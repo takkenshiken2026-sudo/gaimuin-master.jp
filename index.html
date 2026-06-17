@@ -835,7 +835,7 @@ details.rich-detail summary{display:none}
 .plan-feat::before{content:'—';color:var(--text3);font-size:13px}
 
 /* ===== ORIG PRACTICE ===== */
-.orig-field-chips,.orig-format-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.orig-field-chips,.orig-format-chips,.orig-tier-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
 .field-chip{padding:6px 13px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);cursor:pointer;background:var(--bg);color:var(--text2);transition:all .15s;font-family:var(--font)}
 .field-chip:hover{border-color:var(--text2);background:var(--bg3)}
 .field-chip.on{background:var(--sel-s);border-color:var(--ink);color:var(--text);font-weight:600}
@@ -1494,14 +1494,7 @@ html.question-modes--no-past .past-chrome{display:none!important}
           </div>
           <div class="mode-arrow-v2">›</div>
         </div>
-        <div class="mode-card-v2" onclick="gotoPage('orig')">
-          <div class="mode-num-v2">03</div>
-          <div class="mode-body-v2">
-            <div class="mode-purpose-v2" id="mode-orig-purpose" aria-live="polite">本格的に実力をつけたい</div>
-            <div class="mode-title-v2">実践演習</div>
-          </div>
-          <div class="mode-arrow-v2">›</div>
-        </div>
+        <div id="orig-mode-cards"></div>
       </div>
 
       <div id="daily-status-wrap"></div>
@@ -1769,8 +1762,13 @@ html.question-modes--no-past .past-chrome{display:none!important}
           <li class="breadcrumb-item breadcrumb-current" aria-current="page">実践演習</li>
         </ol>
       </nav>
-      <h2 class="page-title">実践演習</h2>
+      <h2 class="page-title" id="orig-page-title">実践演習</h2>
       <div class="page-sub" id="orig-page-sub">分野を選び、過去問と同じ形式で演習できます。出題順は毎回ランダムです。</div>
+
+      <div id="orig-tier-section">
+        <h2 class="section-label">対象試験</h2>
+        <div class="field-chips orig-tier-chips" id="orig-tier-chips" role="group" aria-label="対象試験"></div>
+      </div>
 
       <div id="orig-format-section">
         <h2 class="section-label">出題形式</h2>
@@ -3210,7 +3208,6 @@ function formatQuizCountJa(n) {
 }
 function updateQuizStartModeStats() {
   const pastPurpose = document.getElementById('mode-past-purpose');
-  const origPurpose = document.getElementById('mode-orig-purpose');
   let years = 0;
   if (typeof CSV_IMPORTED_PAST_YEAR_COUNT === 'number') {
     years = CSV_IMPORTED_PAST_YEAR_COUNT;
@@ -3219,22 +3216,60 @@ function updateQuizStartModeStats() {
   } else if (typeof CSV_IMPORTED_YEAR_LABELS === 'object' && CSV_IMPORTED_YEAR_LABELS) {
     years = Object.keys(CSV_IMPORTED_YEAR_LABELS).length;
   }
-  let practiceN = 0;
-  if (typeof CSV_IMPORTED_PRACTICE_QUESTION_COUNT === 'number') {
-    practiceN = CSV_IMPORTED_PRACTICE_QUESTION_COUNT;
-  } else {
-    practiceN = collectPracticeQuestionsFlat().length;
-  }
   if (pastPurpose) {
     pastPurpose.textContent = years > 0
       ? '本番の出題傾向を押さえたい（' + years + '年分掲載）'
       : '本番の出題傾向を押さえたい';
   }
-  if (origPurpose) {
-    origPurpose.textContent = practiceN > 0
-      ? '本格的に実力をつけたい（' + formatQuizCountJa(practiceN) + '問以上掲載）'
-      : '本格的に実力をつけたい';
+  renderQuizStartOrigModes();
+}
+function countPracticeForTier(tierId){
+  if(!tierId) return collectPracticeQuestionsFlat().length;
+  return collectPracticeQuestionsFlat().filter(function(q){ return matchesOrigTier(q, tierId); }).length;
+}
+function renderQuizStartOrigModes(){
+  const wrap=document.getElementById('orig-mode-cards');
+  if(!wrap) return;
+  const tiers=getPracticeTiers();
+  let numBase=1;
+  const list=document.querySelector('.mode-list-v2');
+  if(list){
+    numBase=Array.from(list.children).filter(function(el){
+      return el.id!=='orig-mode-cards' && el.offsetParent!==null;
+    }).length+1;
   }
+  const cards=[];
+  if(tiers.length>=2){
+    tiers.forEach(function(t, idx){
+      const n=countPracticeForTier(t.id);
+      const purpose=n>0
+        ? '本番形式で実力を測りたい（'+formatQuizCountJa(n)+'問）'
+        : '本番形式で実力を測りたい';
+      const label=t.shortLabel||t.label||'実践演習';
+      cards.push(
+        '<div class="mode-card-v2" onclick="openOrigTier(\''+String(t.id).replace(/'/g,'\\\'')+'\')">'
+        +'<div class="mode-num-v2">'+String(numBase+idx).padStart(2,'0')+'</div>'
+        +'<div class="mode-body-v2"><div class="mode-purpose-v2">'+purpose+'</div>'
+        +'<div class="mode-title-v2">実践演習（'+label+'）</div></div>'
+        +'<div class="mode-arrow-v2">›</div></div>'
+      );
+    });
+  }else{
+    const practiceN=(typeof CSV_IMPORTED_PRACTICE_QUESTION_COUNT==='number')
+      ? CSV_IMPORTED_PRACTICE_QUESTION_COUNT
+      : collectPracticeQuestionsFlat().length;
+    const purpose=practiceN>0
+      ? '本格的に実力をつけたい（'+formatQuizCountJa(practiceN)+'問以上掲載）'
+      : '本格的に実力をつけたい';
+    cards.push(
+      '<div class="mode-card-v2" onclick="gotoPage(\'orig\')">'
+      +'<div class="mode-num-v2">03</div>'
+      +'<div class="mode-body-v2"><div class="mode-purpose-v2">'+purpose+'</div>'
+      +'<div class="mode-title-v2">実践演習</div></div>'
+      +'<div class="mode-arrow-v2">›</div></div>'
+    );
+  }
+  wrap.innerHTML=cards.join('');
 }
 window.updateQuizStartModeStats = updateQuizStartModeStats;
 
@@ -3877,10 +3912,14 @@ function _resolveInitialPage() {
     '/account/':     'dash'
   };
   const hashMap = {
-    '#past':'past-config','#orig':'orig','#ichimondou':'ichimondou','#dash':'dash',
+    '#past':'past-config','#orig':'orig','#orig-tier2':'orig','#orig-tier1':'orig',
+    '#ichimondou':'ichimondou','#dash':'dash',
     '#review':'review','#account':'dash'
   };
-  return pathMap[path] || hashMap[hash] || 'quiz-start';
+  const page = pathMap[path] || hashMap[hash] || 'quiz-start';
+  if(page==='orig' && hash==='#orig-tier1') origState.tier='tier1';
+  else if(page==='orig' && hash==='#orig-tier2') origState.tier='tier2';
+  return page;
 }
 
 // ===== STATS =====
@@ -4146,12 +4185,42 @@ function selOrder(o){quizState.order=o;['seq','rnd'].forEach(v=>{const el=docume
 
 // → exam-site-data-practice.js（実践演習）
 
-let origState = {fields: getFieldIds(), count: 10, format: 'all'};
+let origState = {fields: getFieldIds(), count: 10, format: 'all', tier: ''};
+function getPracticeTiers(){
+  var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
+  return Array.isArray(qm.practiceTiers)?qm.practiceTiers:[];
+}
+function hasPracticeTiers(){ return getPracticeTiers().length>=2; }
+function getActivePracticeTier(){
+  var tiers=getPracticeTiers();
+  if(!tiers.length) return null;
+  return tiers.find(function(t){ return t.id===origState.tier; })||tiers[0];
+}
 function getPracticePreset(){
+  var tier=getActivePracticeTier();
+  if(tier) return tier;
   var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
   return qm.practicePreset||null;
 }
+function practiceQuestionTier(q){
+  if(!q) return '';
+  var tags=String(q.tags||'');
+  if(/二種/.test(tags)) return 'tier2';
+  if(/一種/.test(tags)) return 'tier1';
+  return '';
+}
+function matchesOrigTier(q, tierId){
+  if(!hasPracticeTiers()) return true;
+  var tid=tierId||origState.tier;
+  if(!tid) return true;
+  var qt=practiceQuestionTier(q);
+  return qt===tid;
+}
 function isPracticeFormatEnabled(fmt){
+  var tier=getActivePracticeTier();
+  if(tier&&Array.isArray(tier.practiceFormats)&&tier.practiceFormats.length){
+    return tier.practiceFormats.indexOf(fmt)>=0;
+  }
   var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
   var fm=qm.practiceFormats;
   if(!Array.isArray(fm)||!fm.length) return fmt==='choice';
@@ -4168,6 +4237,41 @@ function origFormatLabel(fmt){
   if(fmt==='marubatsu') return '〇×方式';
   if(fmt==='choice') return '五肢選択';
   return 'すべて';
+}
+function origTierLabel(){
+  const tier=getActivePracticeTier();
+  return tier?(tier.shortLabel||tier.label||''):'';
+}
+function buildOrigTierChips(){
+  const section=document.getElementById('orig-tier-section');
+  const el=document.getElementById('orig-tier-chips');
+  const tiers=getPracticeTiers();
+  if(!el||tiers.length<2){ if(section) section.style.display='none'; return; }
+  if(section) section.style.display='';
+  if(!origState.tier||!tiers.some(t=>t.id===origState.tier)) origState.tier=tiers[0].id;
+  el.innerHTML=tiers.map(t=>
+    `<div class="chip ${origState.tier===t.id?'on':''}" id="otier-${t.id}" onclick="selOrigTier('${t.id}')">${t.shortLabel||t.label}</div>`
+  ).join('');
+}
+function selOrigTier(tierId){
+  origState.tier=tierId;
+  origState.format='all';
+  buildOrigTierChips();
+  buildOrigFormatChips();
+  buildOrigCountButtons();
+  updateOrigPageHeading();
+  updateOrigSelSummary();
+}
+function openOrigTier(tierId){
+  origState.tier=tierId;
+  gotoPage('orig');
+}
+function updateOrigPageHeading(){
+  const titleEl=document.getElementById('orig-page-title');
+  const tierLabel=origTierLabel();
+  if(titleEl) titleEl.textContent=tierLabel?`実践演習（${tierLabel}）`:'実践演習';
+  const titles=PAGE_TITLES;
+  if(titles) titles.orig=tierLabel?`実践演習（${tierLabel}）`:'実践演習';
 }
 function buildOrigFormatChips(){
   const section=document.getElementById('orig-format-section');
@@ -4227,7 +4331,7 @@ function toggleOrigChip(fid){
   updateOrigSelSummary();
 }
 function getCsvOrigPracticeFieldPool(){
-  return collectPracticeQuestionsFlat().filter(q => origState.fields.includes(q.field));
+  return collectPracticeQuestionsFlat().filter(q => origState.fields.includes(q.field) && matchesOrigTier(q));
 }
 function filterOrigPoolByFormat(pool){
   if(origState.format==='all') return pool;
@@ -4241,7 +4345,9 @@ function updateOrigSelSummary(){
   if(!sumEl)return;
   const pool=getCsvOrigPracticePool();
   const fmt=origFormatLabel(origState.format);
-  sumEl.textContent=`形式 ${fmt}・分野 ${origState.fields.length}・該当 ${pool.length}問`;
+  const tier=origTierLabel();
+  const tierPart=tier?`対象 ${tier}・`:'';
+  sumEl.textContent=`${tierPart}形式 ${fmt}・分野 ${origState.fields.length}・該当 ${pool.length}問`;
 }
 
 function renderOrigPage(){
@@ -4252,9 +4358,11 @@ function renderOrigPage(){
       ? String(preset.subtitle)
       : '分野を選び、過去問と同じ形式で演習できます。出題順は毎回ランダムです。';
   }
+  buildOrigTierChips();
   buildOrigFormatChips();
   buildOrigCountButtons();
   buildOrigFieldChips();
+  updateOrigPageHeading();
   updateOrigSelSummary();
 }
 

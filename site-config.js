@@ -154,8 +154,73 @@ window.SITE_CONFIG = {
       "marubatsu",
       "choice"
     ],
+    "practiceTiers": [
+      {
+        "id": "tier2",
+        "label": "二種外務員",
+        "shortLabel": "二種",
+        "tag": "二種",
+        "subtitle": "二種外務員向け（〇×方式50問＋五肢選択20問の本番形式）。出題順は毎回ランダムです。",
+        "counts": [
+          {
+            "n": 10,
+            "label": "10問"
+          },
+          {
+            "n": 20,
+            "label": "20問"
+          },
+          {
+            "n": 50,
+            "label": "50問"
+          },
+          {
+            "n": 70,
+            "label": "70問（本番）"
+          }
+        ],
+        "defaultCount": 20,
+        "practiceFormats": [
+          "marubatsu",
+          "choice"
+        ]
+      },
+      {
+        "id": "tier1",
+        "label": "一種外務員",
+        "shortLabel": "一種",
+        "tag": "一種",
+        "subtitle": "一種外務員向け（五肢選択100問・120分の本番形式）。出題順は毎回ランダムです。",
+        "counts": [
+          {
+            "n": 10,
+            "label": "10問"
+          },
+          {
+            "n": 20,
+            "label": "20問"
+          },
+          {
+            "n": 50,
+            "label": "50問"
+          },
+          {
+            "n": 100,
+            "label": "100問（本番）"
+          }
+        ],
+        "defaultCount": 20,
+        "practiceFormats": [
+          "choice"
+        ]
+      }
+    ],
     "practicePreset": {
-      "subtitle": "二種外務員の本番形式（〇×方式50問＋五肢選択20問）に合わせて演習できます。出題順は毎回ランダムです。",
+      "id": "tier2",
+      "label": "二種外務員",
+      "shortLabel": "二種",
+      "tag": "二種",
+      "subtitle": "二種外務員向け（〇×方式50問＋五肢選択20問の本番形式）。出題順は毎回ランダムです。",
       "counts": [
         {
           "n": 10,
@@ -175,11 +240,10 @@ window.SITE_CONFIG = {
         }
       ],
       "defaultCount": 20,
-      "examMix": {
-        "marubatsu": 50,
-        "choice": 20,
-        "total": 70
-      }
+      "practiceFormats": [
+        "marubatsu",
+        "choice"
+      ]
     }
   }
 };

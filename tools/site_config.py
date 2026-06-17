@@ -175,10 +175,24 @@ def practice_formats() -> list[str]:
 
 
 def practice_preset() -> dict[str, object]:
+    tiers = practice_tiers()
+    if tiers:
+        return tiers[0]
     raw = question_modes().get("practicePreset")
     if not isinstance(raw, dict):
         return {}
     return raw
+
+
+def practice_tiers() -> list[dict[str, object]]:
+    raw = question_modes().get("practiceTiers")
+    if not isinstance(raw, list):
+        return []
+    out: list[dict[str, object]] = []
+    for item in raw:
+        if isinstance(item, dict) and str(item.get("id") or "").strip():
+            out.append(item)
+    return out
 
 
 def ichimon_enabled() -> bool:
@@ -575,6 +589,7 @@ def write_site_config_js() -> None:
             **question_modes(),
             "practiceFormats": practice_formats(),
             "practicePreset": practice_preset(),
+            "practiceTiers": practice_tiers(),
         },
     }
     pm = paid_mock_exam()
