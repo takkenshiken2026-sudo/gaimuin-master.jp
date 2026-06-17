@@ -329,6 +329,7 @@ h2.section-label .tip-icon{width:13px;height:13px;font-size:9px}
 .mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
 /* ===== QUIZ START V2 ===== */
 .mode-list-v2{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+#orig-mode-cards{display:flex;flex-direction:column;gap:8px;width:100%}
 /* ===== 一問一答 ===== */
 .ichi-config{padding:4px 0 20px;margin-bottom:8px}
 .ichi-config-lead{font-size:var(--fs-sub);color:var(--text2);line-height:1.65;margin-bottom:14px}
@@ -426,7 +427,7 @@ h2.section-label .tip-icon{width:13px;height:13px;font-size:9px}
 .chip.on{background:var(--sel-s);border-color:var(--ink);color:var(--text);font-weight:600}
 .count-row{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap}
 .count-label{font-size:14px;color:var(--text2)}
-.count-btns{display:flex;gap:4px}
+.count-btns{display:flex;flex-wrap:wrap;gap:8px}
 .count-btn{min-width:64px;height:34px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);font-size:14px;cursor:pointer;font-family:var(--font);transition:all .15s;padding:0 14px}
 .count-btn:hover{border-color:var(--text2);background:var(--bg3)}
 .count-btn.on{border-color:var(--ink);background:var(--sel-s);color:var(--text);font-weight:600}
@@ -835,7 +836,12 @@ details.rich-detail summary{display:none}
 .plan-feat::before{content:'—';color:var(--text3);font-size:13px}
 
 /* ===== ORIG PRACTICE ===== */
-.orig-field-chips,.orig-format-chips,.orig-tier-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.orig-field-chips,.orig-format-chips,.orig-tier-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#page-orig .field-chips.orig-field-chips,
+#page-orig .field-chips.orig-format-chips,
+#page-orig #orig-tier-section{margin-bottom:4px}
+#page-orig #orig-format-section{margin-bottom:4px}
+#page-orig .section-label{margin-top:12px;margin-bottom:8px}
 .field-chip{padding:6px 13px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);cursor:pointer;background:var(--bg);color:var(--text2);transition:all .15s;font-family:var(--font)}
 .field-chip:hover{border-color:var(--text2);background:var(--bg3)}
 .field-chip.on{background:var(--sel-s);border-color:var(--ink);color:var(--text);font-weight:600}
