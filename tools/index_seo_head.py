@@ -16,7 +16,9 @@ from tools.site_config import (
     exam_name,
     fields,
     google_site_verification,
+    ichimon_enabled,
     public_url,
+    study_modes_label,
 )
 
 INDEX_SEO_MARKER_START = "<!--INDEX_SEO_HEAD-->"
@@ -24,7 +26,8 @@ INDEX_SEO_MARKER_END = "<!--/INDEX_SEO_HEAD-->"
 
 
 def index_home_title() -> str:
-    return f"{brand_name()}｜{exam_name()} 過去問・一問一答・用語解説で合格を目指す無料学習サイト"
+    modes = study_modes_label()
+    return f"{brand_name()}｜{exam_name()} {modes}・用語解説で合格を目指す無料学習サイト"
 
 
 def index_og_title() -> str:
@@ -51,10 +54,18 @@ def index_spa_hash_url(hash_frag: str) -> str:
     return f"{origin}/{frag}"
 
 
+def index_study_features_phrase() -> str:
+    """メタ説明用（一問一答の有無に応じる）。"""
+    if ichimon_enabled():
+        return "過去問演習・実践演習・一問一答・重要用語解説"
+    return "過去問演習・実践演習・重要用語解説"
+
+
 def index_description() -> str:
+    features = index_study_features_phrase()
     return (
         f"{exam_name()}の合格を目指す無料学習プラットフォーム。"
-        "過去問演習・実践演習・一問一答・重要用語解説を網羅。"
+        f"{features}を網羅。"
         "年度別・分野別に絞った効率学習で合格を目指す。"
     )
 
@@ -62,15 +73,20 @@ def index_description() -> str:
 def index_description_long() -> str:
     field_names = "・".join(str(f.get("name") or f.get("id") or "") for f in fields()[:4])
     subjects = field_names or "主要分野"
+    features = index_study_features_phrase()
     return (
         f"{exam_name()}の合格を目指す無料学習プラットフォーム。"
-        f"過去問演習・実践演習・一問一答・重要用語解説を網羅。"
+        f"{features}を網羅。"
         f"年度別・科目別（{subjects}）に絞った効率的な学習が可能です。"
     )
 
 
 def index_keywords() -> str:
-    parts = [exam_name(), "過去問", "一問一答", "用語集", "資格学習", "合格"]
+    parts = [exam_name(), "過去問", "用語集", "資格学習", "合格"]
+    if ichimon_enabled():
+        parts.insert(2, "一問一答")
+    else:
+        parts.insert(2, "実践演習")
     for f in fields()[:3]:
         name = str(f.get("name") or "").strip()
         if name:
@@ -82,8 +98,9 @@ def index_json_ld_graph() -> list[dict]:
     home_url = index_canonical_url()
     home_id = home_url.rstrip("/")
     alt = f"{exam_name()}対策サイト"
+    modes = study_modes_label()
     platform_desc = (
-        f"{exam_name()}の過去問・実践演習・一問一答・用語解説を"
+        f"{exam_name()}の{modes}・用語解説を"
         "網羅した無料学習プラットフォーム"
     )
     return [
