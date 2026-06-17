@@ -137,6 +137,8 @@ def practice_row_to_obj(row: dict, line_no: int) -> dict | None:
         "year": PRACTICE_POOL_YEAR,
         "num": qno,
         "field": field,
+        "qtype": norm(row.get("type")) or "single",
+        "tags": norm(row.get("tags")),
         "text": text,
         "opts": opts,
         "ans": 0 if cor is None else cor,

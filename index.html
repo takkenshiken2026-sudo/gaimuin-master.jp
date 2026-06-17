@@ -835,7 +835,7 @@ details.rich-detail summary{display:none}
 .plan-feat::before{content:'—';color:var(--text3);font-size:13px}
 
 /* ===== ORIG PRACTICE ===== */
-.orig-field-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.orig-field-chips,.orig-format-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
 .field-chip{padding:6px 13px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);cursor:pointer;background:var(--bg);color:var(--text2);transition:all .15s;font-family:var(--font)}
 .field-chip:hover{border-color:var(--text2);background:var(--bg3)}
 .field-chip.on{background:var(--sel-s);border-color:var(--ink);color:var(--text);font-weight:600}
@@ -1769,14 +1769,22 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
         </ol>
       </nav>
       <h2 class="page-title">実践演習</h2>
-      <div class="page-sub">分野を選び、過去問と同じ形式で演習できます。出題順は毎回ランダムです。</div>
+      <div class="page-sub" id="orig-page-sub">分野を選び、過去問と同じ形式で演習できます。出題順は毎回ランダムです。</div>
 
-      <div class="orig-bottom-bar" style="margin-top:0;margin-bottom:16px;padding-top:0;border-top:none;border-bottom:1px solid var(--border);padding-bottom:16px">
+      <div id="orig-format-section">
+        <h2 class="section-label">出題形式</h2>
+        <div class="field-chips orig-format-chips" id="orig-format-chips" role="group" aria-label="出題形式"></div>
+      </div>
+
+      <h2 class="section-label">分野を選ぶ</h2>
+      <div class="field-chips orig-field-chips" id="orig-field-chips"></div>
+
+      <div class="orig-bottom-bar" style="margin-top:16px;margin-bottom:16px;padding-top:16px;border-top:1px solid var(--border);padding-bottom:16px;border-bottom:1px solid var(--border)">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px">
           <h2 class="section-label" style="margin-bottom:0">出題数</h2>
           <button class="btn-primary" onclick="beginOrigQuiz()">スタート</button>
         </div>
-        <div class="count-btns">
+        <div class="count-btns" id="orig-count-btns">
           <button class="count-btn"    onclick="selOrigCount(5)"  id="ocb5">5問</button>
           <button class="count-btn on" onclick="selOrigCount(10)" id="ocb10">10問</button>
           <button class="count-btn"    onclick="selOrigCount(30)" id="ocb30">30問</button>
@@ -1784,9 +1792,6 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
         </div>
         <div class="orig-sel-summary" id="orig-sel-summary" style="margin-top:12px">条件を選んでください</div>
       </div>
-
-      <h2 class="section-label">分野を選ぶ</h2>
-      <div class="field-chips" id="orig-field-chips"></div>
 
     </div>
 
@@ -4137,7 +4142,78 @@ function selOrder(o){quizState.order=o;['seq','rnd'].forEach(v=>{const el=docume
 
 // → exam-site-data-practice.js（実践演習）
 
-let origState = {fields: getFieldIds(), count: 10};
+let origState = {fields: getFieldIds(), count: 10, format: 'all'};
+function getPracticePreset(){
+  var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
+  return qm.practicePreset||null;
+}
+function isPracticeFormatEnabled(fmt){
+  var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
+  var fm=qm.practiceFormats;
+  if(!Array.isArray(fm)||!fm.length) return fmt==='choice';
+  return fm.indexOf(fmt)>=0;
+}
+function practiceQuestionFormat(q){
+  if(!q) return 'choice';
+  if(q.qtype==='marubatsu') return 'marubatsu';
+  var tags=String(q.tags||'');
+  if(/〇×|○×|marubatsu/i.test(tags)) return 'marubatsu';
+  return 'choice';
+}
+function origFormatLabel(fmt){
+  if(fmt==='marubatsu') return '〇×方式';
+  if(fmt==='choice') return '五肢選択';
+  if(fmt==='exam') return '本番形式';
+  return 'すべて';
+}
+function buildOrigFormatChips(){
+  const section=document.getElementById('orig-format-section');
+  const el=document.getElementById('orig-format-chips');
+  if(!el) return;
+  const hasM=isPracticeFormatEnabled('marubatsu');
+  const hasC=isPracticeFormatEnabled('choice');
+  if(!hasM&&!hasC){ if(section) section.style.display='none'; return; }
+  if(section) section.style.display='';
+  const items=[{id:'all',label:'すべて'}];
+  if(hasM) items.push({id:'marubatsu',label:'〇×方式'});
+  if(hasC) items.push({id:'choice',label:'五肢選択'});
+  if(hasM&&hasC){
+    const preset=getPracticePreset();
+    const mix=(preset&&preset.examMix)||{};
+    const total=Number(mix.total)||70;
+    items.push({id:'exam',label:`本番形式${total}問`});
+  }
+  el.innerHTML=items.map(it=>
+    `<div class="chip ${origState.format===it.id?'on':''}" id="ofmt-${it.id}" onclick="selOrigFormat('${it.id}')">${it.label}</div>`
+  ).join('');
+}
+function selOrigFormat(fmt){
+  origState.format=fmt;
+  buildOrigFormatChips();
+  if(fmt==='exam'){
+    const preset=getPracticePreset();
+    const total=Number((preset&&preset.examMix&&preset.examMix.total)||70);
+    origState.count=total;
+    buildOrigCountButtons();
+  }
+  updateOrigSelSummary();
+}
+function buildOrigCountButtons(){
+  const el=document.getElementById('orig-count-btns');
+  if(!el) return;
+  const preset=getPracticePreset();
+  const counts=Array.isArray(preset&&preset.counts)&&preset.counts.length
+    ? preset.counts
+    : [{n:5,label:'5問'},{n:10,label:'10問'},{n:30,label:'30問'},{n:0,label:'全問'}];
+  if(typeof origState.count!=='number'||!counts.some(c=>Number(c.n)===origState.count)){
+    origState.count=Number((preset&&preset.defaultCount)!=null?preset.defaultCount:counts[1]?counts[1].n:10);
+  }
+  el.innerHTML=counts.map(c=>{
+    const n=Number(c.n);
+    const label=String(c.label||((n===0)?'全問':(n+'問')));
+    return `<button type="button" class="count-btn ${origState.count===n?'on':''}" onclick="selOrigCount(${n})" id="ocb${n}">${label}</button>`;
+  }).join('');
+}
 function buildOrigFieldChips(){
   const el=document.getElementById('orig-field-chips');
   if(!el)return;
@@ -4159,35 +4235,78 @@ function toggleOrigChip(fid){
   }
   updateOrigSelSummary();
 }
-function getCsvOrigPracticePool(){
+function getCsvOrigPracticeFieldPool(){
   return collectPracticeQuestionsFlat().filter(q => origState.fields.includes(q.field));
+}
+function filterOrigPoolByFormat(pool){
+  if(origState.format==='all'||origState.format==='exam') return pool;
+  return pool.filter(q=>practiceQuestionFormat(q)===origState.format);
+}
+function getCsvOrigPracticePool(){
+  return filterOrigPoolByFormat(getCsvOrigPracticeFieldPool());
 }
 function updateOrigSelSummary(){
   const sumEl=document.getElementById('orig-sel-summary');
   if(!sumEl)return;
   const pool=getCsvOrigPracticePool();
-  sumEl.textContent=`分野 ${origState.fields.length}・該当 ${pool.length}問`;
+  const fmt=origFormatLabel(origState.format);
+  sumEl.textContent=`形式 ${fmt}・分野 ${origState.fields.length}・該当 ${pool.length}問`;
 }
 
 function renderOrigPage(){
+  const sub=document.getElementById('orig-page-sub');
+  const preset=getPracticePreset();
+  if(sub){
+    sub.textContent=(preset&&preset.subtitle)
+      ? String(preset.subtitle)
+      : '分野を選び、過去問と同じ形式で演習できます。出題順は毎回ランダムです。';
+  }
+  buildOrigFormatChips();
+  buildOrigCountButtons();
   buildOrigFieldChips();
   updateOrigSelSummary();
 }
 
 function selOrigCount(n){
   origState.count=n;
-  [5,10,30,0].forEach(v=>{const el=document.getElementById('ocb'+v);if(el)el.classList.toggle('on',v===n);});
+  const el=document.getElementById('orig-count-btns');
+  if(!el) return;
+  el.querySelectorAll('.count-btn').forEach(btn=>{
+    const m=/selOrigCount\((\d+)\)/.exec(btn.getAttribute('onclick')||'');
+    if(m) btn.classList.toggle('on', Number(m[1])===n);
+  });
+}
+
+function buildOrigExamQueue(fieldPool){
+  const preset=getPracticePreset();
+  const mix=(preset&&preset.examMix)||{marubatsu:50,choice:20,total:70};
+  const mbN=Number(mix.marubatsu)||50;
+  const chN=Number(mix.choice)||20;
+  const mb=shuffleArray(fieldPool.filter(q=>practiceQuestionFormat(q)==='marubatsu'));
+  const ch=shuffleArray(fieldPool.filter(q=>practiceQuestionFormat(q)==='choice'));
+  const picked=mb.slice(0,mbN).concat(ch.slice(0,chN));
+  return shuffleArray(picked);
 }
 
 function beginOrigQuiz(){
   syncMissionPopupBaseline();
   showNextBtn(false, null);
-  const pool=getCsvOrigPracticePool();
-  if(!pool.length){
-    alert('条件に該当する実践演習がありません。data/practice_questions.csv の有無・内容と、分野の選択を確認してください。');
-    return;
+  const fieldPool=getCsvOrigPracticeFieldPool();
+  let ordered;
+  if(origState.format==='exam'){
+    ordered=buildOrigExamQueue(fieldPool);
+    if(!ordered.length){
+      alert('本番形式の演習を組み立てられません。〇×方式と五肢選択の問題を data/practice_questions.csv に追加してください。');
+      return;
+    }
+  }else{
+    const pool=getCsvOrigPracticePool();
+    if(!pool.length){
+      alert('条件に該当する実践演習がありません。data/practice_questions.csv の有無・内容と、形式・分野の選択を確認してください。');
+      return;
+    }
+    ordered=shuffleArray(pool.slice());
   }
-  const ordered = shuffleArray(pool.slice());
   quizState.queue=origState.count===0?ordered:ordered.slice(0,origState.count);
   quizState.idx=0;quizState.sessionResults=[];quizState.scoreReplayMode=false;
   quizState.mode='orig';

@@ -162,6 +162,33 @@ window.SITE_CONFIG = {
     "practiceFormats": [
       "marubatsu",
       "choice"
-    ]
+    ],
+    "practicePreset": {
+      "subtitle": "二種外務員の本番形式（〇×方式50問＋五肢選択20問）に合わせて演習できます。出題順は毎回ランダムです。",
+      "counts": [
+        {
+          "n": 10,
+          "label": "10問"
+        },
+        {
+          "n": 20,
+          "label": "20問"
+        },
+        {
+          "n": 50,
+          "label": "50問"
+        },
+        {
+          "n": 70,
+          "label": "70問（本番）"
+        }
+      ],
+      "defaultCount": 20,
+      "examMix": {
+        "marubatsu": 50,
+        "choice": 20,
+        "total": 70
+      }
+    }
   }
 };

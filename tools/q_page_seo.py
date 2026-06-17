@@ -44,6 +44,14 @@ def index_lead(mode: str) -> str:
             "検索と絞り込みで目的の問題を探し、解説ページで正誤と解説を確認できます。"
         )
     if mode == "practice":
+        from tools.site_config import ichimon_enabled, practice_formats
+
+        if not ichimon_enabled() and practice_formats():
+            return (
+                f"{ex}の実践演習を分野別にまとめています。"
+                "〇×方式と五肢選択方式を選んで、二種外務員の本番形式に近い演習ができます。"
+                "各問題の解説ページで正誤を確認し、アプリで演習できます。"
+            )
         return (
             f"{ex}の実践演習を分野別にまとめています。"
             f"{c['mockExam']}に近い形式で力を測る演習として、{c['studyModes']}と組み合わせて学習できます。"

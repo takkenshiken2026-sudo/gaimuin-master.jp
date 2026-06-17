@@ -1047,18 +1047,17 @@ def main() -> int:
             encoding="utf-8",
         )
 
-    if practice_pages:
-        idx = Q_ROOT / "practice" / "index.html"
-        idx.parent.mkdir(parents=True, exist_ok=True)
-        idx.write_text(
-            build_mode_index(
-                mode="practice",
-                pages=practice_pages,
-                base_url=base,
-                rel_path=Path("q/practice/index.html"),
-            ),
-            encoding="utf-8",
-        )
+    idx = Q_ROOT / "practice" / "index.html"
+    idx.parent.mkdir(parents=True, exist_ok=True)
+    idx.write_text(
+        build_mode_index(
+            mode="practice",
+            pages=practice_pages,
+            base_url=base,
+            rel_path=Path("q/practice/index.html"),
+        ),
+        encoding="utf-8",
+    )
 
     ichimon_rows = load_ichimon_rows()
     if ichimon_enabled():

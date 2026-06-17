@@ -167,6 +167,20 @@ def question_modes() -> dict[str, Any]:
     return raw
 
 
+def practice_formats() -> list[str]:
+    raw = question_modes().get("practiceFormats")
+    if not isinstance(raw, list):
+        return []
+    return [str(x).strip() for x in raw if str(x).strip()]
+
+
+def practice_preset() -> dict[str, object]:
+    raw = question_modes().get("practicePreset")
+    if not isinstance(raw, dict):
+        return {}
+    return raw
+
+
 def ichimon_enabled() -> bool:
     """一問一答モード（独立タブ・一覧）を表示するか。hideIchimon=true で非表示。"""
     return not bool(question_modes().get("hideIchimon"))
@@ -546,7 +560,11 @@ def write_site_config_js() -> None:
             }
             for f in fields()
         ],
-        "questionModes": question_modes(),
+        "questionModes": {
+            **question_modes(),
+            "practiceFormats": practice_formats(),
+            "practicePreset": practice_preset(),
+        },
     }
     pm = paid_mock_exam()
     if pm:
