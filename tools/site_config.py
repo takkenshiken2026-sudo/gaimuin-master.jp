@@ -159,6 +159,30 @@ def learning_nav_label(nav_id: str, default: str) -> str:
     return learning_nav_label_overrides().get(nav_id, default)
 
 
+def question_modes() -> dict[str, Any]:
+    """実践演習内の出題形式など（サイトごとに一問一答タブの有無を切替）。"""
+    raw = CONFIG.get("questionModes") or {}
+    if not isinstance(raw, dict):
+        return {}
+    return raw
+
+
+def ichimon_enabled() -> bool:
+    """一問一答モード（独立タブ・一覧）を表示するか。hideIchimon=true で非表示。"""
+    return not bool(question_modes().get("hideIchimon"))
+
+
+def study_modes_label() -> str:
+    seo = CONFIG.get("seoCopy") or {}
+    if isinstance(seo, dict):
+        configured = str(seo.get("studyModes") or "").strip()
+        if configured:
+            return configured
+    if ichimon_enabled():
+        return "過去問・実践演習・一問一答"
+    return "過去問・実践演習"
+
+
 def official_organization() -> str:
     return str(CONFIG.get("officialOrganization") or "試験実施団体")
 
@@ -522,6 +546,7 @@ def write_site_config_js() -> None:
             }
             for f in fields()
         ],
+        "questionModes": question_modes(),
     }
     pm = paid_mock_exam()
     if pm:

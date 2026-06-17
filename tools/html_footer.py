@@ -23,6 +23,7 @@ from tools.site_config import (
     exam_name,
     footer_disclaimer,
     ga4_measurement_id,
+    ichimon_enabled,
     learning_nav_label,
     navigation_items,
 )
@@ -297,11 +298,17 @@ def _learning_nav_href(rel_path: Path, dest: str) -> str:
     return footer_href(rel_path, dest)
 
 
+def _learning_nav_items() -> list[tuple[str, str, str, str]]:
+    if ichimon_enabled():
+        return LEARNING_NAV_ITEMS
+    return [item for item in LEARNING_NAV_ITEMS if item[0] != "tnav-ichimondou"]
+
+
 def _learning_nav_links(rel_path: Path, *, current: str | None = None) -> str:
     """静的ページ用: SPA 学習ナビ（用語解説は terms/index.html）。"""
     active_id = LEARNING_NAV_ACTIVE_BY_PAGE.get(current or "")
     links: list[str] = []
-    for nav_id, label, dest, icon in LEARNING_NAV_ITEMS:
+    for nav_id, label, dest, icon in _learning_nav_items():
         href = html.escape(_learning_nav_href(rel_path, dest))
         active = nav_id == active_id
         cls = "topnav-link active" if active else "topnav-link"
@@ -483,12 +490,13 @@ def q_index_filters_details_html(
 
 
 def q_hub_links_html(rel_path: Path, *, current: str) -> str:
-    """過去問・実践演習・一問一答のモード切替タブ（一覧・個別ページ共通）。"""
+    """過去問・実践演習・（任意で）一問一答のモード切替タブ（一覧・個別ページ共通）。"""
     items: list[tuple[str, str, str]] = [
         ("past", "過去問", "q/index.html"),
         ("practice", "実践演習", "q/practice/index.html"),
-        ("ichimon", "一問一答", "q/ichimon/index.html"),
     ]
+    if ichimon_enabled():
+        items.append(("ichimon", "一問一答", "q/ichimon/index.html"))
     lis: list[str] = []
     for key, label, target in items:
         if key == current:

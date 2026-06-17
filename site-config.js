@@ -156,5 +156,12 @@ window.SITE_CONFIG = {
       ],
       "legacyGlossaryCat": "compliance"
     }
-  ]
+  ],
+  "questionModes": {
+    "hideIchimon": true,
+    "practiceFormats": [
+      "marubatsu",
+      "choice"
+    ]
+  }
 };

@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 
-from tools.site_config import brand_name, contact_url, exam_name, fields
+from tools.site_config import brand_name, contact_url, exam_name, fields, ichimon_enabled
 
 INDEX_NOSCRIPT_MARKER_START = "<!--INDEX_NOSCRIPT-->"
 INDEX_NOSCRIPT_MARKER_END = "<!--/INDEX_NOSCRIPT-->"
@@ -93,6 +93,9 @@ def index_noscript_inner() -> str:
     if not practice_names:
         practice_names = "主要分野"
     subject_lines = "\n".join(_field_noscript_line(f) for f in field_rows) or "          <li>主要科目</li>"
+    ichimon_footer_link = (
+        ' ・ <a href="q/ichimon/index.html">一問一答一覧</a>' if ichimon_enabled() else ""
+    )
     return f"""    <noscript>
       <div style="max-width:860px;margin:40px auto;padding:0 20px;font-family:sans-serif;line-height:1.8">
         <h1>{bn}｜{en} 無料学習プラットフォーム</h1>
@@ -108,7 +111,7 @@ def index_noscript_inner() -> str:
         <ul>
 {subject_lines}
         </ul>
-        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a> ・ <a href="q/index.html">過去問一覧</a> ・ <a href="q/practice/index.html">実践演習一覧</a> ・ <a href="q/ichimon/index.html">一問一答一覧</a> ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="{contact}" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
+        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a> ・ <a href="q/index.html">過去問一覧</a> ・ <a href="q/practice/index.html">実践演習一覧</a>{ichimon_footer_link} ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="{contact}" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
       </div>
     </noscript>"""
 
@@ -286,3 +289,88 @@ def load_patch_region_names(manifest_path: Path) -> list[str]:
         if line:
             names.append(line)
     return names
+
+
+_HTML_CLASS_RE = re.compile(r'<html lang="ja"(?: class="([^"]*)")?>')
+
+
+def inject_question_modes_html_class(text: str) -> str:
+    """hideIchimon 時は index.html の <html> にクラスを付与（SPA 内一問一答 UI を非表示）。"""
+    if not ichimon_enabled():
+        def _add_class(m: re.Match[str]) -> str:
+            existing = (m.group(1) or "").split()
+            if "question-modes--no-ichimon" not in existing:
+                existing.append("question-modes--no-ichimon")
+            cls = " ".join(existing)
+            return f'<html lang="ja" class="{cls}">'
+
+        return _HTML_CLASS_RE.sub(_add_class, text, count=1)
+
+    def _strip_class(m: re.Match[str]) -> str:
+        existing = [c for c in (m.group(1) or "").split() if c and c != "question-modes--no-ichimon"]
+        if existing:
+            return f'<html lang="ja" class="{" ".join(existing)}">'
+        return '<html lang="ja">'
+
+    return _HTML_CLASS_RE.sub(_strip_class, text, count=1)
+
+
+_QUESTION_MODES_GUARD_START = "/*QUESTION_MODES_ICHIMON_GUARD*/"
+_QUESTION_MODES_GUARD_END = "/*/QUESTION_MODES_ICHIMON_GUARD*/"
+
+
+def question_modes_spa_guard_js() -> str:
+    return f"""{_QUESTION_MODES_GUARD_START}
+function ichimonModeEnabled(){{
+  var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{{}};
+  return !qm.hideIchimon;
+}}
+function startIchimondou(){{
+  if(!ichimonModeEnabled()){{ gotoPage('quiz-start'); return; }}
+  ichiState.active = false;
+  ichiState.sourcePool = [];
+  ichiState.questions = [];
+  ichiState.idx = 0;
+  ichiState.score = 0;
+  ichiState.attempts = 0;
+  ichiState.answered = false;
+  gotoPage('ichimondou');
+  syncIchiPageVisibility();
+}}
+{_QUESTION_MODES_GUARD_END}"""
+
+
+def inject_question_modes_spa_guard(text: str) -> str:
+    """startIchimondou を site-config 対応版に差し替え（テンプレ index.html 用）。"""
+    block = question_modes_spa_guard_js()
+    if _QUESTION_MODES_GUARD_START in text:
+        text = replace_marker_region(text, _QUESTION_MODES_GUARD_START, _QUESTION_MODES_GUARD_END, block)
+    else:
+        legacy = re.compile(
+            r"function startIchimondou\(\) \{\s*"
+            r"ichiState\.active = false;[\s\S]*?"
+            r"gotoPage\('ichimondou'\);\s*"
+            r"syncIchiPageVisibility\(\);\s*"
+            r"\}",
+            re.M,
+        )
+        if legacy.search(text):
+            text = legacy.sub(block, text, count=1)
+        else:
+            anchor = "// ===== 一問一答 ====="
+            if anchor in text and "function ichimonModeEnabled" not in text:
+                text = text.replace(anchor, block + "\n" + anchor, 1)
+
+    goto_guard = (
+        "function gotoPage(id, opts){\n"
+        "  if(typeof ichimonModeEnabled==='function' && !ichimonModeEnabled() "
+        "&& (id==='ichimondou'||id==='ichimondou-score')){ id='quiz-start'; }\n"
+        "  if(id==='ichimondou') syncIchiPageVisibility();"
+    )
+    if goto_guard not in text:
+        text = text.replace(
+            "function gotoPage(id, opts){\n  if(id==='ichimondou') syncIchiPageVisibility();",
+            goto_guard,
+            1,
+        )
+    return text

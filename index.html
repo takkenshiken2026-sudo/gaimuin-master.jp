@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="question-modes--no-ichimon">
 <head>
 <meta charset="UTF-8">
 <!--BRAND_ASSET_HEAD-->
@@ -1352,7 +1352,7 @@ body.is-solving .site-footer{display:none!important}
           <span class="topnav-logo-sub">証券外務員（一種・二種）</span>
         </span></a>
       <nav class="topnav-links" aria-label="メインナビゲーション">
-        <a class="topnav-link" id="tnav-ichimondou" href="/#ichimondou" onclick="event.preventDefault();startIchimondou()">
+        <a class="topnav-link ichimon-chrome" id="tnav-ichimondou" href="/#ichimondou" onclick="event.preventDefault();startIchimondou()">
           <svg viewBox="0 0 16 16"><path d="M8 2v12M4 4h8M4 8h8M4 12h8"/></svg>一問一答
         </a>
         <a class="topnav-link" id="tnav-past" href="/#past" onclick="event.preventDefault();gotoPage('past-config')">
@@ -1423,7 +1423,7 @@ body.is-solving .site-footer{display:none!important}
         <svg viewBox="0 0 16 16"><path d="M2 13V6l6-4 6 4v7H10V9H6v4z"/></svg>TOP
       </a>
       <div style="height:1px;background:var(--border);margin:4px 0"></div>
-      <a class="mobile-nav-item" id="mnav-ichimondou" href="/#ichimondou" onclick="event.preventDefault();startIchimondou();closeMobileDrawer()">
+      <a class="mobile-nav-item ichimon-chrome" id="mnav-ichimondou" href="/#ichimondou" onclick="event.preventDefault();startIchimondou();closeMobileDrawer()">
         <svg viewBox="0 0 16 16"><path d="M8 2v12M4 4h8M4 8h8M4 12h8"/></svg>一問一答
       </a>
       <a class="mobile-nav-item" id="mnav-quiz-start" href="/#past" onclick="event.preventDefault();gotoPage('past-config');closeMobileDrawer()">
@@ -1475,7 +1475,7 @@ body.is-solving .site-footer{display:none!important}
       <div class="page-sub">学習目的に合わせてモードを選んでください</div>
 
       <div class="mode-list-v2">
-        <div class="mode-card-v2" onclick="startIchimondou()">
+        <div class="mode-card-v2 ichimon-chrome" onclick="startIchimondou()">
           <div class="mode-num-v2">01</div>
           <div class="mode-body-v2">
             <div class="mode-purpose-v2">隙間時間に知識を定着させたい</div>
@@ -1505,7 +1505,7 @@ body.is-solving .site-footer{display:none!important}
     </div>
 
     <!-- 一問一答 -->
-    <div class="page" id="page-ichimondou">
+    <div class="page ichimon-chrome" id="page-ichimondou">
       <nav class="breadcrumb" aria-label="パンくずリスト">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item"><a href="/" onclick="event.preventDefault();gotoPage('quiz-start')" title="トップ">トップ</a></li>
@@ -1553,7 +1553,7 @@ body.is-solving .site-footer{display:none!important}
     </div>
 
     <!-- 一問一答スコア -->
-    <div class="page" id="page-ichimondou-score">
+    <div class="page ichimon-chrome" id="page-ichimondou-score">
       <nav class="breadcrumb" aria-label="パンくずリスト">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item"><a href="/" onclick="event.preventDefault();gotoPage('quiz-start')" title="トップ">トップ</a></li>
@@ -1808,7 +1808,7 @@ body.is-solving .site-footer{display:none!important}
           <li>金融商品取引法（金融商品取引法・金商法・インサイダー取引など）</li>
           <li>その他法令・業務（その他法令・業務・その他の法令・顧客資産など）</li>
         </ul>
-        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a> ・ <a href="q/index.html">過去問一覧</a> ・ <a href="q/practice/index.html">実践演習一覧</a> ・ <a href="q/ichimon/index.html">一問一答一覧</a> ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="https://gaimuin-master.jp/contact" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
+        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a> ・ <a href="q/index.html">過去問一覧</a> ・ <a href="q/practice/index.html">実践演習一覧</a> ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="https://gaimuin-master.jp/contact" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
       </div>
     </noscript>
     <!--/INDEX_NOSCRIPT-->
@@ -3489,7 +3489,13 @@ function beginIchimondouSession() {
   showIchiQuestion();
 }
 
-function startIchimondou() {
+/*QUESTION_MODES_ICHIMON_GUARD*/
+function ichimonModeEnabled(){
+  var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
+  return !qm.hideIchimon;
+}
+function startIchimondou(){
+  if(!ichimonModeEnabled()){ gotoPage('quiz-start'); return; }
   ichiState.active = false;
   ichiState.sourcePool = [];
   ichiState.questions = [];
@@ -3500,6 +3506,7 @@ function startIchimondou() {
   gotoPage('ichimondou');
   syncIchiPageVisibility();
 }
+/*/QUESTION_MODES_ICHIMON_GUARD*/
 
 function formatIchiStatementLead(statement) {
   return (statement || '').trim();
@@ -3780,6 +3787,7 @@ function shareIchiResultToX(){
 }
 
 function gotoPage(id, opts){
+  if(typeof ichimonModeEnabled==='function' && !ichimonModeEnabled() && (id==='ichimondou'||id==='ichimondou-score')){ id='quiz-start'; }
   if(id==='ichimondou') syncIchiPageVisibility();
   if(id!=='quiz') showNextBtn(false, null);
   document.body.classList.toggle('is-solving', id==='quiz' || (id==='ichimondou' && ichiState.active));

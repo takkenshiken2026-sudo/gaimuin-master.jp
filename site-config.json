@@ -11,7 +11,11 @@
   "officialOrganization": "日本証券業協会",
   "seoCopy": {
     "mockExam": "模試・模擬試験",
-    "studyModes": "過去問・実践演習・一問一答"
+    "studyModes": "過去問・実践演習"
+  },
+  "questionModes": {
+    "hideIchimon": true,
+    "practiceFormats": ["marubatsu", "choice"]
   },
   "theme": {
     "accent": "#1a3d7c",
@@ -259,12 +263,12 @@
     },
     {
       "label": "証券外務員資格試験",
-      "url": "https://www.jsda.or.jp/activities/exams/gaiin/",
-      "description": "一種・二種外務員の受験案内・申込・試験範囲・CBT 会場情報。"
+      "url": "https://www.jsda.or.jp/gaimuin/shiken.html",
+      "description": "一種・二種外務員の受験案内・試験範囲・CBT 会場情報。"
     },
     {
       "label": "外務員・内部管理責任者等登録",
-      "url": "https://www.jsda.or.jp/activities/exams/gaiin/touroku/",
+      "url": "https://www.jsda.or.jp/gaimuin/touroku/",
       "description": "合格後の登録手続き・有効期限・更新について。"
     }
   ]

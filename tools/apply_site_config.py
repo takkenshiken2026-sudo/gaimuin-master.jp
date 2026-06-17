@@ -29,6 +29,7 @@ from tools.site_config import (
     exam_name,
     external_links,
     ga4_measurement_id,
+    ichimon_enabled,
     learning_nav_label,
     official_organization,
     primary_external_link,
@@ -53,6 +54,8 @@ from tools.index_spa_patch import (
     inject_index_fields_fallback,
     inject_index_noscript,
     inject_index_spa_ui_leaks,
+    inject_question_modes_html_class,
+    inject_question_modes_spa_guard,
 )
 
 
@@ -651,6 +654,8 @@ def main() -> int:
             new = inject_index_noscript(new)
             new = inject_index_fields_fallback(new)
             new = inject_index_spa_ui_leaks(new)
+            new = inject_question_modes_html_class(new)
+            new = inject_question_modes_spa_guard(new)
             new = update_index_spa_seo_js(new)
             new = fix_quiz_start_page_titles(new)
             new = fix_spa_breadcrumb_top(new)

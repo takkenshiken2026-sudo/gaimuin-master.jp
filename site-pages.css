@@ -4846,6 +4846,11 @@ html:not(.js) .terms-idx-seo-fallback .terms-idx-seo-list a {
   color: var(--text2);
   line-height: 1.75;
 }
+/* ===== 出題形式モード（site-config questionModes.hideIchimon） ===== */
+html.question-modes--no-ichimon .ichimon-chrome {
+  display: none !important;
+}
+
 /* ===== 全ページ共通レスポンシブ ===== */
 @media (max-width: 960px) and (min-width: 761px) {
   .terms-idx-table:not(.terms-idx-table-duo),

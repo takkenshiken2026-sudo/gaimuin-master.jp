@@ -284,6 +284,11 @@ def _mode_index_counts(root: Path) -> list[Issue]:
         json_n = _q_index_data_count(index_path)
         if csv_n == 0:
             continue
+        if mode == "ichimon":
+            from tools.site_config import ichimon_enabled
+
+            if not ichimon_enabled():
+                continue
         if mode == "ichimon" and _is_redirect_stub(index_path):
             continue
         if mode == "practice" and _orig_practice_index_ok(index_path):
@@ -320,13 +325,24 @@ def _site_q_index_js(js_path: Path) -> list[Issue]:
 def _mode_index_hub_tabs(mode: str, index_path: Path) -> list[Issue]:
     if not index_path.is_file():
         return []
+    from tools.site_config import ichimon_enabled
+
     text = index_path.read_text(encoding="utf-8")
     issues: list[Issue] = []
     if "q-hub-links" not in text:
-        issues.append(Issue(f"q/{mode}/index.html: q_hub_links_html（3モードタブ）がありません"))
-    for href in ("/q/index.html", "/q/practice/index.html", "/q/ichimon/index.html"):
+        issues.append(Issue(f"q/{mode}/index.html: q_hub_links_html（モードタブ）がありません"))
+    required_hrefs = ["/q/index.html", "/q/practice/index.html"]
+    if ichimon_enabled():
+        required_hrefs.append("/q/ichimon/index.html")
+    for href in required_hrefs:
         if href not in text and href.replace("/q/", "") not in text:
             issues.append(Issue(f"q/{mode}/index.html: タブリンク {href} がありません"))
+    if not ichimon_enabled() and "/q/ichimon/index.html" in text and not _is_redirect_stub(index_path):
+        issues.append(
+            Issue(
+                f"q/{mode}/index.html: questionModes.hideIchimon 時は一問一答タブを出さないでください"
+            )
+        )
     return issues
 
 
@@ -416,6 +432,8 @@ def _spa_home_url() -> str:
 
 def _header_learning_nav(root: Path) -> list[Issue]:
     """静的ページの学習ナビ href / q/index の active 状態（site-chrome.md §3, §7）。"""
+    from tools.site_config import ichimon_enabled
+
     spa_hash = _spa_nav_hash_hrefs()
     article_sample = root / "articles" / "field-law-basics" / "index.html"
     if not article_sample.is_file():
@@ -432,6 +450,12 @@ def _header_learning_nav(root: Path) -> list[Issue]:
             continue
         text = path.read_text(encoding="utf-8")
         for nav_id, expected in spa_hash.items():
+            if nav_id == "tnav-ichimondou" and not ichimon_enabled():
+                if f'id="{nav_id}"' in text:
+                    issues.append(
+                        Issue(f"{label}: hideIchimon 時は {nav_id} をヘッダーに出さないでください")
+                    )
+                continue
             m = re.search(rf'id="{re.escape(nav_id)}"\s+href="([^"]+)"', text)
             if not m:
                 issues.append(Issue(f"{label}: {nav_id} がありません"))
