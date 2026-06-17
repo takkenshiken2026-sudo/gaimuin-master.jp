@@ -60,6 +60,7 @@ from tools.site_config import (
     clean_origin,
     exam_name,
     excluded_past_exam_years,
+    past_enabled,
     public_url as site_public_url,
 )
 
@@ -984,6 +985,26 @@ def build_q_index(pages: list[dict], base_url: str) -> str:
 """
 
 
+def build_past_redirect_index(*, base_url: str) -> str:
+    """hidePast 時: 旧過去問一覧 URL を実践演習へ転送。"""
+    dest = "practice/index.html"
+    title = html.escape(f"実践演習一覧｜{brand_name()}")
+    return f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="0;url={html.escape(dest)}">
+<meta name="robots" content="noindex, follow">
+<title>{title}</title>
+<link rel="canonical" href="{html.escape(public_url(base_url, "q/practice/index.html"))}">
+</head>
+<body>
+<p><a href="{html.escape(dest)}">実践演習一覧へ移動</a></p>
+</body>
+</html>
+"""
+
+
 def main() -> int:
     import argparse
 
@@ -1028,7 +1049,10 @@ def main() -> int:
 
     q_index = ROOT / "q" / "index.html"
     q_index.parent.mkdir(parents=True, exist_ok=True)
-    q_index.write_text(build_q_index(pages, base), encoding="utf-8")
+    if past_enabled():
+        q_index.write_text(build_q_index(pages, base), encoding="utf-8")
+    else:
+        q_index.write_text(build_past_redirect_index(base_url=base), encoding="utf-8")
 
     try:
         from tools.past_question_seo import build_past_root_hub_html  # noqa: WPS433

@@ -17,6 +17,7 @@ from tools.site_config import (
     fields,
     google_site_verification,
     ichimon_enabled,
+    past_enabled,
     public_url,
     study_modes_label,
 )
@@ -55,10 +56,15 @@ def index_spa_hash_url(hash_frag: str) -> str:
 
 
 def index_study_features_phrase() -> str:
-    """メタ説明用（一問一答の有無に応じる）。"""
+    """メタ説明用（過去問・一問一答の有無に応じる）。"""
+    parts: list[str] = []
+    if past_enabled():
+        parts.append("過去問演習")
+    parts.append("実践演習")
     if ichimon_enabled():
-        return "過去問演習・実践演習・一問一答・重要用語解説"
-    return "過去問演習・実践演習・重要用語解説"
+        parts.append("一問一答")
+    parts.append("重要用語解説")
+    return "・".join(parts)
 
 
 def index_description() -> str:
@@ -82,11 +88,12 @@ def index_description_long() -> str:
 
 
 def index_keywords() -> str:
-    parts = [exam_name(), "過去問", "用語集", "資格学習", "合格"]
+    parts = [exam_name(), "用語集", "資格学習", "合格"]
+    if past_enabled():
+        parts.insert(1, "過去問")
+    parts.insert(2 if past_enabled() else 1, "実践演習")
     if ichimon_enabled():
-        parts.insert(2, "一問一答")
-    else:
-        parts.insert(2, "実践演習")
+        parts.insert(3 if past_enabled() else 2, "一問一答")
     for f in fields()[:3]:
         name = str(f.get("name") or "").strip()
         if name:

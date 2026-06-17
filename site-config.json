@@ -11,10 +11,11 @@
   "officialOrganization": "日本証券業協会",
   "seoCopy": {
     "mockExam": "模試・模擬試験",
-    "studyModes": "過去問・実践演習"
+    "studyModes": "実践演習"
   },
   "questionModes": {
     "hideIchimon": true,
+    "hidePast": true,
     "practiceFormats": ["marubatsu", "choice"],
     "practicePreset": {
       "subtitle": "二種外務員の本番形式（〇×方式50問＋五肢選択20問）に合わせて演習できます。出題順は毎回ランダムです。",

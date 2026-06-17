@@ -26,6 +26,7 @@ from tools.site_config import (
     ichimon_enabled,
     learning_nav_label,
     navigation_items,
+    past_enabled,
 )
 
 FORM_URL = contact_url()
@@ -299,9 +300,12 @@ def _learning_nav_href(rel_path: Path, dest: str) -> str:
 
 
 def _learning_nav_items() -> list[tuple[str, str, str, str]]:
-    if ichimon_enabled():
-        return LEARNING_NAV_ITEMS
-    return [item for item in LEARNING_NAV_ITEMS if item[0] != "tnav-ichimondou"]
+    items = LEARNING_NAV_ITEMS
+    if not ichimon_enabled():
+        items = [item for item in items if item[0] != "tnav-ichimondou"]
+    if not past_enabled():
+        items = [item for item in items if item[0] != "tnav-past"]
+    return items
 
 
 def _learning_nav_links(rel_path: Path, *, current: str | None = None) -> str:
@@ -491,10 +495,10 @@ def q_index_filters_details_html(
 
 def q_hub_links_html(rel_path: Path, *, current: str) -> str:
     """過去問・実践演習・（任意で）一問一答のモード切替タブ（一覧・個別ページ共通）。"""
-    items: list[tuple[str, str, str]] = [
-        ("past", "過去問", "q/index.html"),
-        ("practice", "実践演習", "q/practice/index.html"),
-    ]
+    items: list[tuple[str, str, str]] = []
+    if past_enabled():
+        items.append(("past", "過去問", "q/index.html"))
+    items.append(("practice", "実践演習", "q/practice/index.html"))
     if ichimon_enabled():
         items.append(("ichimon", "一問一答", "q/ichimon/index.html"))
     lis: list[str] = []

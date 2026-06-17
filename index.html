@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" class="question-modes--no-ichimon">
+<html lang="ja" class="question-modes--no-ichimon question-modes--no-past">
 <head>
 <meta charset="UTF-8">
 <!--BRAND_ASSET_HEAD-->
@@ -11,11 +11,11 @@
 <!--INDEX_SEO_HEAD-->
 <!--SITE_VERIFICATION_META_INJECT-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>証外マスター｜証券外務員（一種・二種） 過去問・実践演習・用語解説で合格を目指す無料学習サイト</title>
+<title>証外マスター｜証券外務員（一種・二種） 実践演習・用語解説で合格を目指す無料学習サイト</title>
 
 <!-- 基本SEO -->
-<meta name="description" content="証券外務員（一種・二種）の合格を目指す無料学習プラットフォーム。過去問演習・実践演習・重要用語解説を網羅。年度別・科目別（金融商品・サービス・勧誘・販売規則・金融商品取引法・その他法令・業務）に絞った効率的な学習が可能です。">
-<meta name="keywords" content="証券外務員（一種・二種）,過去問,実践演習,用語集,資格学習,合格,金融商品・サービス,勧誘・販売規則,金融商品取引法">
+<meta name="description" content="証券外務員（一種・二種）の合格を目指す無料学習プラットフォーム。実践演習・重要用語解説を網羅。年度別・科目別（金融商品・サービス・勧誘・販売規則・金融商品取引法・その他法令・業務）に絞った効率的な学習が可能です。">
+<meta name="keywords" content="証券外務員（一種・二種）,実践演習,用語集,資格学習,合格,金融商品・サービス,勧誘・販売規則,金融商品取引法">
 <meta name="robots" content="index, follow">
 <meta name="application-name" content="証外マスター（証券外務員（一種・二種））">
 <link rel="canonical" href="https://gaimuin-master.jp/" id="canonical-link">
@@ -24,14 +24,14 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gaimuin-master.jp/">
 <meta property="og:title" content="証外マスター｜証券外務員（一種・二種） 無料学習プラットフォーム">
-<meta property="og:description" content="証券外務員（一種・二種）の合格を目指す無料学習プラットフォーム。過去問演習・実践演習・重要用語解説を網羅。年度別・分野別に絞った効率学習で合格を目指す。">
+<meta property="og:description" content="証券外務員（一種・二種）の合格を目指す無料学習プラットフォーム。実践演習・重要用語解説を網羅。年度別・分野別に絞った効率学習で合格を目指す。">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:site_name" content="証外マスター（証券外務員（一種・二種））">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="証外マスター｜証券外務員（一種・二種） 無料学習プラットフォーム">
-<meta name="twitter:description" content="証券外務員（一種・二種）の合格を目指す無料学習プラットフォーム。過去問演習・実践演習・重要用語解説を網羅。年度別・分野別に絞った効率学習で合格を目指す。">
+<meta name="twitter:description" content="証券外務員（一種・二種）の合格を目指す無料学習プラットフォーム。実践演習・重要用語解説を網羅。年度別・分野別に絞った効率学習で合格を目指す。">
 <meta name="twitter:image:alt" content="証外マスター｜証券外務員（一種・二種） 無料学習プラットフォーム">
 
 <!-- Schema.org 構造化データ -->
@@ -45,7 +45,7 @@
       "url": "https://gaimuin-master.jp/",
       "name": "証外マスター",
       "alternateName": "証券外務員（一種・二種）対策サイト",
-      "description": "証券外務員（一種・二種）の過去問・実践演習・用語解説を網羅した無料学習プラットフォーム",
+      "description": "証券外務員（一種・二種）の実践演習・用語解説を網羅した無料学習プラットフォーム",
       "inLanguage": "ja"
     },
     {
@@ -53,7 +53,7 @@
       "@id": "https://gaimuin-master.jp/#app",
       "name": "証外マスター",
       "alternateName": "証券外務員（一種・二種）対策サイト",
-      "description": "証券外務員（一種・二種）の過去問・実践演習・用語解説を網羅した無料学習プラットフォーム",
+      "description": "証券外務員（一種・二種）の実践演習・用語解説を網羅した無料学習プラットフォーム",
       "applicationCategory": "EducationApplication",
       "operatingSystem": "Web",
       "inLanguage": "ja",
@@ -1269,6 +1269,7 @@ body.is-solving .site-footer{display:none!important}
 .session-msg-extra{font-size:var(--fs-sub);color:var(--green);font-weight:600;margin-top:8px}
 /* questionModes.hideIchimon: SPA は site-pages.css を読まないため index 内に定義 */
 html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
+html.question-modes--no-past .past-chrome{display:none!important}
 </style>
 <script type="application/ld+json">
 {
@@ -1357,7 +1358,7 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
         <a class="topnav-link ichimon-chrome" id="tnav-ichimondou" href="/#ichimondou" onclick="event.preventDefault();startIchimondou()">
           <svg viewBox="0 0 16 16"><path d="M8 2v12M4 4h8M4 8h8M4 12h8"/></svg>一問一答
         </a>
-        <a class="topnav-link" id="tnav-past" href="/#past" onclick="event.preventDefault();gotoPage('past-config')">
+        <a class="topnav-link past-chrome" id="tnav-past" href="/#past" onclick="event.preventDefault();gotoPage('past-config')">
           <svg viewBox="0 0 16 16"><path d="M3 2h10v12H3z"/><path d="M5 5h6M5 8h6M5 11h4"/></svg>過去問
         </a>
         <a class="topnav-link" id="tnav-orig" href="/#orig" onclick="event.preventDefault();gotoPage('orig')">
@@ -1428,7 +1429,7 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
       <a class="mobile-nav-item ichimon-chrome" id="mnav-ichimondou" href="/#ichimondou" onclick="event.preventDefault();startIchimondou();closeMobileDrawer()">
         <svg viewBox="0 0 16 16"><path d="M8 2v12M4 4h8M4 8h8M4 12h8"/></svg>一問一答
       </a>
-      <a class="mobile-nav-item" id="mnav-quiz-start" href="/#past" onclick="event.preventDefault();gotoPage('past-config');closeMobileDrawer()">
+      <a class="mobile-nav-item past-chrome" id="mnav-quiz-start" href="/#past" onclick="event.preventDefault();gotoPage('past-config');closeMobileDrawer()">
         <svg viewBox="0 0 16 16"><path d="M3 2h10v12H3z"/><path d="M5 5h6M5 8h6M5 11h4"/></svg>過去問
       </a>
       <a class="mobile-nav-item" id="mnav-orig" href="/#orig" onclick="event.preventDefault();gotoPage('orig');closeMobileDrawer()">
@@ -1485,7 +1486,7 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
           </div>
           <div class="mode-arrow-v2">›</div>
         </div>
-        <div class="mode-card-v2" onclick="gotoPage('past-config')">
+        <div class="mode-card-v2 past-chrome" onclick="gotoPage('past-config')">
           <div class="mode-num-v2">02</div>
           <div class="mode-body-v2">
             <div class="mode-purpose-v2" id="mode-past-purpose" aria-live="polite">本番の出題傾向を押さえたい</div>
@@ -1715,7 +1716,7 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
     </div>
 
     <!-- PAST QUIZ CONFIG -->
-    <div class="page" id="page-past-config">
+    <div class="page past-chrome" id="page-past-config">
       <nav class="breadcrumb" aria-label="パンくずリスト">
         <ol class="breadcrumb-list">
           <li class="breadcrumb-item"><a href="/" onclick="event.preventDefault();gotoPage('quiz-start')" title="トップ">トップ</a></li>
@@ -1803,7 +1804,6 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
         <p>証券外務員（一種・二種）の合格を目指す無料の学習プラットフォームです。本サービスをご利用いただくにはJavaScriptを有効にしてください。</p>
         <h2>主な機能</h2>
         <ul>
-          <li><strong>過去問演習</strong>：年度別・科目別に絞り込んで効率的に学習</li>
           <li><strong>実践演習</strong>：金融商品・サービス・勧誘・販売規則・金融商品取引法・その他法令・業務の分野別練習（独自問題集）</li>
           <li><strong>用語解説</strong>：重要用語をわかりやすく解説（静的ページ）</li>
           <li><strong>記録・学習分析</strong>：学習日記・バッジ・レベルに加え、正答率や科目別成績で進捗を可視化</li>
@@ -1815,7 +1815,7 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
           <li>金融商品取引法（金融商品取引法・金商法・インサイダー取引など）</li>
           <li>その他法令・業務（その他法令・業務・その他の法令・顧客資産など）</li>
         </ul>
-        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a> ・ <a href="q/index.html">過去問一覧</a> ・ <a href="q/practice/index.html">実践演習一覧</a> ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="https://gaimuin-master.jp/contact" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
+        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a> ・ <a href="q/practice/index.html">実践演習一覧</a> ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="https://gaimuin-master.jp/contact" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
       </div>
     </noscript>
     <!--/INDEX_NOSCRIPT-->
@@ -1833,7 +1833,6 @@ html.question-modes--no-ichimon .ichimon-chrome{display:none!important}
           <nav class="site-footer-legal" aria-label="サイト情報・ポリシー">
             <a href="index.html">トップ</a>
             <a href="about.html">このサイトについて</a>
-            <a href="q/index.html">過去問一覧</a>
             <a href="terms/index.html">用語解説</a>
             <a href="articles/index.html">試験ガイド</a>
             <a href="related-sites.html">関連リンク</a>
@@ -3501,6 +3500,10 @@ function ichimonModeEnabled(){
   var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
   return !qm.hideIchimon;
 }
+function pastModeEnabled(){
+  var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
+  return !qm.hidePast;
+}
 function startIchimondou(){
   if(!ichimonModeEnabled()){ gotoPage('quiz-start'); return; }
   ichiState.active = false;
@@ -3795,6 +3798,7 @@ function shareIchiResultToX(){
 
 function gotoPage(id, opts){
   if(typeof ichimonModeEnabled==='function' && !ichimonModeEnabled() && (id==='ichimondou'||id==='ichimondou-score')){ id='quiz-start'; }
+  if(typeof pastModeEnabled==='function' && !pastModeEnabled() && (id==='past-config'||(id==='quiz'&&quizState.mode==='past')||(id==='score'&&quizState.mode==='past'))){ id='orig'; }
   if(id==='ichimondou') syncIchiPageVisibility();
   if(id!=='quiz') showNextBtn(false, null);
   document.body.classList.toggle('is-solving', id==='quiz' || (id==='ichimondou' && ichiState.active));

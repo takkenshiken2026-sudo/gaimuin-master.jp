@@ -31,11 +31,6 @@ window.SITE_CONFIG = {
         "key": "about"
       },
       {
-        "label": "過去問一覧",
-        "href": "q/index.html",
-        "key": "q"
-      },
-      {
         "label": "用語解説",
         "href": "terms/index.html",
         "key": "terms"
@@ -66,11 +61,6 @@ window.SITE_CONFIG = {
         "label": "このサイトについて",
         "href": "about.html",
         "key": "about"
-      },
-      {
-        "label": "過去問一覧",
-        "href": "q/index.html",
-        "key": "q"
       },
       {
         "label": "用語解説",
@@ -159,6 +149,7 @@ window.SITE_CONFIG = {
   ],
   "questionModes": {
     "hideIchimon": true,
+    "hidePast": true,
     "practiceFormats": [
       "marubatsu",
       "choice"

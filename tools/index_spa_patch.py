@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 
-from tools.site_config import brand_name, contact_url, exam_name, fields, ichimon_enabled
+from tools.site_config import brand_name, contact_url, exam_name, fields, ichimon_enabled, past_enabled
 
 INDEX_NOSCRIPT_MARKER_START = "<!--INDEX_NOSCRIPT-->"
 INDEX_NOSCRIPT_MARKER_END = "<!--/INDEX_NOSCRIPT-->"
@@ -96,14 +96,21 @@ def index_noscript_inner() -> str:
     ichimon_footer_link = (
         ' ・ <a href="q/ichimon/index.html">一問一答一覧</a>' if ichimon_enabled() else ""
     )
+    past_footer_link = (
+        ' ・ <a href="q/index.html">過去問一覧</a>' if past_enabled() else ""
+    )
+    past_feature_line = (
+        "          <li><strong>過去問演習</strong>：年度別・科目別に絞り込んで効率的に学習</li>\n"
+        if past_enabled()
+        else ""
+    )
     return f"""    <noscript>
       <div style="max-width:860px;margin:40px auto;padding:0 20px;font-family:sans-serif;line-height:1.8">
         <h1>{bn}｜{en} 無料学習プラットフォーム</h1>
         <p>{en}の合格を目指す無料の学習プラットフォームです。本サービスをご利用いただくにはJavaScriptを有効にしてください。</p>
         <h2>主な機能</h2>
         <ul>
-          <li><strong>過去問演習</strong>：年度別・科目別に絞り込んで効率的に学習</li>
-          <li><strong>実践演習</strong>：{practice_names}の分野別練習（独自問題集）</li>
+{past_feature_line}          <li><strong>実践演習</strong>：{practice_names}の分野別練習（独自問題集）</li>
           <li><strong>用語解説</strong>：重要用語をわかりやすく解説（静的ページ）</li>
           <li><strong>記録・学習分析</strong>：学習日記・バッジ・レベルに加え、正答率や科目別成績で進捗を可視化</li>
         </ul>
@@ -111,7 +118,7 @@ def index_noscript_inner() -> str:
         <ul>
 {subject_lines}
         </ul>
-        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a> ・ <a href="q/index.html">過去問一覧</a> ・ <a href="q/practice/index.html">実践演習一覧</a>{ichimon_footer_link} ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="{contact}" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
+        <p style="margin-top:24px;font-size:14px;line-height:2"><a href="about.html">このサイトについて</a>{past_footer_link} ・ <a href="q/practice/index.html">実践演習一覧</a>{ichimon_footer_link} ・ <a href="terms/index.html">用語集</a> ・ <a href="articles/index.html">試験ガイド</a> ・ <a href="related-sites.html">関連リンク</a> ・ <a href="privacy.html">プライバシー</a> ・ <a href="{contact}" target="_blank" rel="noopener noreferrer">お問い合わせ</a></p>
       </div>
     </noscript>"""
 
@@ -295,24 +302,26 @@ _HTML_CLASS_RE = re.compile(r'<html lang="ja"(?: class="([^"]*)")?>')
 
 
 def inject_question_modes_html_class(text: str) -> str:
-    """hideIchimon 時は index.html の <html> にクラスを付与（SPA 内一問一答 UI を非表示）。"""
+    """hideIchimon / hidePast 時は index.html の <html> にクラスを付与。"""
+    mode_classes: list[str] = []
     if not ichimon_enabled():
-        def _add_class(m: re.Match[str]) -> str:
-            existing = (m.group(1) or "").split()
-            if "question-modes--no-ichimon" not in existing:
-                existing.append("question-modes--no-ichimon")
-            cls = " ".join(existing)
-            return f'<html lang="ja" class="{cls}">'
+        mode_classes.append("question-modes--no-ichimon")
+    if not past_enabled():
+        mode_classes.append("question-modes--no-past")
 
-        return _HTML_CLASS_RE.sub(_add_class, text, count=1)
-
-    def _strip_class(m: re.Match[str]) -> str:
-        existing = [c for c in (m.group(1) or "").split() if c and c != "question-modes--no-ichimon"]
+    def _sync_class(m: re.Match[str]) -> str:
+        existing = [c for c in (m.group(1) or "").split() if c]
+        for cls in mode_classes:
+            if cls not in existing:
+                existing.append(cls)
+        for cls in ("question-modes--no-ichimon", "question-modes--no-past"):
+            if cls not in mode_classes and cls in existing:
+                existing.remove(cls)
         if existing:
             return f'<html lang="ja" class="{" ".join(existing)}">'
         return '<html lang="ja">'
 
-    return _HTML_CLASS_RE.sub(_strip_class, text, count=1)
+    return _HTML_CLASS_RE.sub(_sync_class, text, count=1)
 
 
 _QUESTION_MODES_GUARD_START = "/*QUESTION_MODES_ICHIMON_GUARD*/"
@@ -324,6 +333,10 @@ def question_modes_spa_guard_js() -> str:
 function ichimonModeEnabled(){{
   var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{{}};
   return !qm.hideIchimon;
+}}
+function pastModeEnabled(){{
+  var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{{}};
+  return !qm.hidePast;
 }}
 function startIchimondou(){{
   if(!ichimonModeEnabled()){{ gotoPage('quiz-start'); return; }}
@@ -365,6 +378,8 @@ def inject_question_modes_spa_guard(text: str) -> str:
         "function gotoPage(id, opts){\n"
         "  if(typeof ichimonModeEnabled==='function' && !ichimonModeEnabled() "
         "&& (id==='ichimondou'||id==='ichimondou-score')){ id='quiz-start'; }\n"
+        "  if(typeof pastModeEnabled==='function' && !pastModeEnabled() "
+        "&& (id==='past-config'||(id==='quiz'&&quizState.mode==='past')||(id==='score'&&quizState.mode==='past'))){ id='orig'; }\n"
         "  if(id==='ichimondou') syncIchiPageVisibility();"
     )
     if goto_guard not in text:

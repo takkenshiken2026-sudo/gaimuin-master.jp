@@ -186,15 +186,24 @@ def ichimon_enabled() -> bool:
     return not bool(question_modes().get("hideIchimon"))
 
 
+def past_enabled() -> bool:
+    """過去問モード（独立タブ・一覧）を表示するか。hidePast=true で非表示。"""
+    return not bool(question_modes().get("hidePast"))
+
+
 def study_modes_label() -> str:
     seo = CONFIG.get("seoCopy") or {}
     if isinstance(seo, dict):
         configured = str(seo.get("studyModes") or "").strip()
         if configured:
             return configured
+    parts: list[str] = []
+    if past_enabled():
+        parts.append("過去問")
+    parts.append("実践演習")
     if ichimon_enabled():
-        return "過去問・実践演習・一問一答"
-    return "過去問・実践演習"
+        parts.append("一問一答")
+    return "・".join(parts)
 
 
 def official_organization() -> str:
@@ -263,6 +272,8 @@ def navigation_items(section: str) -> list[tuple[str, str, str]]:
         key = str(item.get("key") or "").strip()
         if href == "__CONTACT__":
             href = contact_url()
+        if not past_enabled() and key == "q":
+            continue
         if label and href:
             out.append((label, href, key or label))
     return out
