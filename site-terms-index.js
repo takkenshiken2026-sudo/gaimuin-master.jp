@@ -123,11 +123,19 @@
   }
 
   function rowHtml(item, query) {
-    const href = resolveEntryHref(item.href);
-    const hrefAttr = ` data-entry-href="${escapeHtml(href)}"`;
-    const badge = item.expertPass ? '' : preparingBadgeHtml();
-    return `<tr class="terms-idx-table-row">
-<td class="terms-idx-td-term" data-label="用語"${hrefAttr} tabindex="0"><div class="terms-idx-term-cell"><a href="${escapeHtml(href)}">${highlightText(item.term, query)}</a>${badge}</div></td>
+    const preparing = !item.expertPass;
+    const href = preparing ? '' : resolveEntryHref(item.href);
+    const hrefAttr = preparing ? '' : ` data-entry-href="${escapeHtml(href)}"`;
+    const rowClass = preparing
+      ? 'terms-idx-table-row terms-idx-table-row--preparing'
+      : 'terms-idx-table-row';
+    const badge = preparing ? preparingBadgeHtml() : '';
+    const termInner = preparing
+      ? `<span class="terms-idx-term-pending">${highlightText(item.term, query)}</span>`
+      : `<a href="${escapeHtml(href)}">${highlightText(item.term, query)}</a>`;
+    const termTab = preparing ? '' : ' tabindex="0"';
+    return `<tr class="${rowClass}">
+<td class="terms-idx-td-term" data-label="用語"${hrefAttr}${termTab}><div class="terms-idx-term-cell">${termInner}${badge}</div></td>
 <td class="terms-idx-td-cat" data-label="分野"${hrefAttr}>${escapeHtml(item.category)}</td>
 <td class="terms-idx-td-snippet" data-label="概要"${hrefAttr}>${(item.shortDef || item.definition) ? highlightText(item.shortDef || item.definition, query) : ''}</td>
 </tr>`;

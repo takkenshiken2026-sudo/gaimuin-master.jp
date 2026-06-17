@@ -2993,6 +2993,19 @@ html:not(.js) .terms-idx-seo-fallback .terms-idx-seo-list a {
   background: #fff9e6;
   border: 1px solid #ead9a0;
 }
+.terms-idx-term-pending {
+  color: var(--text2);
+  cursor: default;
+}
+.terms-idx-table-row--preparing {
+  cursor: default;
+}
+.terms-idx-table-row--preparing:hover td {
+  background: inherit !important;
+}
+.terms-index-panel .terms-idx-table-row--preparing:nth-child(even) td {
+  background: var(--table-row-alt-bg);
+}
 .priority-index-panel .terms-idx-chips--importance {
   margin-bottom: 4px;
 }

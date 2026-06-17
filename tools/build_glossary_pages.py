@@ -255,7 +255,7 @@ def split_semicolon(s: str) -> list[str]:
     return [x.strip() for x in re.split(r"[;；]", s or "") if x.strip()]
 
 
-TERMS_INDEX_CSS_VER = "20260616-term-preparing"
+TERMS_INDEX_CSS_VER = "20260616-term-pending-no-link"
 
 
 def glossary_preparing_badge_html() -> str:
@@ -275,7 +275,35 @@ def glossary_preparing_notice_html() -> str:
         "試験直前の最終確認は、必ず公式情報や教材もあわせてご確認ください。"
         "</p></aside>"
     )
-TERMS_INDEX_JS_VER = "20260521-terms-snippet"
+
+
+def terms_index_term_name_html(entry: dict) -> str:
+    """一覧・ハブ用。編集合格前はリンクにしない。"""
+    term = html.escape(entry["term"])
+    if is_glossary_expert_pass(entry):
+        href = html.escape(terms_index_href(entry["slug_file"]))
+        return f'<a href="{href}">{term}</a>'
+    return f'<span class="terms-idx-term-pending">{term}</span>'
+
+
+def field_hub_term_name_html(entry: dict) -> str:
+    """分野ハブ一覧用。編集合格前はリンクにしない。"""
+    term = html.escape(entry["term"])
+    if is_glossary_expert_pass(entry):
+        href = html.escape(f"../{entry['slug_file']}")
+        return f'<a href="{href}">{term}</a>'
+    return f'<span class="terms-idx-term-pending">{term}</span>'
+
+
+def terms_index_row_attrs(entry: dict) -> tuple[str, str]:
+    """(tr class, data-entry-href 属性) — 準備中行は行クリック無効。"""
+    if is_glossary_expert_pass(entry):
+        href = html.escape(terms_index_href(entry["slug_file"]))
+        return "terms-idx-table-row", f' data-entry-href="{href}"'
+    return "terms-idx-table-row terms-idx-table-row--preparing", ""
+
+
+TERMS_INDEX_JS_VER = "20260616-term-pending-no-link"
 TERMS_INDEX_SEARCH_PLACEHOLDER = "例：ストレスチェック、ラインケア、うつ病…"
 
 # CSV enrich 時の分野テンプレ（一覧の概要抜粋には出さない）
@@ -370,14 +398,14 @@ def render_terms_index_tbody(entries: list[dict]) -> str:
     rows: list[str] = []
 
     for item in items:
-        href = html.escape(terms_index_href(item["slug_file"]))
-        href_attr = f' data-entry-href="{href}"'
+        row_class, href_attr = terms_index_row_attrs(item)
         short_def = html.escape(terms_index_snippet(item))
         preparing = "" if is_glossary_expert_pass(item) else glossary_preparing_badge_html()
+        term_tab = ' tabindex="0"' if href_attr else ""
         rows.append(
-            "<tr class=\"terms-idx-table-row\">"
-            f'<td class="terms-idx-td-term" data-label="用語"{href_attr} tabindex="0">'
-            f'<div class="terms-idx-term-cell"><a href="{href}">{html.escape(item["term"])}</a>'
+            f'<tr class="{row_class}">'
+            f'<td class="terms-idx-td-term" data-label="用語"{href_attr}{term_tab}>'
+            f'<div class="terms-idx-term-cell">{terms_index_term_name_html(item)}'
             f"{preparing}</div></td>"
             f'<td class="terms-idx-td-cat" data-label="分野"{href_attr}>'
             f'{html.escape(item.get("category") or "")}</td>'
@@ -1138,9 +1166,7 @@ def build_field_hub_html(
     lis = []
     for e in sorted(cat_entries, key=lambda x: x["term"]):
         badge = "" if is_glossary_expert_pass(e) else f" {glossary_preparing_badge_html()}"
-        lis.append(
-            f'    <li><a href="../{html.escape(e["slug_file"])}">{html.escape(e["term"])}</a>{badge}</li>'
-        )
+        lis.append(f"    <li>{field_hub_term_name_html(e)}{badge}</li>")
     list_html = "\n".join(lis)
     crumb_items = [
         ("トップ", "index.html"),
@@ -1234,10 +1260,7 @@ def build_terms_index(entries: list[dict], base_url: str) -> str:
     seo_links: list[str] = []
     for cat in cat_keys:
         for e in by_cat[cat]:
-            seo_links.append(
-                f'<li><a href="{html.escape(terms_index_href(e["slug_file"]))}">'
-                f"{html.escape(e['term'])}</a></li>"
-            )
+            seo_links.append(f"<li>{terms_index_term_name_html(e)}</li>")
     seo_html = (
         '<ul class="terms-idx-seo-list">\n    '
         + "\n    ".join(seo_links)
