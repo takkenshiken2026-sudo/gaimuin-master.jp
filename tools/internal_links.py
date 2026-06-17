@@ -197,11 +197,13 @@ def link_terms_in_plaintext(
     max_new: int = MAX_AUTO_LINKS_PER_SECTION,
 ) -> str:
     """本文プレーンテキスト中の用語初出を内部リンク化。"""
+    from tools.inline_markup import render_inline_markup
+
     if not text.strip() or not term_hrefs or max_new <= 0:
-        return html.escape(text).replace("\n", "<br>")
+        return render_inline_markup(text)
 
     if len(linked) >= MAX_AUTO_LINKS_PER_ARTICLE:
-        return html.escape(text).replace("\n", "<br>")
+        return render_inline_markup(text)
 
     terms = sorted(term_hrefs.keys(), key=len, reverse=True)
     matches: list[tuple[int, int, str, str]] = []
@@ -220,7 +222,7 @@ def link_terms_in_plaintext(
         linked.add(term)
 
     if not matches:
-        return html.escape(text).replace("\n", "<br>")
+        return render_inline_markup(text)
 
     matches.sort(key=lambda x: x[0])
     parts: list[str] = []

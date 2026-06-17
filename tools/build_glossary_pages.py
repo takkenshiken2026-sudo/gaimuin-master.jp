@@ -849,10 +849,12 @@ def build_term_html(
         exam_choices_html = text_paragraphs(explanation)
     example_html = ""
     if example_question or example_answer:
+        from tools.inline_markup import render_inline_markup
+
         example_html = (
             '<div class="related-box"><div class="related-box-title">例題</div>'
-            f"<p>{_term_item_label('問題')}：{html.escape(example_question)}</p>"
-            f"<p>{_term_item_label('答え')}：{html.escape(example_answer)}</p></div>"
+            f"<p>{_term_item_label('問題')}：{render_inline_markup(example_question)}</p>"
+            f"<p>{_term_item_label('答え')}：{render_inline_markup(example_answer)}</p></div>"
         )
     faq_items = custom_faq_items(entry, faq_items_for_term(term, short_def, definition, explanation))
     faq_html = faq_section_html(faq_items)
@@ -1044,6 +1046,8 @@ def build_term_html(
         {"@type": "BreadcrumbList", "itemListElement": breadcrumb_items},
     ]
     if faq_items:
+        from tools.inline_markup import strip_md_bold
+
         graph.append(
             {
                 "@type": "FAQPage",
@@ -1051,8 +1055,11 @@ def build_term_html(
                 "mainEntity": [
                     {
                         "@type": "Question",
-                        "name": item["question"],
-                        "acceptedAnswer": {"@type": "Answer", "text": item["answer"]},
+                        "name": strip_md_bold(item["question"]),
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": strip_md_bold(item["answer"]),
+                        },
                     }
                     for item in faq_items
                 ],
