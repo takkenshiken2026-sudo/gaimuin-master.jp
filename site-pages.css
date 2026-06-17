@@ -2977,6 +2977,22 @@ html:not(.js) .terms-idx-seo-fallback .terms-idx-seo-list a {
   background: #eef5ff;
   border: 1px solid #c9ddff;
 }
+.term-status-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  line-height: 1.35;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.term-status-preparing {
+  color: #5c4a00;
+  background: #fff9e6;
+  border: 1px solid #ead9a0;
+}
 .priority-index-panel .terms-idx-chips--importance {
   margin-bottom: 4px;
 }

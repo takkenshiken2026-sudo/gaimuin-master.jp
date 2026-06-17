@@ -72,7 +72,7 @@ READABILITY_FRAGMENTS: tuple[tuple[str, str], ...] = (
 # --- 試験ガイド（published 行の ERROR 下限は guide_article_rules が参照）---
 GUIDE_PRO = {
     "lead": 80,
-    "lead_max": 250,
+    "lead_max": 200,
     "meta_description_min": 70,
     "meta_description_max": 165,
     "user_intent": 50,
@@ -97,6 +97,25 @@ GLOSSARY_PRO = {
     "related_terms_as": 3,
     "paragraphs_in_body": 2,
     "max_sentence_chars": 72,
+}
+
+# 編集合格（expert_pass）— 用語詳細の SEO・読者価値の正本下限
+GLOSSARY_EXPERT = {
+    "article_lead": 80,
+    "term_detail_body": 350,
+    "definition": 80,
+    "explanation": 120,
+    "common_mistakes": 60,
+    "memory_tip": 40,
+    "faq_answer": 120,
+    "exam_points_min": 3,
+    "exam_points_as": 4,
+    "related_terms": 3,
+    "related_links_min": 2,
+    "paragraphs_in_body": 2,
+    "max_sentence_chars": 72,
+    "min_faq_concrete": 2,
+    "expert_tag": "編集合格",
 }
 
 
@@ -240,3 +259,8 @@ def _similar_ratio(a: str, b: str) -> float:
 def is_published_guide(row: dict[str, str]) -> bool:
     status = norm(row.get("content_status")).lower()
     return status in {"", "published", "publish"}
+
+
+def is_glossary_expert_pass(row: dict[str, str]) -> bool:
+    """用語詳細が expert_pass（tags に編集合格）か。"""
+    return GLOSSARY_EXPERT["expert_tag"] in split_semicolon(norm(row.get("tags")))

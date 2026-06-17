@@ -2,8 +2,8 @@ window.SITE_CONFIG = {
   "brandName": "証外マスター",
   "brandMark": "証外",
   "examName": "証券外務員（一種・二種）",
-  "siteOrigin": "https://YOUR-DOMAIN.example",
-  "contactUrl": "https://example.com/contact",
+  "siteOrigin": "https://gaimuin-master.jp",
+  "contactUrl": "https://gaimuin-master.jp/contact",
   "ga4MeasurementId": "",
   "theme": {
     "accent": "#1a3d7c",
@@ -94,7 +94,7 @@ window.SITE_CONFIG = {
       },
       {
         "label": "お問い合わせ",
-        "href": "https://example.com/contact",
+        "href": "https://gaimuin-master.jp/contact",
         "key": "contact"
       }
     ]

@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages-shogai-master
+  group: pages-gaimuin-master
   cancel-in-progress: false
 
 jobs:

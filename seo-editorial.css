@@ -391,6 +391,20 @@ body.seo-editorial-preview-page .seo-editorial .seo-article-section h2 .section-
   line-height: var(--seo-line-heading);
 }
 
+.seo-editorial .glossary-preparing-notice {
+  margin: 16px 0 20px;
+  padding: 14px 16px;
+  background: #fff9e6;
+  border: 1px solid #ead9a0;
+  border-left: 4px solid #c9a227;
+  border-radius: var(--seo-callout-radius);
+  color: var(--seo-callout-text);
+}
+
+.seo-editorial .glossary-preparing-notice p {
+  margin: 0;
+}
+
 .seo-editorial .seo-key-points-box p {
   margin: 10px 0 0;
   color: var(--seo-text-body);

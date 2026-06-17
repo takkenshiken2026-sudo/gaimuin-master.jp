@@ -10,11 +10,12 @@ import csv
 import html
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from tools.site_config import (
+    ROOT,
     base_path,
     brand_logo_lines,
     brand_logo_size_class,
@@ -24,6 +25,7 @@ from tools.site_config import (
     clean_origin,
     contact_url,
     copyright_text,
+    exam_grade,
     exam_name,
     external_links,
     ga4_measurement_id,
@@ -300,6 +302,37 @@ def fix_wrong_official_urls(text: str) -> str:
     if "FP3級" in en and "FP2" not in en:
         text = text.replace("ファイナンシャル・プランナー試験（FP2級・FP3級）", en)
         text = text.replace("（FP2級・FP3級）", "（FP3級）")
+    return text
+
+
+def migrate_wrong_fp_grade_branding(text: str) -> str:
+    """FP 多級サイトで sibling 級のブランド文字列が誤混入した場合に是正する。"""
+    grade = exam_grade()
+    bn = brand_name()
+    en = exam_name()
+    top, _ = brand_logo_lines()
+    if grade == "FP3" and "FP3" in bn:
+        pairs = [
+            ("FP2級マスター", bn),
+            ("ファイナンシャル・プランナー試験（FP2級）", en),
+        ]
+        wrong_logo = "FP2級"
+    elif grade == "FP2" and "FP2" in bn:
+        pairs = [
+            ("FP3級マスター", bn),
+            ("ファイナンシャル・プランナー試験（FP3級）", en),
+        ]
+        wrong_logo = "FP3級"
+    else:
+        return text
+    for src, dst in pairs:
+        if src != dst:
+            text = text.replace(src, dst)
+    if top and wrong_logo != top:
+        text = text.replace(
+            f'<span class="logo-mark-line">{wrong_logo}</span>',
+            f'<span class="logo-mark-line">{html.escape(top)}</span>',
+        )
     return text
 
 
@@ -602,6 +635,7 @@ def main() -> int:
         if path.suffix == ".html":
             new = fix_legacy_base_path_hrefs(new)
             new = migrate_legacy_takken_leaks(new)
+            new = migrate_wrong_fp_grade_branding(new)
             new = fix_wrong_official_urls(new)
             new = update_static_page_canonical(new, path)
             if path == ROOT / "related-sites.html":

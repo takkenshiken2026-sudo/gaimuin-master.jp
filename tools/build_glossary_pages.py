@@ -21,6 +21,9 @@ from xml.sax.saxutils import escape as xml_escape
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# 用語一覧テーブル3列目の見出し（詳細記事の「定義と基本理解」セクションとは別）
+TERMS_INDEX_SNIPPET_LABEL = "概要"
+
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -63,6 +66,9 @@ from tools.seo_editorial_chrome import (  # noqa: E402
     seo_editorial_head_fonts,
     seo_editorial_stylesheet_links,
 )
+from tools.editorial_quality import is_glossary_expert_pass  # noqa: E402
+
+GLOSSARY_PREPARING_LABEL = "準備中"
 
 PRESERVED_TERM_SUBDIRS = frozenset({"compare", "numbers", "mistakes", "priority", "samples", "diagram-samples"})
 PRESERVED_TERM_HTML = frozenset({"index.html", "g-writing-sample.html", "g-diagram-sample.html"})
@@ -249,11 +255,30 @@ def split_semicolon(s: str) -> list[str]:
     return [x.strip() for x in re.split(r"[;；]", s or "") if x.strip()]
 
 
-TERMS_INDEX_CSS_VER = "20260524-terms-table-14px"
+TERMS_INDEX_CSS_VER = "20260616-term-preparing"
+
+
+def glossary_preparing_badge_html() -> str:
+    label = html.escape(GLOSSARY_PREPARING_LABEL)
+    return (
+        f'<span class="term-status-badge term-status-preparing" aria-label="{label}">'
+        f"{label}</span>"
+    )
+
+
+def glossary_preparing_notice_html() -> str:
+    label = html.escape(GLOSSARY_PREPARING_LABEL)
+    return (
+        '<aside class="glossary-preparing-notice" role="status">'
+        f"<p><strong>{label}</strong>："
+        "この用語の詳細記事は現在整備中です。順次内容を更新して公開していきます。"
+        "試験直前の最終確認は、必ず公式情報や教材もあわせてご確認ください。"
+        "</p></aside>"
+    )
 TERMS_INDEX_JS_VER = "20260521-terms-snippet"
 TERMS_INDEX_SEARCH_PLACEHOLDER = "例：ストレスチェック、ラインケア、うつ病…"
 
-# CSV enrich 時の分野テンプレ（一覧の定義抜粋には出さない）
+# CSV enrich 時の分野テンプレ（一覧の概要抜粋には出さない）
 _GENERIC_SNIPPET_SUFFIXES = (
     "に関わる用語です。",
     "を整理する際に使われます。",
@@ -295,7 +320,7 @@ def _is_generic_index_snippet(text: str, term: str) -> bool:
 
 
 def terms_index_snippet(entry: dict) -> str:
-    """一覧・検索用の定義抜粋。enrich テンプレ文は definition から実義を拾う。"""
+    """一覧・検索用の概要抜粋。enrich テンプレ文は definition から実義を拾う。"""
     term = (entry.get("term") or "").strip()
     short = (entry.get("short_def") or "").strip()
     definition = (entry.get("definition") or "").strip()
@@ -348,14 +373,15 @@ def render_terms_index_tbody(entries: list[dict]) -> str:
         href = html.escape(terms_index_href(item["slug_file"]))
         href_attr = f' data-entry-href="{href}"'
         short_def = html.escape(terms_index_snippet(item))
+        preparing = "" if is_glossary_expert_pass(item) else glossary_preparing_badge_html()
         rows.append(
             "<tr class=\"terms-idx-table-row\">"
             f'<td class="terms-idx-td-term" data-label="用語"{href_attr} tabindex="0">'
             f'<div class="terms-idx-term-cell"><a href="{href}">{html.escape(item["term"])}</a>'
-            f"</div></td>"
+            f"{preparing}</div></td>"
             f'<td class="terms-idx-td-cat" data-label="分野"{href_attr}>'
             f'{html.escape(item.get("category") or "")}</td>'
-            f'<td class="terms-idx-td-snippet" data-label="定義"{href_attr}>'
+            f'<td class="terms-idx-td-snippet" data-label="{TERMS_INDEX_SNIPPET_LABEL}"{href_attr}>'
             f"{short_def}</td>"
             "</tr>"
         )
@@ -378,6 +404,7 @@ def terms_index_item_dict(entry: dict) -> dict:
         "shortDef": snippet,
         "href": terms_index_href(entry["slug_file"]),
         "fieldHub": entry.get("field_hub") or "",
+        "expertPass": is_glossary_expert_pass(entry),
         "search": " ".join(x for x in search_bits if x),
     }
 
@@ -469,9 +496,13 @@ def load_guide_slugs() -> list[dict[str, str]]:
     path = ROOT / "data" / "guide_articles.csv"
     if not path.is_file():
         return []
+    from tools.editorial_quality import is_published_guide
+
     text = path.read_text(encoding="utf-8-sig")
     rows: list[dict[str, str]] = []
     for row in csv.DictReader(text.splitlines()):
+        if not is_published_guide(row):
+            continue
         slug = norm(row.get("slug"))
         title = norm(row.get("title"))
         if slug and title:
@@ -842,6 +873,8 @@ def build_term_html(
         meta_bits.append(badge_html)
     if category and not badge_html:
         meta_bits.append(f"<span>{html.escape(category)}</span>")
+    if not is_glossary_expert_pass(entry):
+        meta_bits.append(glossary_preparing_badge_html())
     meta_line = " · ".join(meta_bits)
 
     crumb_items: list[tuple[str, str | None]] = [
@@ -861,6 +894,9 @@ def build_term_html(
 
     updated = content_date_from_row(entry)
     robots_meta = robots_meta_for_slug(slug_file)
+    preparing_notice_html = (
+        "" if is_glossary_expert_pass(entry) else glossary_preparing_notice_html()
+    )
 
     quality_html = (
         '<section class="seo-quality-panel" aria-labelledby="quality-panel-title">'
@@ -1059,6 +1095,7 @@ def build_term_html(
     </div>
     <h1 class="article-title">{html.escape(article_title or term + 'とは？意味・根拠・試験ポイントを整理')}</h1>
     <p class="article-lead"><strong>{html.escape(term)}</strong>について、定義・根拠・試験での押さえ方をまとめます。{html.escape(article_lead or lead)}</p>
+    {preparing_notice_html}
     {key_points_html}
     {toc_html}
     {quality_html}
@@ -1091,10 +1128,12 @@ def build_field_hub_html(
     desc = meta_description(
         f"{exam_name()}の{category}分野に関する用語を一覧し、各用語の解説記事へリンクします。"
     )
-    lis = [
-        f'    <li><a href="../{html.escape(e["slug_file"])}">{html.escape(e["term"])}</a></li>'
-        for e in sorted(cat_entries, key=lambda x: x["term"])
-    ]
+    lis = []
+    for e in sorted(cat_entries, key=lambda x: x["term"]):
+        badge = "" if is_glossary_expert_pass(e) else f" {glossary_preparing_badge_html()}"
+        lis.append(
+            f'    <li><a href="../{html.escape(e["slug_file"])}">{html.escape(e["term"])}</a>{badge}</li>'
+        )
     list_html = "\n".join(lis)
     crumb_items = [
         ("トップ", "index.html"),
@@ -1319,7 +1358,7 @@ def build_terms_index(entries: list[dict], base_url: str) -> str:
           <thead><tr>
             <th scope="col" class="terms-idx-th-term">用語</th>
             <th scope="col" class="terms-idx-th-cat">分野</th>
-            <th scope="col" class="terms-idx-th-def">定義</th>
+            <th scope="col" class="terms-idx-th-def">{TERMS_INDEX_SNIPPET_LABEL}</th>
           </tr></thead>
           <tbody id="terms-idx-flat-body">
 {tbody_html}
