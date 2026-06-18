@@ -159,3 +159,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1158,single,その他法令・業務,その他法令・業務,内部統制システム,standard,16,done,Phase2
 1159,single,その他法令・業務,その他法令・業務,信託保全,standard,16,done,Phase2
 1160,single,その他法令・業務,その他法令・業務,犯罪収益移転防止法,standard,16,done,Phase2
+1161,marubatsu,その他法令・業務,その他法令・業務,顧客本位の業務運営,standard,17,done,Phase2
+1162,marubatsu,勧誘・販売規則,勧誘・販売規則,元本欠損リスク,standard,17,done,Phase2
+1163,marubatsu,勧誘・販売規則,勧誘・販売規則,リスク許容度,standard,17,done,Phase2
+1164,marubatsu,金融商品・サービス,投資信託,分散投資,standard,17,done,Phase2
+1165,marubatsu,その他法令・業務,その他法令・業務,内部牽制,standard,17,done,Phase2
+1166,marubatsu,金融商品・サービス,株式業務,グロース市場,standard,17,done,Phase2
+1167,marubatsu,勧誘・販売規則,勧誘・販売規則,最良執行,standard,17,done,Phase2
+1168,single,その他法令・業務,その他法令・業務,内部牽制,standard,17,done,Phase2
+1169,single,勧誘・販売規則,勧誘・販売規則,元本欠損リスク,standard,17,done,Phase2
+1170,single,その他法令・業務,その他法令・業務,顧客本位の業務運営,standard,17,done,Phase2
