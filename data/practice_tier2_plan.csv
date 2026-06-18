@@ -9,16 +9,16 @@ question_no,format,category,source_term,status,notes
 8,marubatsu,その他法令・業務,顧客の利益保護,done,batch1
 9,single,金融商品・サービス,投資信託,done,batch1
 10,single,勧誘・販売規則,重要事項説明,done,batch1
-11,marubatsu,金融商品・サービス,,planned,phase1
-12,marubatsu,金融商品・サービス,,planned,phase1
-13,marubatsu,勧誘・販売規則,,planned,phase1
-14,marubatsu,勧誘・販売規則,,planned,phase1
-15,marubatsu,金融商品取引法,,planned,phase1
-16,marubatsu,金融商品取引法,,planned,phase1
-17,marubatsu,その他法令・業務,,planned,phase1
-18,marubatsu,その他法令・業務,,planned,phase1
-19,single,金融商品・サービス,,planned,phase1
-20,single,勧誘・販売規則,,planned,phase1
+11,marubatsu,金融商品・サービス,社債,done,batch2
+12,marubatsu,金融商品・サービス,ETF,done,batch2
+13,marubatsu,勧誘・販売規則,特定投資家,done,batch2
+14,marubatsu,勧誘・販売規則,契約締結前交付書面,done,batch2
+15,marubatsu,金融商品取引法,第二種金融商品取引業,done,batch2
+16,marubatsu,金融商品取引法,インサイダー取引,done,batch2
+17,marubatsu,その他法令・業務,分別管理,done,batch2
+18,marubatsu,その他法令・業務,反社会的勢力排除,done,batch2
+19,single,金融商品・サービス,社債,done,batch2
+20,single,勧誘・販売規則,契約締結前交付書面,done,batch2
 21-50,marubatsu,各分野,,planned,phase1 〇×残42問
 51-70,single,各分野,,planned,phase1 五肢残18問
 71-350,marubatsu,各分野,,planned,phase2 拡充
