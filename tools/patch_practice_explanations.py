@@ -18,6 +18,14 @@ from gaimuin_practice_explanation_texts import EXPLANATIONS  # noqa: E402
 BATCH_DIR = ROOT / "tools" / "batches"
 BATCH_GLOB = "gaimuin_practice_tier2_batch*.py"
 
+EXPLANATION_KEYS = (
+    "explanation",
+    "explanation_summary",
+    "explanation_correct",
+    "explanation_choices",
+    "explanation_point",
+)
+
 
 def load_batch(path: Path):
     spec = importlib.util.spec_from_file_location("batch", path)
@@ -25,6 +33,38 @@ def load_batch(path: Path):
     assert spec.loader is not None
     spec.loader.exec_module(mod)
     return mod.QUESTIONS
+
+
+def _escape_value(value: str) -> str:
+    return value.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def _upsert_field(block: str, key: str, value: str) -> str:
+    line_pat = rf'^        "{key}": ".*",$'
+    new_line = f'        "{key}": "{_escape_value(value)}",'
+    new_block, n = re.subn(line_pat, new_line, block, count=1, flags=re.MULTILINE)
+    if n:
+        return new_block
+    anchor_pat = r'^        "explanation_point": ".*",$'
+    insert = f'{new_line}\n'
+    new_block, n = re.subn(
+        anchor_pat,
+        lambda m: m.group(0) + "\n" + insert.rstrip("\n"),
+        block,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    if n:
+        return new_block
+    anchor_pat = r'^        "explanation_correct": ".*",$'
+    new_block, n = re.subn(
+        anchor_pat,
+        lambda m: m.group(0) + "\n" + insert.rstrip("\n"),
+        block,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    return new_block if n else block
 
 
 def patch_file(path: Path) -> int:
@@ -37,15 +77,12 @@ def patch_file(path: Path) -> int:
         next_match = re.search(r'\n    \{\n        "question_no":', text[block_start + 1 :])
         block_end = block_start + 1 + next_match.start() if next_match else len(text)
         block = text[block_start:block_end]
-        for key, value in fields.items():
-            pattern = rf'("{key}": )"[^"]*(?:"[^"]*"[^"]*)*"'
-            # simpler: replace line by line within block
-            line_pat = rf'^        "{key}": ".*",$'
-            new_line = f'        "{key}": "{value}",'
-            new_block, n = re.subn(line_pat, new_line, block, count=1, flags=re.MULTILINE)
-            if n:
-                block = new_block
-        if block != text[block_start:block_end]:
+        original = block
+        for key in EXPLANATION_KEYS:
+            if key not in fields:
+                continue
+            block = _upsert_field(block, key, fields[key])
+        if block != original:
             text = text[:block_start] + block + text[block_end:]
             count += 1
     path.write_text(text, encoding="utf-8")
