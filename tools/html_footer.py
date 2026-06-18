@@ -421,6 +421,7 @@ def site_shell_footer(
     fixed: bool = True,
     include_analytics: bool = True,
     current: str | None = None,
+    practice_tier_nav: str = "",
 ) -> str:
     """index.html の site-footer と同型（画面下固定。site-pages.css で position:fixed）。"""
     _ = fixed
@@ -446,12 +447,18 @@ def site_shell_footer(
                 f'<a href="{html.escape(href)}"{cur}>{html.escape(label)}</a>'
             )
     links_html = "\n          ".join(links)
+    tier_block = ""
+    if practice_tier_nav:
+        tier_block = (
+            '\n        <span class="site-footer-sep" aria-hidden="true"></span>\n'
+            f"        {practice_tier_nav}\n"
+        )
     footer = f"""<footer class="site-footer" role="contentinfo">
     <div class="site-footer-scroll">
       <div class="site-footer-inner">
         <a class="site-footer-brand" href="{root}" title="{title}">
           {mark}
-        </a>
+        </a>{tier_block}
         <span class="site-footer-sep" aria-hidden="true"></span>
         <nav class="site-footer-legal" aria-label="サイト情報・ポリシー">
           {links_html}
@@ -475,17 +482,14 @@ def site_page_footer(
 ) -> str:
     """静的ページ用フッター + GA4（site-config の navigation.footer）。"""
     _ = wide
-    footer = site_shell_footer(rel_path, include_analytics=True, current=current)
-    if practice_tier_id is None:
-        return footer
-    tier_tabs = q_practice_tier_tabs_html(rel_path, current_tier_id=practice_tier_id)
-    if not tier_tabs:
-        return footer
-    return (
-        '<div class="site-shell-foot-stack">\n'
-        f'<div class="site-practice-tier-bar">{tier_tabs}</div>\n'
-        f"{footer}\n"
-        "</div>"
+    tier_nav = ""
+    if practice_tier_id:
+        tier_nav = q_practice_tier_footer_nav_html(rel_path, current_tier_id=practice_tier_id)
+    return site_shell_footer(
+        rel_path,
+        include_analytics=True,
+        current=current,
+        practice_tier_nav=tier_nav,
     )
 
 
@@ -617,6 +621,41 @@ def q_hub_links_html(rel_path: Path, *, current: str) -> str:
     return (
         '<nav class="q-hub-links q-hub-links--tabs" aria-label="問題タイプ">'
         f'<ul class="q-hub-tabs-list">{"".join(lis)}</ul></nav>'
+    )
+
+
+def q_practice_tier_footer_nav_html(
+    rel_path: Path,
+    *,
+    current_tier_id: str | None,
+) -> str:
+    """practiceTiers があるサイトの試験種別切替（site-footer 内に表示）。"""
+    tiers = practice_tiers()
+    if len(tiers) < 2:
+        return ""
+    lis: list[str] = []
+    for tier in tiers:
+        tid = str(tier.get("id") or "").strip()
+        if not tid:
+            continue
+        label = str(tier.get("shortLabel") or tier.get("tag") or tier.get("label") or tid).strip()
+        target = f"q/practice/{tid}/index.html"
+        if tid == current_tier_id:
+            lis.append(
+                f'<li><span class="site-footer-tier-link is-current" aria-current="page">'
+                f"{html.escape(label)}</span></li>"
+            )
+        else:
+            href = html.escape(footer_href(rel_path, target), quote=True)
+            lis.append(
+                f'<li><a class="site-footer-tier-link" href="{href}">'
+                f"{html.escape(label)}</a></li>"
+            )
+    if not lis:
+        return ""
+    return (
+        '<nav class="site-footer-tier-nav" aria-label="試験種別">'
+        f'<ul class="site-footer-tier-list">{"".join(lis)}</ul></nav>'
     )
 
 

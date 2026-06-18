@@ -361,10 +361,10 @@ def _mode_index_counts(root: Path) -> list[Issue]:
                         )
                     issues.extend(_mode_index_config("practice", tier_index))
                     issues.extend(_mode_index_hub_tabs("practice", tier_index))
-                    if "q-practice-tier-tabs" not in tier_index.read_text(encoding="utf-8", errors="replace"):
+                    if "site-footer-tier-nav" not in tier_index.read_text(encoding="utf-8", errors="replace"):
                         issues.append(
                             Issue(
-                                f"{tier_index_rel_path(tid)}: q-practice-tier-tabs がありません"
+                                f"{tier_index_rel_path(tid)}: site-footer-tier-nav がありません"
                             )
                         )
                 continue

@@ -360,39 +360,44 @@ a.site-page-brand:hover,
   line-height: 1.2;
   margin-left: auto;
 }
-/* 実践演習 tier サブタブ（フッター直上・画面下固定） */
-.site-shell-foot-stack {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 25;
-  width: 100%;
-  max-width: 100%;
+/* 実践演習 tier 切替（site-footer 内） */
+.site-footer-tier-nav {
+  flex: 0 0 auto;
 }
-.site-shell-foot-stack .site-footer {
-  position: static;
+.site-footer-tier-list {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-.site-practice-tier-bar {
-  border-top: 1px solid var(--border);
+.site-footer-tier-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
   background: var(--bg);
-  padding: 8px max(14px, env(safe-area-inset-right, 0px)) 6px
-    max(14px, env(safe-area-inset-left, 0px));
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text2);
+  text-decoration: none;
+  white-space: nowrap;
 }
-.site-practice-tier-bar .q-practice-tier-tabs {
-  margin: 0 auto;
-  max-width: var(--site-nav-w);
+a.site-footer-tier-link:hover {
+  color: var(--text);
+  background: var(--accent-hover-surface);
+  border-color: var(--accent-border);
 }
-.site-page-wrap:has(.site-shell-foot-stack) {
-  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
-}
-body:has(.site-shell-foot-stack) .q-index-top,
-body:has(.site-shell-foot-stack) .site-scroll-top {
-  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
-}
-.site-shell-column-page .site-page-wrap:has(.site-shell-foot-stack) .site-page-main,
-.site-shell-column-page .site-page-wrap:has(.site-shell-foot-stack) .q-static-main {
-  min-height: calc(100vh - 54px - 100px);
+.site-footer-tier-link.is-current {
+  color: var(--accent-emphasis);
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
 }
 
 .site-page-header {
