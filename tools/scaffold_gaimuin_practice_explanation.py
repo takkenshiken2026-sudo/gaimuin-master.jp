@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""gaimuin_practice_explanation_texts.py に追記する EXPLANATIONS 雛形を出力する。"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import importlib.util
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+BLUEPRINT = ROOT / "data" / "practice_tier2_blueprint.csv"
+BATCH_DIR = ROOT / "tools" / "batches"
+
+
+def load_batch_questions(batch_num: int) -> list[dict[str, str]]:
+    path = BATCH_DIR / f"gaimuin_practice_tier2_batch{batch_num}.py"
+    if not path.is_file():
+        raise SystemExit(f"batch ファイルがありません: {path}")
+    spec = importlib.util.spec_from_file_location("batch", path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+    return mod.QUESTIONS
+
+
+def blueprint_map() -> dict[str, dict[str, str]]:
+    if not BLUEPRINT.is_file():
+        return {}
+    with BLUEPRINT.open(encoding="utf-8-sig", newline="") as f:
+        return {row["question_no"]: row for row in csv.DictReader(f)}
+
+
+def scaffold_entry(q: dict[str, str], bp: dict[str, str]) -> str:
+    qno = q["question_no"]
+    qtype = q.get("type", bp.get(qno, {}).get("format", "marubatsu"))
+    term = bp.get(qno, {}).get("source_term", "")
+    stem = q.get("stem", "（問題文）")
+    correct = q.get("correct", "?")
+
+    if qtype == "marubatsu":
+        wrong = "1" if correct == "2" else "2"
+        choices_hint = (
+            f'        "explanation_choices": "{wrong}:（問題文の誤り／正しさに即して、'
+            f'「正しい」または「誤っている」を選べない理由を48字以上で）",'
+        )
+    else:
+        choices_hint = (
+            '        "explanation_choices": "'
+            "1:（肢1が正答でない理由）;2:…;（正答肢は除く）"
+            '",'
+        )
+
+    return f'''    "{qno}": {{
+        "explanation": "（結論1〜2文。{term}）",
+        "explanation_summary": "（15〜30字）",
+        "explanation_correct": "（正答={correct} の理由。設問: {stem[:40]}…）",
+{choices_hint}
+        "explanation_point": "（復習の具体アクション。他問と被らないこと）",
+    }},'''
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--batch", type=int, help="batch 番号（例: 6）")
+    ap.add_argument("--question-nos", help="カンマ区切り問番（例: 51,52,53）")
+    args = ap.parse_args()
+
+    if not args.batch and not args.question_nos:
+        ap.error("--batch または --question-nos を指定してください")
+
+    bp = blueprint_map()
+    questions: list[dict[str, str]] = []
+
+    if args.batch:
+        questions = load_batch_questions(args.batch)
+    elif args.question_nos:
+        want = {x.strip() for x in args.question_nos.split(",") if x.strip()}
+        for n in range(1, 20):
+            try:
+                for q in load_batch_questions(n):
+                    if q["question_no"] in want:
+                        questions.append(q)
+            except SystemExit:
+                break
+        missing = want - {q["question_no"] for q in questions}
+        if missing:
+            for qno in sorted(missing, key=int):
+                row = bp.get(qno, {})
+                questions.append(
+                    {
+                        "question_no": qno,
+                        "type": row.get("format", "single"),
+                        "stem": f"（batch未作成・用語: {row.get('source_term', '')}）",
+                        "correct": "?",
+                    }
+                )
+
+    print("# gaimuin_practice_explanation_texts.py の EXPLANATIONS に追記")
+    print("# 手書きで（）を埋めてから patch → audit → apply してください\n")
+    for q in sorted(questions, key=lambda x: int(x["question_no"])):
+        print(scaffold_entry(q, bp))
+        print()
+
+
+if __name__ == "__main__":
+    main()
