@@ -466,10 +466,27 @@ def site_shell_footer(
     return footer
 
 
-def site_page_footer(rel_path: Path, *, current: str | None = None, wide: bool = False) -> str:
+def site_page_footer(
+    rel_path: Path,
+    *,
+    current: str | None = None,
+    wide: bool = False,
+    practice_tier_id: str | None = None,
+) -> str:
     """静的ページ用フッター + GA4（site-config の navigation.footer）。"""
     _ = wide
-    return site_shell_footer(rel_path, include_analytics=True, current=current)
+    footer = site_shell_footer(rel_path, include_analytics=True, current=current)
+    if practice_tier_id is None:
+        return footer
+    tier_tabs = q_practice_tier_tabs_html(rel_path, current_tier_id=practice_tier_id)
+    if not tier_tabs:
+        return footer
+    return (
+        '<div class="site-shell-foot-stack">\n'
+        f'<div class="site-practice-tier-bar">{tier_tabs}</div>\n'
+        f"{footer}\n"
+        "</div>"
+    )
 
 
 def site_page_wrap_open() -> str:
@@ -626,10 +643,10 @@ def q_practice_tier_tabs_html(
                 f"</li>"
             )
         else:
-            href = "/" + target.lstrip("/")
+            href = html.escape(footer_href(rel_path, target), quote=True)
             lis.append(
                 f'<li class="q-hub-tab">'
-                f'<a class="q-hub-tab-label" href="{html.escape(href)}">{html.escape(label)}</a>'
+                f'<a class="q-hub-tab-label" href="{href}">{html.escape(label)}</a>'
                 f"</li>"
             )
     if not lis:

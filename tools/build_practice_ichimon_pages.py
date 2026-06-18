@@ -65,7 +65,6 @@ from tools.html_footer import (  # noqa: E402
     q_index_stats_line,
     q_index_tools_close_html,
     q_index_tools_open_html,
-    q_practice_tier_tabs_html,
     shell_body_class,
     site_page_footer,
     site_page_header,
@@ -521,8 +520,11 @@ def build_practice_question_html(
     }
     site_header = site_page_header(rel_path, current="practice")
     site_breadcrumb = breadcrumb_html(rel_path, crumb_items)
-    tier_tabs_html = q_practice_tier_tabs_html(rel_path, current_tier_id=tier_tab_id)
-    site_footer = site_page_footer(rel_path, current="practice")
+    site_footer = site_page_footer(
+        rel_path,
+        current="practice",
+        practice_tier_id=tier_tab_id,
+    )
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -553,7 +555,6 @@ def build_practice_question_html(
   {site_breadcrumb}
   {study_modes_note}
   {q_hub_links_html(rel_path, current="practice")}
-  {tier_tabs_html}
   <p class="q-meta-line">実践演習 · {html.escape(page["category"])}</p>
   <h1 class="q-h1">{html.escape(heading)}</h1>
   {lead_html}
@@ -931,7 +932,6 @@ def build_mode_index(
         show_category_row = False
         year_row_label = "分野へ"
         tier_tab_id = str(practice_tier.get("id") or "") if practice_tier else None
-        tier_tabs_html = q_practice_tier_tabs_html(rel_path, current_tier_id=tier_tab_id)
         if practice_tier:
             breadcrumb_items: list[tuple[str, str | None]] = [
                 ("トップ", "index.html"),
@@ -954,7 +954,7 @@ def build_mode_index(
         filter_hint = "分野・学習状況"
         show_category_row = False
         year_row_label = "分野へ"
-        tier_tabs_html = ""
+        tier_tab_id = None
         breadcrumb_items = [("トップ", "index.html"), (f"{h1}一覧", None)]
 
     by_category: dict[str, int] = {}
@@ -1002,7 +1002,11 @@ def build_mode_index(
 
     header = site_page_header(rel_path, current=current)
     breadcrumb = breadcrumb_html(rel_path, breadcrumb_items)
-    footer = site_page_footer(rel_path, current=current)
+    footer = site_page_footer(
+        rel_path,
+        current=current,
+        practice_tier_id=tier_tab_id if mode == "practice" and tier_tab_id else None,
+    )
     list_aria = f"{group_label}別{h1}"
     css_href = rel_css(rel_path)
     theme_href = rel_theme_css(rel_path)
@@ -1033,7 +1037,6 @@ def build_mode_index(
   <p class="site-page-lead">{html.escape(lead)}</p>
   {study_modes_note}
   {q_hub_links_html(rel_path, current=current)}
-  {tier_tabs_html}
   <section class="past-index-panel" aria-labelledby="mode-index-heading">
     <div class="past-index-head">
       <div>

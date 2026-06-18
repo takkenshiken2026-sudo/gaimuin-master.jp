@@ -360,6 +360,40 @@ a.site-page-brand:hover,
   line-height: 1.2;
   margin-left: auto;
 }
+/* 実践演習 tier サブタブ（フッター直上・画面下固定） */
+.site-shell-foot-stack {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
+  width: 100%;
+  max-width: 100%;
+}
+.site-shell-foot-stack .site-footer {
+  position: static;
+}
+.site-practice-tier-bar {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  padding: 8px max(14px, env(safe-area-inset-right, 0px)) 6px
+    max(14px, env(safe-area-inset-left, 0px));
+}
+.site-practice-tier-bar .q-practice-tier-tabs {
+  margin: 0 auto;
+  max-width: var(--site-nav-w);
+}
+.site-page-wrap:has(.site-shell-foot-stack) {
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+}
+body:has(.site-shell-foot-stack) .q-index-top,
+body:has(.site-shell-foot-stack) .site-scroll-top {
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+}
+.site-shell-column-page .site-page-wrap:has(.site-shell-foot-stack) .site-page-main,
+.site-shell-column-page .site-page-wrap:has(.site-shell-foot-stack) .q-static-main {
+  min-height: calc(100vh - 54px - 100px);
+}
 
 .site-page-header {
   position: sticky;
@@ -1069,7 +1103,7 @@ a.q-hub-tab-label:hover {
   border: 1px solid var(--border2);
 }
 .q-practice-tier-tabs {
-  margin-top: -4px;
+  margin: 0;
 }
 .q-practice-tier-hub {
   display: grid;
