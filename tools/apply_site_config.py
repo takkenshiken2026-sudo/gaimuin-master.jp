@@ -34,13 +34,16 @@ from tools.site_config import (
     learning_nav_label,
     official_organization,
     primary_external_link,
+    practice_tiers,
     public_url,
     sync_config_files,
     fields,
 )
 from tools.html_footer import (
+    footer_tier_inline_css,
     index_learning_nav_extra_desktop_html,
     index_learning_nav_extra_mobile_html,
+    q_practice_tier_footer_nav_html,
     site_page_footer,
     site_page_header,
     site_shell_footer,
@@ -475,7 +478,15 @@ def ensure_index_theme(text: str) -> str:
 
 def update_index_shell_footer(text: str) -> str:
     """SPA フッターを site-config の navigation.footer と同型に揃える。"""
-    block = site_shell_footer(Path("index.html"), fixed=True, include_analytics=False)
+    tier_nav = ""
+    if len(practice_tiers()) >= 2:
+        tier_nav = q_practice_tier_footer_nav_html(Path("index.html"), current_tier_id=None)
+    block = site_shell_footer(
+        Path("index.html"),
+        fixed=True,
+        include_analytics=False,
+        practice_tier_nav=tier_nav,
+    )
     indented = "\n".join(("  " + line) if line else line for line in block.splitlines())
     return re.sub(
         r'\n  <footer class="site-footer[^"]*" role="contentinfo">.*?</footer>',
@@ -484,6 +495,31 @@ def update_index_shell_footer(text: str) -> str:
         count=1,
         flags=re.S,
     )
+
+
+_FOOTER_TIER_CSS_MARKER_START = "/* site-footer-tier */"
+_FOOTER_TIER_CSS_MARKER_END = "/* /site-footer-tier */"
+
+
+def update_index_footer_tier_css(text: str) -> str:
+    """practiceTiers がある SPA にフッター tier pill 用 CSS を注入。"""
+    block = f"{_FOOTER_TIER_CSS_MARKER_START}\n{footer_tier_inline_css()}\n{_FOOTER_TIER_CSS_MARKER_END}"
+    if _FOOTER_TIER_CSS_MARKER_START in text:
+        text = re.sub(
+            re.escape(_FOOTER_TIER_CSS_MARKER_START) + r".*?" + re.escape(_FOOTER_TIER_CSS_MARKER_END),
+            block,
+            text,
+            count=1,
+            flags=re.S,
+        )
+    elif len(practice_tiers()) >= 2:
+        text = re.sub(
+            r"(\.site-footer-copy-sub::before\{content:'・'\})",
+            r"\1\n" + block,
+            text,
+            count=1,
+        )
+    return text
 
 
 def _index_logo_mark_html() -> str:
@@ -713,6 +749,7 @@ def main() -> int:
             new = fix_spa_breadcrumb_top(new)
             new = ensure_index_theme(new)
             new = update_index_shell_footer(new)
+            new = update_index_footer_tier_css(new)
             new = update_index_brand_mark(new)
             new = update_index_auth_modal(new)
             new = update_index_logo_styles(new)

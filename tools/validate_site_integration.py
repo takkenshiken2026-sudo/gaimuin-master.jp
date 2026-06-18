@@ -81,7 +81,7 @@ def _footer_past_href(cfg: dict) -> Issue | None:
 
 
 def _index_footer(index_path: Path) -> list[Issue]:
-    from tools.site_config import past_enabled
+    from tools.site_config import past_enabled, practice_tiers
 
     if not index_path.is_file():
         return [Issue(f"{index_path.name} がありません（SPA フッター未検証）")]
@@ -91,6 +91,15 @@ def _index_footer(index_path: Path) -> list[Issue]:
         issues.append(
             Issue(f"{index_path.name}: site-pages.css / site-theme.css が未リンク（apply_site_config を実行）")
         )
+    if len(practice_tiers()) >= 2:
+        if "site-footer-tier-nav" not in text:
+            issues.append(
+                Issue(f"{index_path.name}: site-footer-tier-nav がありません（apply_site_config を実行）")
+            )
+        if "site-footer-tier" not in text:
+            issues.append(
+                Issue(f"{index_path.name}: site-footer-tier CSS がありません（apply_site_config を実行）")
+            )
     if not past_enabled():
         return issues
     for m in re.finditer(

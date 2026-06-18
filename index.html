@@ -1113,6 +1113,13 @@ body.is-solving .site-footer{display:none!important}
 .site-footer-copy-brand{font-weight:600;color:var(--text3)}
 .site-footer-copy-sub{display:inline;font-size:inherit;font-weight:500;opacity:.88}
 .site-footer-copy-sub::before{content:'・'}
+/* site-footer-tier */
+.site-footer-tier-nav{flex:0 0 auto}
+.site-footer-tier-list{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;list-style:none;margin:0;padding:0}
+.site-footer-tier-link{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:3px 10px;border-radius:999px;border:1px solid var(--border2);background:#fff;font-size:11px;font-weight:700;line-height:1.2;color:var(--text);text-decoration:none;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+a.site-footer-tier-link:hover{color:var(--text);background:var(--accent-hover-surface);border-color:var(--accent-border)}
+.site-footer-tier-link.is-current{color:var(--accent-emphasis);background:var(--accent-soft);border-color:var(--accent-border)}
+/* /site-footer-tier */
 
 /* ========== GAMIFICATION ==========
 /* Level + Streak 横並び */
@@ -1855,6 +1862,9 @@ html.question-modes--no-past .past-chrome{display:none!important}
           <a class="site-footer-brand" href="index.html" title="証外マスター（証券外務員（一種・二種）対策）トップへ">
             <div class="topnav-logo-mark logo-mark--narrow" aria-hidden="true"><span class="logo-mark-line">証外マスター</span><span class="logo-mark-line logo-mark-line--sub">マスター</span></div>
           </a>
+          <span class="site-footer-sep" aria-hidden="true"></span>
+          <nav class="site-footer-tier-nav" aria-label="試験種別"><ul class="site-footer-tier-list"><li><a class="site-footer-tier-link" href="q/practice/tier2/index.html">二種</a></li><li><a class="site-footer-tier-link" href="q/practice/tier1/index.html">一種</a></li></ul></nav>
+
           <span class="site-footer-sep" aria-hidden="true"></span>
           <nav class="site-footer-legal" aria-label="サイト情報・ポリシー">
             <a href="index.html">トップ</a>

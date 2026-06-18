@@ -415,6 +415,15 @@ def site_page_header(
     </header>"""
 
 
+def footer_tier_inline_css() -> str:
+    """SPA index.html の <style> 内用（site-pages.css と同型）。"""
+    return """.site-footer-tier-nav{flex:0 0 auto}
+.site-footer-tier-list{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;list-style:none;margin:0;padding:0}
+.site-footer-tier-link{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:3px 10px;border-radius:999px;border:1px solid var(--border2);background:#fff;font-size:11px;font-weight:700;line-height:1.2;color:var(--text);text-decoration:none;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+a.site-footer-tier-link:hover{color:var(--text);background:var(--accent-hover-surface);border-color:var(--accent-border)}
+.site-footer-tier-link.is-current{color:var(--accent-emphasis);background:var(--accent-soft);border-color:var(--accent-border)}"""
+
+
 def site_shell_footer(
     rel_path: Path,
     *,
