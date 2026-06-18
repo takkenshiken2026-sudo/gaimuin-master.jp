@@ -127,14 +127,34 @@ def build_retire_map(
 def placeholder_body(facts: dict, organizer: str | None = None) -> str:
     fmt = facts.get("exam_format") or {}
     org = organizer or norm(facts.get("organizer"))
+    tier2 = (
+        f"二種{fmt.get('question_count', 44)}問·{fmt.get('duration_minutes', 120)}分·"
+        f"{fmt.get('total_points', 300)}点満点"
+    )
+    first = facts.get("first_kind_reference") or {}
+    if first.get("question_count"):
+        format_summary = (
+            f"{tier2}（一種は{first['question_count']}問·{first['duration_minutes']}分·"
+            f"{first['total_points']}点満点）"
+        )
+    else:
+        format_summary = tier2
+    pass_pct = fmt.get("pass_overall_percent", 60)
+    pass_pts = fmt.get("pass_overall_points", 240)
+    per_range = fmt.get("pass_per_range_percent")
+    if per_range not in (None, ""):
+        pass_criteria = (
+            f"総合{pass_pct}％（{pass_pts}点）以上かつ各出題範囲{per_range}％以上"
+        )
+    else:
+        note = norm(facts.get("pass_criteria_note"))
+        if note.startswith("合否は"):
+            note = note[3:].lstrip("、").strip()
+        pass_criteria = note or f"総合{pass_pct}％（{pass_pts}点）以上"
     return GREENFIELD_PLACEHOLDER.format(
         organizer=org,
-        question_count=fmt.get("question_count", 44),
-        total_points=fmt.get("total_points", 400),
-        duration_minutes=fmt.get("duration_minutes", 180),
-        pass_overall_percent=fmt.get("pass_overall_percent", 60),
-        pass_overall_points=fmt.get("pass_overall_points", 240),
-        pass_per_range_percent=fmt.get("pass_per_range_percent", 40),
+        format_summary=format_summary,
+        pass_criteria=pass_criteria,
     )
 
 
@@ -198,12 +218,19 @@ def greenfield_reset_row(
         fmt = facts.get("exam_format") or {}
         org = norm(facts.get("organizer"))
         if i == 1:
+            per_range = fmt.get("pass_per_range_percent")
+            if per_range not in (None, ""):
+                pass_note = f"各科目{per_range}％足切り"
+            else:
+                note = norm(facts.get("pass_criteria_note") or "総合得点のみ")
+                if note.startswith("合否は"):
+                    note = note[3:].lstrip("、").strip()
+                pass_note = note
             row["faq_1_question"] = "この記事はいつ本番の内容に差し替わりますか？"
             row["faq_1_answer"] = (
                 "greenfield 執筆プログラムの優先順（write_priority）に沿って順次公開します。"
-                f"試験形式は全{fmt.get('question_count')}問·{fmt.get('total_points')}点満点·"
-                f"各科目{fmt.get('pass_per_range_percent')}％足切りを正本とし、"
-                f"{org}の公式要項で都度確認します。"
+                f"試験形式は二種{fmt.get('question_count')}問·{fmt.get('total_points')}点満点·"
+                f"{pass_note}を正本とし、{org}の公式要項で都度確認します。"
             )
         else:
             row[f"faq_{i}_question"] = ""

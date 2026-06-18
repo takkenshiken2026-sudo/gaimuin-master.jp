@@ -97,9 +97,6 @@ def scan_row_forbidden(row: dict[str, str], facts: dict[str, Any]) -> list[str]:
 
 GREENFIELD_PLACEHOLDER = (
     "【greenfield 執筆待ち】{organizer}の公式要項で最新を確認したうえで、本節の本文を新規執筆します。"
-    "試験形式の正本は全{question_count}問（{total_points}点満点）·{duration_minutes}分·五肢択一で、"
-    "合格は総合{pass_overall_percent}％（{pass_overall_points}点）以上かつ"
-    "各出題範囲{pass_per_range_percent}％以上です。"
-    "旧稿にあった100問·5科目×各20問·1.8分/問などの表記は採用しません。"
+    "試験形式の正本は{format_summary}、合格は{pass_criteria}です。"
     "執筆完了後に事実確認日と参照元を更新して公開します。"
 )
