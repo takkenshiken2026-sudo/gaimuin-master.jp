@@ -4223,6 +4223,10 @@ function getAvailablePracticeTiers(){
   return getPracticeTiers().filter(function(t){ return !isPracticeTierPreparing(t); });
 }
 function hasPracticeTiers(){ return getAvailablePracticeTiers().length>=2; }
+function shouldHideOrigTierPicker(){
+  // トップに「実践演習（二種/一種）」の別入口があるサイトでは、設定画面で試験種別を再選択しない
+  return getPracticeTiers().length>=2;
+}
 function getActivePracticeTier(){
   var tiers=getAvailablePracticeTiers();
   if(!tiers.length) return null;
@@ -4279,12 +4283,13 @@ function buildOrigTierChips(){
   const el=document.getElementById('orig-tier-chips');
   const tiers=getPracticeTiers();
   const available=getAvailablePracticeTiers();
-  if(!el||available.length<2){
+  if(!el||shouldHideOrigTierPicker()||available.length<2){
     if(section) section.style.display='none';
     if(available.length){
       const cur=getPracticeTierById(origState.tier);
       if(!origState.tier||isPracticeTierPreparing(cur)) origState.tier=available[0].id;
     }
+    if(el) el.innerHTML='';
     return;
   }
   if(section) section.style.display='';
@@ -4393,7 +4398,7 @@ function updateOrigSelSummary(){
   const pool=getCsvOrigPracticePool();
   const fmt=origFormatLabel(origState.format);
   const tier=origTierLabel();
-  const tierPart=tier?`対象 ${tier}・`:'';
+  const tierPart=(tier&&!shouldHideOrigTierPicker())?`対象 ${tier}・`:'';
   sumEl.textContent=`${tierPart}形式 ${fmt}・分野 ${origState.fields.length}・該当 ${pool.length}問`;
 }
 

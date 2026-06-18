@@ -36,7 +36,27 @@ def study_modes_note_html() -> str:
     return f'<p class="q-study-modes-note">{html.escape(text)}</p>'
 
 
-def index_lead(mode: str) -> str:
+def _practice_tier_lead(tier: dict) -> str:
+    subtitle = str(tier.get("subtitle") or "").strip()
+    label = str(tier.get("label") or tier.get("shortLabel") or tier.get("tag") or "").strip()
+    c = seo_copy()
+    if subtitle:
+        return (
+            f"{subtitle.rstrip('。')}。"
+            f"各問題の解説ページで正誤を確認し、アプリで{c['mockExam']}前の演習ができます。"
+        )
+    if label:
+        return (
+            f"{label}向けの実践演習を分野別にまとめています。"
+            f"{c['mockExam']}に近い形式で力を測る演習として学習できます。"
+            "各問題の解説ページで正誤を確認し、アプリで演習できます。"
+        )
+    return index_lead("practice")
+
+
+def index_lead(mode: str, *, tier: dict | None = None) -> str:
+    if mode == "practice" and tier:
+        return _practice_tier_lead(tier)
     ex = exam_name()
     c = seo_copy()
     if mode == "past":
@@ -66,9 +86,20 @@ def index_lead(mode: str) -> str:
     )
 
 
-def index_meta_description(mode: str, *, count: int) -> str:
+def index_meta_description(mode: str, *, count: int, tier: dict | None = None) -> str:
     ex = exam_name()
     c = seo_copy()
+    if mode == "practice" and tier:
+        label = str(
+            tier.get("label") or tier.get("shortLabel") or tier.get("tag") or ""
+        ).strip()
+        subject = f"{label}の実践演習" if label else "実践演習"
+        base = (
+            f"{subject}{count}問を分野別に掲載。"
+            f"{c['mockExam']}前の演習として{c['studyModes']}と併用可能。"
+            "検索・絞り込みと解説ページに対応。"
+        )
+        return meta_description(base, 155)
     if mode == "past":
         base = (
             f"{ex}の過去問{count}問を年度・分野別に掲載。"
@@ -147,12 +178,18 @@ def index_search_index_suffix() -> str:
     return f"{c['mockExam']} {c['studyModes']}"
 
 
-def index_h1(mode: str) -> str:
+def index_h1(mode: str, *, tier: dict | None = None) -> str:
     """一覧ページの H1（試験名＋モード名を先頭に）。"""
+    if mode == "practice" and tier:
+        tier_label = str(
+            tier.get("label") or tier.get("shortLabel") or tier.get("tag") or ""
+        ).strip()
+        if tier_label:
+            return f"{tier_label} {MODE_LABEL[mode]}"
     return f"{exam_name()} {MODE_LABEL[mode]}"
 
 
-def index_page_title(mode: str) -> str:
+def index_page_title(mode: str, *, tier: dict | None = None) -> str:
     """一覧ページの <title>（試験名・モード・模試キーワード・ブランド）。"""
     c = seo_copy()
     label = MODE_LABEL[mode]
@@ -162,7 +199,38 @@ def index_page_title(mode: str) -> str:
         sub = f"{c['mockExam']}前の演習"
     else:
         sub = f"{c['mockExam']}前の確認"
+    if mode == "practice" and tier:
+        tier_label = str(
+            tier.get("label") or tier.get("shortLabel") or tier.get("tag") or ""
+        ).strip()
+        if tier_label:
+            return f"{tier_label} {label}一覧｜{sub}｜{brand_name()}"
     return f"{exam_name()} {label}一覧｜{sub}｜{brand_name()}"
+
+
+def practice_hub_lead() -> str:
+    tiers = practice_tiers()
+    labels = [
+        str(t.get("shortLabel") or t.get("tag") or t.get("label") or "").strip()
+        for t in tiers
+    ]
+    labels = [x for x in labels if x]
+    if len(labels) >= 2:
+        joined = "と".join(labels[:2])
+        return (
+            f"{exam_name()}の実践演習を{joined}向けに分けて掲載しています。"
+            "それぞれの一覧から分野別に問題を探し、解説ページやアプリで演習できます。"
+        )
+    return index_lead("practice")
+
+
+def practice_hub_meta_description(*, total_count: int) -> str:
+    c = seo_copy()
+    base = (
+        f"{exam_name()}の実践演習{total_count}問。"
+        f"一種・二種など試験種別ごとの一覧から、{c['mockExam']}前の演習ができます。"
+    )
+    return meta_description(base, 155)
 
 
 def past_year_display(year: int, wareki: str = "") -> str:

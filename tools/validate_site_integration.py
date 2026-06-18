@@ -282,6 +282,13 @@ def _orig_practice_index_ok(path: Path) -> bool:
     return "q-orig-index-page" in text and "site-q-orig-index.js" in text
 
 
+def _is_practice_hub_index(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return "q-practice-hub-page" in text
+
+
 def _mode_index_counts(root: Path) -> list[Issue]:
     issues: list[Issue] = []
     practice_index = root / "q" / "orig" / "index.html"
@@ -305,6 +312,62 @@ def _mode_index_counts(root: Path) -> list[Issue]:
             continue
         if mode == "practice" and _orig_practice_index_ok(index_path):
             continue
+        if mode == "practice":
+            from tools.practice_tier import (
+                csv_practice_count_by_tier,
+                multi_tier_practice_enabled,
+                tier_index_rel_path,
+            )
+            from tools.site_config import practice_tiers
+
+            if multi_tier_practice_enabled():
+                hub = root / "q" / "practice" / "index.html"
+                if _q_index_data_count(hub) is not None:
+                    issues.append(
+                        Issue(
+                            "q/practice/index.html: practiceTiers 時は hub に "
+                            "#q-index-data を置かないでください"
+                        )
+                    )
+                if not _is_practice_hub_index(hub):
+                    issues.append(
+                        Issue(
+                            "q/practice/index.html: practiceTiers 時は "
+                            "q-practice-hub-page が必要です（build_all.py を再実行）"
+                        )
+                    )
+                issues.extend(_mode_index_hub_tabs("practice", hub))
+                for tier in practice_tiers():
+                    tid = str(tier.get("id") or "").strip()
+                    if not tid:
+                        continue
+                    tier_index = root / tier_index_rel_path(tid)
+                    tier_csv_n = csv_practice_count_by_tier(csv_path, tid)
+                    tier_json_n = _q_index_data_count(tier_index)
+                    if tier_json_n is None:
+                        issues.append(
+                            Issue(
+                                f"{tier_index_rel_path(tid)}: #q-index-data がありません"
+                                "（build_practice_ichimon を実行）"
+                            )
+                        )
+                        continue
+                    if tier_json_n != tier_csv_n:
+                        issues.append(
+                            Issue(
+                                f"{tier_index_rel_path(tid)}: 一覧 JSON が {tier_json_n} 件ですが "
+                                f"tier {tid} は {tier_csv_n} 行です（build_all.py を再実行）"
+                            )
+                        )
+                    issues.extend(_mode_index_config("practice", tier_index))
+                    issues.extend(_mode_index_hub_tabs("practice", tier_index))
+                    if "q-practice-tier-tabs" not in tier_index.read_text(encoding="utf-8", errors="replace"):
+                        issues.append(
+                            Issue(
+                                f"{tier_index_rel_path(tid)}: q-practice-tier-tabs がありません"
+                            )
+                        )
+                continue
         if json_n is None:
             issues.append(Issue(f"q/{mode}/index.html: #q-index-data がありません（build_practice_ichimon を実行）"))
             continue
@@ -457,7 +520,7 @@ def _header_learning_nav(root: Path) -> list[Issue]:
 
     spa_hash = _spa_nav_hash_hrefs()
     article_sample = root / "articles" / "field-law-basics" / "index.html"
-    if not article_sample.is_file() or _is_redirect_stub(article_sample):
+    if not article_sample.is_file():
         article_sample = root / "articles" / "exam-overview" / "index.html"
     samples: list[tuple[str, Path]] = [
         ("articles sample", article_sample),
@@ -608,6 +671,19 @@ def _viewport_and_static_css(root: Path) -> list[Issue]:
             issues.append(Issue("index.html: og:title がありません（SNSカード用 SEO head 未適用）"))
         else:
             head = text.split("</head>", 1)[0]
+            if 'property="og:image"' not in head and 'name="twitter:image"' not in head:
+                issues.append(
+                    Issue(
+                        "index.html: og:image / twitter:image がありません"
+                        "（generate_brand_assets + inject_brand_head を実行）"
+                    )
+                )
+            elif 'summary_large_image' in head and 'property="og:image"' not in head:
+                issues.append(
+                    Issue(
+                        "index.html: twitter:card=summary_large_image なのに og:image がありません"
+                    )
+                )
             home_url = _spa_home_url()
             og_url_m = re.search(r'property="og:url"\s+content="([^"]+)"', head)
             if og_url_m and og_url_m.group(1).rstrip("/") != home_url:

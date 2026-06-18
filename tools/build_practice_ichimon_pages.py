@@ -4,7 +4,8 @@
 data/practice_questions.csv / data/ichimon_questions.csv から静的 SEO ページを生成。
 
   - q/practice/p{no:03d}/index.html … 実践演習（各問）
-  - q/practice/index.html … 実践演習一覧
+  - q/practice/index.html … 実践演習一覧（practiceTiers 時は hub）
+  - q/practice/tier{N}/index.html … 試験種別別一覧（practiceTiers 時）
   - q/ichimon/y{年}/i{月:02d}-{連番}/index.html … 一問一答（各問）
   - q/ichimon/index.html … 一問一答一覧
 
@@ -64,6 +65,7 @@ from tools.html_footer import (  # noqa: E402
     q_index_stats_line,
     q_index_tools_close_html,
     q_index_tools_open_html,
+    q_practice_tier_tabs_html,
     shell_body_class,
     site_page_footer,
     site_page_header,
@@ -78,7 +80,7 @@ from tools.q_page_seo import (
     question_meta_description,
     study_modes_note_html,
 )
-from tools.site_config import brand_name, category_order, clean_origin, exam_name, ichimon_enabled
+from tools.site_config import brand_name, category_order, clean_origin, exam_name, ichimon_enabled, practice_tiers
 from tools.seo_editorial_chrome import seo_brand_asset_tags
 
 PRACTICE_CSV = ROOT / "data" / "practice_questions.csv"
@@ -147,6 +149,44 @@ def category_rank(cat: str) -> int:
 
 def practice_rel_path(qno: int) -> str:
     return f"q/practice/p{qno:03d}/index.html"
+
+
+def _rel_root_asset(rel_path: Path, filename: str) -> str:
+    depth = len(rel_path.parent.parts)
+    prefix = "/".join([".."] * depth)
+    return f"{prefix}/{filename}" if prefix else filename
+
+
+def _practice_question_nav(page: dict) -> tuple[list[tuple[str, str | None]], str | None, str]:
+    """パンくず（tier 対応）と tier タブ用 id、一覧 JSON-LD 用ラベル。"""
+    from tools.practice_tier import (
+        multi_tier_practice_enabled,
+        page_tier_id,
+        tier_index_rel_path,
+        tier_list_breadcrumb_label,
+    )
+
+    heading_tail = f"第{page['qno']}問"
+    if not multi_tier_practice_enabled():
+        return (
+            [("トップ", "index.html"), ("実践演習一覧", "q/practice/index.html"), (heading_tail, None)],
+            None,
+            "実践演習一覧",
+        )
+    tiers = practice_tiers()
+    tid = page_tier_id(page, tiers)
+    tier = next(t for t in tiers if str(t.get("id") or "") == tid)
+    list_label = tier_list_breadcrumb_label(tier)
+    return (
+        [
+            ("トップ", "index.html"),
+            ("実践演習", "q/practice/index.html"),
+            (list_label, tier_index_rel_path(tid)),
+            (heading_tail, None),
+        ],
+        tid,
+        list_label,
+    )
 
 
 def parse_marubatsu_answer(raw: str) -> bool:
@@ -237,6 +277,12 @@ def build_practice_related_html(
 ) -> str:
     from tools.build_glossary_pages import field_hub_slug
     from tools.knowledge_hub_seo import field_hub_page_exists
+    from tools.practice_tier import (
+        multi_tier_practice_enabled,
+        page_tier_id,
+        tier_index_rel_path,
+        tier_list_breadcrumb_label,
+    )
 
     links: list[tuple[str, str]] = []
     seen: set[str] = set()
@@ -247,13 +293,29 @@ def build_practice_related_html(
         seen.add(href)
         links.append((href, label))
 
-    add(rel_href(rel_path, "q/practice/index.html"), "実践演習一覧")
-    qno = page["qno"]
-    by_no = {p["qno"]: p for p in all_pages}
-    for other in (qno - 1, qno + 1):
-        pg = by_no.get(other)
-        if pg:
-            add(rel_href(rel_path, pg["rel_path"]), f"実践演習 第{other}問")
+    if multi_tier_practice_enabled():
+        tiers = practice_tiers()
+        tid = page_tier_id(page, tiers)
+        tier = next(t for t in tiers if str(t.get("id") or "") == tid)
+        add(rel_href(rel_path, tier_index_rel_path(tid)), tier_list_breadcrumb_label(tier))
+        same_tier = sorted(
+            [p for p in all_pages if page_tier_id(p, tiers) == tid],
+            key=lambda x: x["qno"],
+        )
+        qnos = [p["qno"] for p in same_tier]
+        idx = qnos.index(page["qno"])
+        for j in (idx - 1, idx + 1):
+            if 0 <= j < len(same_tier):
+                pg = same_tier[j]
+                add(rel_href(rel_path, pg["rel_path"]), f"実践演習 第{pg['qno']}問")
+    else:
+        add(rel_href(rel_path, "q/practice/index.html"), "実践演習一覧")
+        qno = page["qno"]
+        by_no = {p["qno"]: p for p in all_pages}
+        for other in (qno - 1, qno + 1):
+            pg = by_no.get(other)
+            if pg:
+                add(rel_href(rel_path, pg["rel_path"]), f"実践演習 第{other}問")
 
     for gl in glossary_links_for_tags(page.get("tags") or [], glossary_lookup):
         add(rel_href(rel_path, normalize_glossary_href(gl["href"])), gl["label"])
@@ -405,6 +467,12 @@ def build_practice_question_html(
     related_html = build_practice_related_html(
         page, rel_path, all_pages, glossary_lookup, guides
     )
+    from tools.practice_tier import tier_index_rel_path  # noqa: E402
+
+    crumb_items, tier_tab_id, list_json_label = _practice_question_nav(page)
+    list_json_href = (
+        tier_index_rel_path(tier_tab_id) if tier_tab_id else "q/practice/index.html"
+    )
     json_ld = {
         "@context": "https://schema.org",
         "@graph": [
@@ -420,21 +488,40 @@ def build_practice_question_html(
                 "@type": "BreadcrumbList",
                 "itemListElement": [
                     {"@type": "ListItem", "position": 1, "name": "トップ", "item": public_url(base_url, "index.html")},
-                    {"@type": "ListItem", "position": 2, "name": "実践演習一覧", "item": public_url(base_url, "q/practice/index.html")},
-                    {"@type": "ListItem", "position": 3, "name": heading, "item": canonical},
+                    *(
+                        [
+                            {
+                                "@type": "ListItem",
+                                "position": 2,
+                                "name": "実践演習",
+                                "item": public_url(base_url, "q/practice/index.html"),
+                            },
+                            {
+                                "@type": "ListItem",
+                                "position": 3,
+                                "name": list_json_label,
+                                "item": public_url(base_url, list_json_href),
+                            },
+                            {"@type": "ListItem", "position": 4, "name": heading, "item": canonical},
+                        ]
+                        if tier_tab_id
+                        else [
+                            {
+                                "@type": "ListItem",
+                                "position": 2,
+                                "name": list_json_label,
+                                "item": public_url(base_url, "q/practice/index.html"),
+                            },
+                            {"@type": "ListItem", "position": 3, "name": heading, "item": canonical},
+                        ]
+                    ),
                 ],
             },
         ],
     }
     site_header = site_page_header(rel_path, current="practice")
-    site_breadcrumb = breadcrumb_html(
-        rel_path,
-        [
-            ("トップ", "index.html"),
-            ("実践演習一覧", "q/practice/index.html"),
-            (heading, None),
-        ],
-    )
+    site_breadcrumb = breadcrumb_html(rel_path, crumb_items)
+    tier_tabs_html = q_practice_tier_tabs_html(rel_path, current_tier_id=tier_tab_id)
     site_footer = site_page_footer(rel_path, current="practice")
 
     return f"""<!DOCTYPE html>
@@ -466,6 +553,7 @@ def build_practice_question_html(
   {site_breadcrumb}
   {study_modes_note}
   {q_hub_links_html(rel_path, current="practice")}
+  {tier_tabs_html}
   <p class="q-meta-line">実践演習 · {html.escape(page["category"])}</p>
   <h1 class="q-h1">{html.escape(heading)}</h1>
   {lead_html}
@@ -707,12 +795,103 @@ def build_group_blocks(
     return "".join(blocks), "".join(jump_links), len(groups)
 
 
+def build_practice_hub_index(
+    *,
+    tiers: list[dict],
+    tier_counts: dict[str, int],
+    base_url: str,
+    total_count: int,
+) -> str:
+    """practiceTiers があるサイトの実践演習 hub（試験種別の入口）。"""
+    from tools.practice_tier import tier_display_label, tier_index_rel_path
+    from tools.q_page_seo import (
+        index_h1,
+        index_page_title,
+        practice_hub_lead,
+        practice_hub_meta_description,
+    )
+
+    rel_path = Path("q/practice/index.html")
+    h1 = index_h1("practice")
+    page_title = index_page_title("practice")
+    lead = practice_hub_lead()
+    desc = practice_hub_meta_description(total_count=total_count)
+    canonical_rel = "q/practice/index.html"
+
+    cards: list[str] = []
+    for tier in tiers:
+        tid = str(tier.get("id") or "").strip()
+        if not tid:
+            continue
+        label = tier_display_label(tier)
+        subtitle = str(tier.get("subtitle") or "").strip()
+        count = tier_counts.get(tid, 0)
+        href = "/" + tier_index_rel_path(tid).lstrip("/")
+        subtitle_html = (
+            f'<p class="q-practice-tier-card-lead">{html.escape(subtitle)}</p>'
+            if subtitle
+            else ""
+        )
+        cards.append(
+            f'<section class="q-practice-tier-card">'
+            f'<h2 class="q-practice-tier-card-title">{html.escape(label)}</h2>'
+            f"{subtitle_html}"
+            f'<p class="q-practice-tier-card-count">{count}問</p>'
+            f'<p class="q-practice-tier-card-action">'
+            f'<a class="site-btn site-btn--primary" href="{html.escape(href)}">一覧を見る</a>'
+            f"</p></section>"
+        )
+
+    header = site_page_header(rel_path, current="practice")
+    breadcrumb = breadcrumb_html(rel_path, [("トップ", "index.html"), (f"{h1}一覧", None)])
+    footer = site_page_footer(rel_path, current="practice")
+    css_href = rel_css(rel_path)
+    theme_href = rel_theme_css(rel_path)
+
+    return f"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+{seo_brand_asset_tags(rel_path)}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{html.escape(page_title)}</title>
+<meta name="description" content="{html.escape(desc)}">
+<meta property="og:title" content="{html.escape(page_title)}">
+<meta property="og:description" content="{html.escape(desc)}">
+{ROBOTS_INDEX_FOLLOW}
+<link rel="canonical" href="{html.escape(public_url(base_url, canonical_rel))}">
+{HEAD_FONTS}
+<link rel="stylesheet" href="{html.escape(css_href)}">
+<link rel="stylesheet" href="{html.escape(theme_href)}">
+</head>
+<body class="{shell_body_class('q-index-page q-practice-hub-page')}">
+{site_page_wrap_open()}
+{header}
+<main class="site-page-main">
+  {breadcrumb}
+  <h1>{html.escape(h1)}</h1>
+  <p class="site-page-lead">{html.escape(lead)}</p>
+  {study_modes_note_html()}
+  {q_hub_links_html(rel_path, current="practice")}
+  <div class="q-practice-tier-hub" aria-label="試験種別を選ぶ">
+    {"".join(cards)}
+  </div>
+  <p class="q-practice-hub-total">全{total_count}問（試験種別ごとに分野別一覧から探せます）</p>
+</main>
+{footer}
+{site_page_wrap_close()}
+</body>
+</html>
+"""
+
+
 def build_mode_index(
     *,
     mode: str,
     pages: list[dict],
     base_url: str,
     rel_path: Path,
+    practice_tier: dict | None = None,
 ) -> str:
     """実践演習 / 一問一答の一覧（過去問 q/index.html と同型 UI）。"""
     cfg = {**INDEX_CONFIG[mode], "categoryOrder": category_order()}
@@ -721,18 +900,33 @@ def build_mode_index(
 
     if mode == "practice":
         current = "practice"
+        from tools.practice_tier import tier_index_rel_path, tier_list_breadcrumb_label
         from tools.q_page_seo import index_h1, index_page_title
 
-        page_title = index_page_title("practice")
-        h1 = index_h1("practice")
-        lead = index_lead("practice")
-        desc = index_meta_description("practice", count=len(pages))
-        canonical_rel = "q/practice/index.html"
+        page_title = index_page_title("practice", tier=practice_tier)
+        h1 = index_h1("practice", tier=practice_tier)
+        lead = index_lead("practice", tier=practice_tier)
+        desc = index_meta_description("practice", count=len(pages), tier=practice_tier)
+        if practice_tier:
+            tid = str(practice_tier.get("id") or "")
+            canonical_rel = tier_index_rel_path(tid)
+        else:
+            canonical_rel = "q/practice/index.html"
         index_items = [practice_index_item_dict(pg) for pg in pages]
         group_by = "category"
         filter_hint = "分野・学習状況"
         show_category_row = False
         year_row_label = "分野へ"
+        tier_tab_id = str(practice_tier.get("id") or "") if practice_tier else None
+        tier_tabs_html = q_practice_tier_tabs_html(rel_path, current_tier_id=tier_tab_id)
+        if practice_tier:
+            breadcrumb_items: list[tuple[str, str | None]] = [
+                ("トップ", "index.html"),
+                ("実践演習", "q/practice/index.html"),
+                (tier_list_breadcrumb_label(practice_tier), None),
+            ]
+        else:
+            breadcrumb_items = [("トップ", "index.html"), (f"{h1}一覧", None)]
     else:
         current = "ichimon"
         from tools.q_page_seo import index_h1, index_page_title
@@ -747,6 +941,8 @@ def build_mode_index(
         filter_hint = "分野・学習状況"
         show_category_row = False
         year_row_label = "分野へ"
+        tier_tabs_html = ""
+        breadcrumb_items = [("トップ", "index.html"), (f"{h1}一覧", None)]
 
     by_category: dict[str, int] = {}
     for pg in pages:
@@ -790,11 +986,12 @@ def build_mode_index(
     group_label = cfg["groupLabel"]
 
     header = site_page_header(rel_path, current=current)
-    breadcrumb = breadcrumb_html(
-        rel_path, [("トップ", "index.html"), (f"{h1}一覧", None)]
-    )
+    breadcrumb = breadcrumb_html(rel_path, breadcrumb_items)
     footer = site_page_footer(rel_path, current=current)
     list_aria = f"{group_label}別{h1}"
+    css_href = rel_css(rel_path)
+    theme_href = rel_theme_css(rel_path)
+    index_js_href = _rel_root_asset(rel_path, "site-q-index.js")
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -809,8 +1006,8 @@ def build_mode_index(
 {ROBOTS_INDEX_FOLLOW}
 <link rel="canonical" href="{html.escape(public_url(base_url, canonical_rel))}">
 {HEAD_FONTS}
-<link rel="stylesheet" href="../../site-pages.css?v={Q_INDEX_CSS_VER}">
-<link rel="stylesheet" href="../../site-theme.css">
+<link rel="stylesheet" href="{html.escape(css_href)}">
+<link rel="stylesheet" href="{html.escape(theme_href)}">
 </head>
 <body class="{shell_body_class('q-index-page')}">
 {site_page_wrap_open()}
@@ -821,6 +1018,7 @@ def build_mode_index(
   <p class="site-page-lead">{html.escape(lead)}</p>
   {study_modes_note}
   {q_hub_links_html(rel_path, current=current)}
+  {tier_tabs_html}
   <section class="past-index-panel" aria-labelledby="mode-index-heading">
     <div class="past-index-head">
       <div>
@@ -872,7 +1070,7 @@ def build_mode_index(
 <button type="button" class="q-index-top" id="q-index-top" aria-label="ページ上部へ">↑</button>
 <script type="application/json" id="q-index-config">{json_config}</script>
 <script type="application/json" id="q-index-data">{json_data}</script>
-<script defer src="../../site-q-index.js"></script>
+<script defer src="{html.escape(index_js_href)}"></script>
 </body>
 </html>
 """
@@ -1058,15 +1256,51 @@ def main() -> int:
 
     idx = Q_ROOT / "practice" / "index.html"
     idx.parent.mkdir(parents=True, exist_ok=True)
-    idx.write_text(
-        build_mode_index(
-            mode="practice",
-            pages=practice_pages,
-            base_url=base,
-            rel_path=Path("q/practice/index.html"),
-        ),
-        encoding="utf-8",
-    )
+    tiers = practice_tiers()
+    if len(tiers) >= 2:
+        from tools.practice_tier import filter_pages_by_tier, tier_index_rel_path
+
+        tier_counts = {
+            str(tier["id"]): len(filter_pages_by_tier(practice_pages, str(tier["id"]), tiers))
+            for tier in tiers
+            if str(tier.get("id") or "").strip()
+        }
+        idx.write_text(
+            build_practice_hub_index(
+                tiers=tiers,
+                tier_counts=tier_counts,
+                base_url=base,
+                total_count=len(practice_pages),
+            ),
+            encoding="utf-8",
+        )
+        for tier in tiers:
+            tid = str(tier.get("id") or "").strip()
+            if not tid:
+                continue
+            filtered = filter_pages_by_tier(practice_pages, tid, tiers)
+            tier_idx = Q_ROOT / "practice" / tid / "index.html"
+            tier_idx.parent.mkdir(parents=True, exist_ok=True)
+            tier_idx.write_text(
+                build_mode_index(
+                    mode="practice",
+                    pages=filtered,
+                    base_url=base,
+                    rel_path=Path(tier_index_rel_path(tid)),
+                    practice_tier=tier,
+                ),
+                encoding="utf-8",
+            )
+    else:
+        idx.write_text(
+            build_mode_index(
+                mode="practice",
+                pages=practice_pages,
+                base_url=base,
+                rel_path=Path("q/practice/index.html"),
+            ),
+            encoding="utf-8",
+        )
 
     ichimon_rows = load_ichimon_rows()
     if ichimon_enabled():
