@@ -22,5 +22,11 @@ question_no,format,category,source_term,status,notes
 21-50,marubatsu,各分野,,done,phase1 〇×残30問
 51-70,single,各分野,,done,phase1 五肢残18問
 71-80,marubatsu,各分野,,done,phase2 batch8
-81-350,marubatsu,各分野,,planned,phase2 拡充
+81-90,marubatsu,各分野,,done,phase2 batch9
+91-100,marubatsu,各分野,,done,phase2 batch10
+101-110,marubatsu,各分野,,done,phase2 batch11
+111-120,marubatsu,各分野,,done,phase2 batch12
+121-130,marubatsu,各分野,,done,phase2 batch13
+131-140,marubatsu,各分野,,done,phase2 batch14
+141-350,marubatsu,各分野,,planned,phase2 拡充
 351-490,single,各分野,,planned,phase2 拡充
