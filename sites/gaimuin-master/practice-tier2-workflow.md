@@ -147,7 +147,7 @@ python3 tools/build_all.py
 | 1 本番相当 | 70問（〇×50＋五肢20） | **完了**（batch1〜7 適用済み） |
 | 2 拡充（〇×） | 71〜350問 | **完了**（batch8〜35） |
 | 2 拡充（五肢） | 351〜490問 | **完了**（batch36〜49） |
-| 3 五肢未作成用語 | 491〜620問 | **進行中**（130問スロット・batch50 適用済み 500問） |
+| 3 五肢未作成用語 | 491〜620問 | **完了**（batch50〜62・130問） |
 
 ## Phase 2 完了サマリー（2026-06-18）
 
@@ -158,19 +158,18 @@ python3 tools/build_all.py
 | **計** | **490問** | |
 
 - ブループリント `practice_tier2_blueprint.csv`：490行すべて `done`（Phase2）
-- 本番（GitHub Pages）：**490問**デプロイ済み（2026-06-18）
+- 本番（GitHub Pages）：**620問**デプロイ済み（2026-06-18）
 
-## Phase 3（491問以降）
+## Phase 3（491問以降）— 完了（2026-06-18）
 
 | 項目 | 内容 |
 |------|------|
 | 目的 | 〇×のみ・未使用の用語に **五肢** を追加（用語カバレッジ完成） |
 | 目標 | **130問**（491〜620）／batch50〜62 |
 | 形式 | すべて五肢（`single`） |
-| 状態 | batch50（491〜500）**適用済み** → ローカル **500問** |
+| 状態 | **完了** — batch50〜62 適用済み・ローカル **620問** |
 
 ### Phase 3 運用
 
-- スロットは `practice_tier2_blueprint.csv` に 491〜620 を `planned` で追加済み
-- 10問バッチ単位で batch51 以降を作成・適用
-- 解説正本: `gaimuin_practice_explanation_texts.py` → patch → audit（ERROR 0）→ apply → build
+- スロットは `practice_tier2_blueprint.csv` 491〜620 すべて `done`
+- 解説正本: `gaimuin_practice_explanation_texts.py` → patch → audit（491〜620 は ERROR 0）→ apply → build
