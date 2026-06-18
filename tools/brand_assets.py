@@ -380,18 +380,15 @@ def brand_head_markup(rel_path: Path, *, site_root: Path | None = None, include_
     return block
 
 
-def _is_spa_index(rel_path: Path, html_text: str) -> bool:
-    return rel_path.name == "index.html" and 'id="page-score"' in html_text
-
-
 def inject_brand_head(html_text: str, rel_path: Path, *, site_root: Path | None = None) -> str:
-    include_social = not _is_spa_index(rel_path, html_text)
-    block = brand_head_markup(rel_path, site_root=site_root, include_social_image=include_social)
+    block = brand_head_markup(rel_path, site_root=site_root, include_social_image=True)
     if not block:
         return html_text
     if MARKER in html_text:
         html_text = re.sub(
-            rf"{re.escape(MARKER)}[\s\S]*?(?=\n<!--SITE_VERIFICATION|\n  <meta name=\"viewport\"|\n<meta name=\"viewport\")",
+            rf"{re.escape(MARKER)}[\s\S]*?"
+            r"(?=\n<!--INDEX_SEO_HEAD-->|\n<!--SITE_VERIFICATION|"
+            r'\n  <meta name="viewport"|\n<meta name="viewport")',
             block.rstrip() + "\n",
             html_text,
             count=1,

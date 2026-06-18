@@ -25,8 +25,8 @@ def main() -> int:
         print("repair_index_seo_head: index.html がありません", file=sys.stderr)
         return 0
     before = index.read_text(encoding="utf-8")
-    text = inject_index_seo_head(before)
-    text = inject_brand_head(text, Path("index.html"), site_root=ROOT)
+    text = inject_brand_head(before, Path("index.html"), site_root=ROOT)
+    text = inject_index_seo_head(text)
     index.write_text(text, encoding="utf-8")
     if INDEX_SEO_MARKER_START not in text or INDEX_SEO_MARKER_END not in text:
         print(
