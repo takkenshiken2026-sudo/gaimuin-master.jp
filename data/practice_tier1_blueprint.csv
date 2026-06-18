@@ -119,3 +119,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1118,single,金融商品・サービス,投資信託,基準価額,standard,12,done,Phase2
 1119,single,金融商品・サービス,デリバティブ取引,先物取引,standard,12,done,Phase2
 1120,single,金融商品・サービス,税制,NISA,standard,12,done,Phase2
+1121,marubatsu,金融商品取引法,金融商品取引法,公開買付け,standard,13,done,Phase2
+1122,marubatsu,金融商品・サービス,デリバティブ取引,証拠金,standard,13,done,Phase2
+1123,marubatsu,金融商品・サービス,デリバティブ取引,オプション取引,standard,13,done,Phase2
+1124,marubatsu,金融商品・サービス,投資信託,REIT,standard,13,done,Phase2
+1125,marubatsu,金融商品・サービス,デリバティブ取引,コールオプション,standard,13,done,Phase2
+1126,marubatsu,金融商品・サービス,株式業務,有価証券の引受け,standard,13,done,Phase2
+1127,marubatsu,金融商品・サービス,デリバティブ取引,値洗い,standard,13,done,Phase2
+1128,single,金融商品取引法,金融商品取引法,公開買付け,standard,13,done,Phase2
+1129,single,金融商品・サービス,デリバティブ取引,プットオプション,standard,13,done,Phase2
+1130,single,金融商品・サービス,デリバティブ取引,証拠金,standard,13,done,Phase2
