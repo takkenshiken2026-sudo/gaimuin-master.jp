@@ -1,0 +1,130 @@
+{
+  "site_id": "gaimuin-master",
+  "exam_name": "証券外務員（一種・二種）試験",
+  "organizer": "日本証券業協会",
+  "organizer_url": "https://www.jsda.or.jp/gaimuin/shiken.html",
+  "exam_format": {
+    "question_count": 70,
+    "total_points": 300,
+    "duration_minutes": 120,
+    "choice_type": "CBT（〇×50問＋五肢選択20問·PC入力）",
+    "pass_overall_percent": 70,
+    "pass_overall_points": 210,
+    "marubatsu_points_each": 2,
+    "choice_points_each": 10,
+    "fee_note": "受験料は年度·区分ごとに要項で確認（一般受験はプロメトリック経由）",
+    "format_note": "二種外務員の代表値。一種は100問160分·440点満点·308点合格（要項正本）"
+  },
+  "tiers": [
+    {
+      "id": "tier2",
+      "label": "二種外務員",
+      "question_count": 70,
+      "duration_minutes": 120,
+      "marubatsu": 50,
+      "choice": 20,
+      "total_points": 300,
+      "pass_overall_points": 210,
+      "pass_overall_percent": 70
+    },
+    {
+      "id": "tier1",
+      "label": "一種外務員",
+      "question_count": 100,
+      "duration_minutes": 160,
+      "marubatsu": 70,
+      "choice": 30,
+      "total_points": 440,
+      "pass_overall_points": 308,
+      "pass_overall_percent": 70
+    }
+  ],
+  "ranges": [
+    {
+      "id": "products",
+      "name": "金融商品・サービス",
+      "note": "外務員必携の商品業務に相当。学習配分の目安として使用"
+    },
+    {
+      "id": "solicitation",
+      "name": "勧誘・販売規則",
+      "note": "勧誘·販売に関係する法律·諸規則"
+    },
+    {
+      "id": "fil",
+      "name": "金融商品取引法",
+      "note": "金融商品取引法及び関係法令"
+    },
+    {
+      "id": "compliance",
+      "name": "その他法令・業務",
+      "note": "コンプライアンス·関連科目·その他業務"
+    }
+  ],
+  "pass_criteria_note": "合否は総合得点のみ（分野別足切りなし）。要項の合否判定基準が正本",
+  "study_defaults": {
+    "beginner_hours_min": 80,
+    "beginner_hours_max": 150,
+    "minutes_per_question_exam_tier2": 1.7,
+    "minutes_per_question_exam_tier1": 1.6,
+    "site_practice_bank_note": "当サイトの演習バンクは学習用であり、本番の問数·配点·出題比率とは別に管理する"
+  },
+  "first_kind_reference": {
+    "question_count": 100,
+    "duration_minutes": 160,
+    "marubatsu": 70,
+    "choice": 30,
+    "total_points": 440,
+    "pass_overall_points": 308,
+    "note": "一種外務員。詳細は要項が正本"
+  },
+  "forbidden_phrases": [
+    "60問90分",
+    "60問·90分",
+    "30問45分",
+    "50問60分",
+    "100問·180分",
+    "100問·5科目",
+    "5出題範囲",
+    "400点満点",
+    "240点以上",
+    "各出題分野40％",
+    "各出題範囲40％",
+    "分野別40％足切り",
+    "有害業務",
+    "第一種衛生管理者",
+    "第二種衛生管理者",
+    "マン管",
+    "宅建",
+    "44問",
+    "マークシート形式（本番）",
+    "300問"
+  ],
+  "lead_anchor_template": "本試験（二種）は70問·120分·CBT·300点満点。合格は7割（210点）以上。一種は100問160分·440点満点·308点（要項正本）。",
+  "eligibility": {
+    "note": "受験資格は年度要項の正本で確認。一種·二種で要件が異なる場合あり"
+  },
+  "exam_operations": {
+    "sessions_per_year": "通年（CBT·土日祝除く）",
+    "venue_type": "CBT試験センター（プロメトリック等）",
+    "application_note": "一般受験は受験日の60日前〜5営業日前まで予約（要項·プロメトリックサイトで再確認）",
+    "result_note": "試験終了時に画面で正解率が表示。一般受験は後日メール通知も"
+  },
+  "official_pages": [
+    {
+      "label": "日本証券業協会（公式）",
+      "url": "https://www.jsda.or.jp/",
+      "use": "試験案内への入口"
+    },
+    {
+      "label": "証券外務員資格試験",
+      "url": "https://www.jsda.or.jp/gaimuin/shiken.html",
+      "use": "問数·配点·合格基準·出題範囲"
+    },
+    {
+      "label": "外務員・内部管理責任者等登録",
+      "url": "https://www.jsda.or.jp/gaimuin/touroku/",
+      "use": "合格後の登録手続き"
+    }
+  ]
+}
