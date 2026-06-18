@@ -1,0 +1,6 @@
+generated: 2026-06-18
+site: gaimuin-master
+published: 47
+target: 50
+decisions: {'keep': 17, 'merge': 20, 'review': 3, 'retire': 1, 'replace': 6}
+edit: guide_seo_candidates.csv の manual_decision 列（keep|merge|retire）

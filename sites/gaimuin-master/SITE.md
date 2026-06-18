@@ -61,7 +61,7 @@ python3 tools/sync_from_template.py --target ~/Projects/gaimuin-master --build
 |------|------|------|
 | `glossary_terms.csv` | 300+ | **300件・v0済**／**編集合格 155/300**（expert batch1〜31 適用・フェーズ2進行中） |
 | `guide_articles.csv` | 50以内 | **47本 published**（通常ガイド手書き完了）／アフィリエイト3本は **draft** |
-| 実践演習（二種） | 70問（本番相当）→拡充 | **batch1〜5: 50問公開**（〇×40＋五肢10）／解説オリジナル化済み／[作問手順](practice-tier2-workflow.md)・[解説手順](../../docs/gaimuin-practice-explanation-workflow.md) |
+| 実践演習（二種） | 70問（本番相当）→拡充490 | **490問ローカル完了**（〇×320＋五肢170）／本番150問／[作問手順](practice-tier2-workflow.md) |
 | 過去問 | 年度別 | 非表示（hidePast） |
 | アフィリエイト | ~10 本 | **未着手**（雛形3 slug のみ・brief は textbooks 雛形のみ） |
 
@@ -76,5 +76,5 @@ python3 tools/sync_from_template.py --target ~/Projects/gaimuin-master --build
 
 ## 最終同期
 
-- 日付: 2026-06-17
-- 備考: ガイド47本公開・用語300件手書き適用済み。アフィリエイト3本は draft に戻した。`build_all.py` 通過済み。
+- 日付: 2026-06-18
+- 備考: 二種実践演習 Phase2 完了（490問・batch1〜49）。`build_all.py`・`audit_gaimuin_practice_explanations.py`（ERROR 0）通過済み。本番 push は未実施。
