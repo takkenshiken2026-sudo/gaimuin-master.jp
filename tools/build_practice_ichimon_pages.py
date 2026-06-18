@@ -178,6 +178,7 @@ def practice_page_dict(row: dict, line_no: int) -> dict:
     if norm(row.get("is_invalidated", "")).upper() == "TRUE":
         raise ValueError(f"practice line {line_no}: 無効行はスキップ対象")
     from tools.correct_answer_format import collect_choice_texts, practice_min_choice_count
+    from tools.site_config import extended_correct_answers
 
     qno = int(row["question_no"])
     opts = collect_choice_texts(row)
@@ -353,16 +354,25 @@ def build_practice_question_html(
         question_page_title,
     )
 
+    practice_tags = page.get("tags") or []
     heading = question_h1(
-        "practice", qno=page["qno"], category=page["category"]
+        "practice",
+        qno=page["qno"],
+        category=page["category"],
+        tags=practice_tags,
     )
     title = question_page_title(
-        "practice", qno=page["qno"], category=page["category"]
+        "practice",
+        qno=page["qno"],
+        category=page["category"],
+        tags=practice_tags,
     )
     stem = page.get("stem_plain") or ""
     desc = question_meta_description(
         "practice",
-        headline=question_meta_headline("practice", qno=page["qno"]),
+        headline=question_meta_headline(
+            "practice", qno=page["qno"], tags=practice_tags
+        ),
         category=page["category"],
         body=stem,
         answer_tail=str(page["correct"]) if page.get("correct") is not None else "",

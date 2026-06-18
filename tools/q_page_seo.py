@@ -7,7 +7,9 @@ import html
 import re
 
 from tools.build_past_question_pages import meta_description
-from tools.site_config import CONFIG, brand_name, exam_name
+from tools.site_config import CONFIG, brand_name, exam_name, practice_tiers
+
+_COMBINED_EXAM_SUFFIX_RE = re.compile(r"^(.+?)（.+）$")
 
 MODE_LABEL: dict[str, str] = {
     "past": "過去問",
@@ -171,6 +173,41 @@ def past_year_display(year: int, wareki: str = "") -> str:
     return f"{year}年"
 
 
+def practice_exam_name(*, tags: list[str] | None = None, qno: int = 0) -> str:
+    """実践演習各問向けの試験名。practiceTiers があるサイトは一種/二種のみ表示。"""
+    tiers = practice_tiers()
+    if not tiers:
+        return exam_name()
+
+    tag_set = {str(t).strip() for t in (tags or []) if str(t).strip()}
+    tier_label = ""
+    for tier in tiers:
+        tg = str(tier.get("tag") or tier.get("shortLabel") or "").strip()
+        if tg and tg in tag_set:
+            tier_label = tg
+            break
+
+    if not tier_label:
+        tier_id = "tier1" if qno >= 1000 else "tier2"
+        for tier in tiers:
+            if str(tier.get("id") or "") == tier_id:
+                tier_label = str(
+                    tier.get("shortLabel") or tier.get("tag") or ""
+                ).strip()
+                break
+
+    if not tier_label:
+        return exam_name()
+
+    base = exam_name().strip()
+    m = _COMBINED_EXAM_SUFFIX_RE.match(base)
+    if m:
+        return f"{m.group(1)}（{tier_label}）"
+    if "（" not in base:
+        return f"{base}（{tier_label}）"
+    return base
+
+
 def question_h1(
     mode: str,
     *,
@@ -179,9 +216,10 @@ def question_h1(
     question_id: str = "",
     category: str = "",
     year_label: str = "",
+    tags: list[str] | None = None,
 ) -> str:
     """各問ページの H1（試験名＋モード＋識別子＋分野）。"""
-    ex = exam_name()
+    ex = practice_exam_name(tags=tags, qno=qno) if mode == "practice" else exam_name()
     label = MODE_LABEL[mode]
     if mode == "past":
         yl = (year_label or "").strip() or past_year_display(year)
@@ -199,10 +237,11 @@ def question_page_title(
     question_id: str = "",
     category: str = "",
     year_label: str = "",
+    tags: list[str] | None = None,
 ) -> str:
     """各問ページの <title>。"""
     return (
-        f"{question_h1(mode, year=year, qno=qno, question_id=question_id, category=category, year_label=year_label)}"
+        f"{question_h1(mode, year=year, qno=qno, question_id=question_id, category=category, year_label=year_label, tags=tags)}"
         f"｜{brand_name()}"
     )
 
@@ -214,9 +253,10 @@ def question_meta_headline(
     qno: int = 0,
     question_id: str = "",
     year_label: str = "",
+    tags: list[str] | None = None,
 ) -> str:
     """各問 meta description の headline 用。"""
-    ex = exam_name()
+    ex = practice_exam_name(tags=tags, qno=qno) if mode == "practice" else exam_name()
     label = MODE_LABEL[mode]
     if mode == "past":
         yl = (year_label or "").strip() or past_year_display(year)
