@@ -109,3 +109,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1108,single,金融商品・サービス,社債・債券,劣後社債,standard,11,done,Phase2
 1109,single,金融商品・サービス,株式業務,媒介取引,standard,11,done,Phase2
 1110,single,金融商品・サービス,株式業務,募集,standard,11,done,Phase2
+1111,marubatsu,金融商品・サービス,投資信託,基準価額,standard,12,done,Phase2
+1112,marubatsu,金融商品・サービス,投資信託,分配金,standard,12,done,Phase2
+1113,marubatsu,金融商品・サービス,デリバティブ取引,商品先物取引,standard,12,done,Phase2
+1114,marubatsu,金融商品・サービス,税制,NISA,standard,12,done,Phase2
+1115,marubatsu,金融商品・サービス,税制,つみたてNISA,standard,12,done,Phase2
+1116,marubatsu,金融商品・サービス,税制,成長投資枠,standard,12,done,Phase2
+1117,marubatsu,金融商品・サービス,デリバティブ取引,先物取引,standard,12,done,Phase2
+1118,single,金融商品・サービス,投資信託,基準価額,standard,12,done,Phase2
+1119,single,金融商品・サービス,デリバティブ取引,先物取引,standard,12,done,Phase2
+1120,single,金融商品・サービス,税制,NISA,standard,12,done,Phase2
