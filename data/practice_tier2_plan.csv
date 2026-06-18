@@ -19,7 +19,7 @@ question_no,format,category,source_term,status,notes
 18,marubatsu,その他法令・業務,反社会的勢力排除,done,batch2
 19,single,金融商品・サービス,社債,done,batch2
 20,single,勧誘・販売規則,契約締結前交付書面,done,batch2
-21-50,marubatsu,各分野,,planned,phase1 〇×残42問
+21-50,marubatsu,各分野,,planned,phase1 〇×残30問
 51-70,single,各分野,,planned,phase1 五肢残18問
 71-350,marubatsu,各分野,,planned,phase2 拡充
 351-490,single,各分野,,planned,phase2 拡充
