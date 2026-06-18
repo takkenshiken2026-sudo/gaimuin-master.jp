@@ -380,15 +380,31 @@ def brand_head_markup(rel_path: Path, *, site_root: Path | None = None, include_
     return block
 
 
+_BRAND_HEAD_STOP = (
+    r"(?=\n<!--INDEX_SEO_HEAD-->|\n<!--SITE_VERIFICATION|\n  <meta name=\"viewport\"|\n<meta name=\"viewport\")"
+)
+
+_ORPHAN_SOCIAL_AFTER_INDEX_SEO = re.compile(
+    r"(<!--/INDEX_SEO_HEAD-->\s*)"
+    r"(?:<meta name=\"theme-color\"[^>]+>\s*)?"
+    r"(?:<meta property=\"og:image[^\"]*\"[^>]+>\s*)+"
+    r"(?:<meta name=\"twitter:image\"[^>]+>\s*)?"
+    r"(?:<meta name=\"description\"[^>]+>\s*"
+    r"<meta name=\"keywords\"[^>]+>\s*"
+    r"<meta name=\"robots\"[^>]+>\s*"
+    r"<meta name=\"application-name\"[^>]+>\s*"
+    r"<link rel=\"canonical\"[^>]+>\s*)?",
+    re.I,
+)
+
+
 def inject_brand_head(html_text: str, rel_path: Path, *, site_root: Path | None = None) -> str:
     block = brand_head_markup(rel_path, site_root=site_root, include_social_image=True)
     if not block:
         return html_text
     if MARKER in html_text:
         html_text = re.sub(
-            rf"{re.escape(MARKER)}[\s\S]*?"
-            r"(?=\n<!--INDEX_SEO_HEAD-->|\n<!--SITE_VERIFICATION|"
-            r'\n  <meta name="viewport"|\n<meta name="viewport")',
+            rf"{re.escape(MARKER)}[\s\S]*?{_BRAND_HEAD_STOP}",
             block.rstrip() + "\n",
             html_text,
             count=1,
@@ -400,6 +416,7 @@ def inject_brand_head(html_text: str, rel_path: Path, *, site_root: Path | None 
             html_text,
             count=1,
         )
+    html_text = _ORPHAN_SOCIAL_AFTER_INDEX_SEO.sub(r"\1", html_text, count=1)
     html_text = html_text.replace(
         '<meta name="twitter:card" content="summary">',
         '<meta name="twitter:card" content="summary_large_image">',

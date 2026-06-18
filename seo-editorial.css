@@ -30,9 +30,10 @@ body.seo-editorial-preview-page {
   --seo-line-lead: 1.95;
   --seo-line-heading: 1.45;
   --seo-letter-body: 0.01em;
-  --seo-font-weight: 500;
-  --seo-font-weight-heading: 700;
-  --seo-font-weight-strong: 700;
+  --seo-font-weight: 450;
+  --seo-font-weight-heading: 800;
+  --seo-font-weight-strong: 600;
+  --seo-font-weight-link: 600;
   --seo-font-weight-faq: 700;
 
   /* --- 色（本文階層） --- */
@@ -126,7 +127,7 @@ body.seo-editorial-preview-page .seo-editorial.seo-article-card {
   font-weight: var(--seo-font-weight);
 }
 
-/* 太字指定の上書き（本文系は Medium、見出しは Bold） */
+/* 太字指定の上書き（本文系は Regular、見出しは ExtraBold） */
 .seo-editorial.seo-article-card .article-lead,
 .seo-editorial.seo-article-card p,
 .seo-editorial.seo-article-card li,
@@ -216,7 +217,7 @@ body.seo-editorial-preview-page .seo-editorial.seo-article-card {
 .seo-editorial.seo-article-card .seo-key-points-box a {
   color: var(--seo-link-inline);
   font-size: inherit;
-  font-weight: var(--seo-font-weight-heading);
+  font-weight: var(--seo-font-weight-link);
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 0.2em;
@@ -234,7 +235,7 @@ body.seo-editorial-preview-page .seo-editorial.seo-article-card {
 
 .seo-editorial.seo-article-card .seo-quality-panel .quality-source-list a {
   color: var(--seo-link-inline);
-  font-weight: var(--seo-font-weight-heading);
+  font-weight: var(--seo-font-weight-link);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
@@ -747,7 +748,7 @@ body.seo-editorial-preview-page .seo-editorial .seo-article-section h2 .section-
 }
 
 .seo-editorial.seo-article-card .seo-article-section table.seo-info-table thead th {
-  font-weight: 700;
+  font-weight: var(--seo-font-weight);
   background: var(--seo-table-head-bg);
   color: var(--seo-table-head-text);
 }

@@ -383,6 +383,8 @@ class Validator:
         affiliate_count = 0
         affiliate_ready_count = 0
         for idx, row in enumerate(rows, start=2):
+            if self.norm(row.get("content_status")).lower() == "archived":
+                continue
             slug = self.require_text(path, row, idx, "slug")
             if slug and self.only_slugs and slug not in self.only_slugs:
                 continue

@@ -18,10 +18,13 @@ globs:
 
 | 種別 | ドキュメント | スクリプト |
 |------|-------------|------------|
-| 試験ガイド | `guide-article-template.md` | `scaffold_guide_article.py` |
+| 試験ガイド（ポートフォリオ→リライト） | `guide-portfolio-rewrite-workflow.md` → `guide-expert-rewrite-program.md` | `build_guide_seo_candidates.py` / `retire_guide_articles.py` / batch |
+| 試験ガイド（CSV 形式） | `guide-article-template.md` | `scaffold_guide_article.py` |
 | 用語 | `glossary-term-template.md` | `scaffold_glossary_term.py` |
 | アフィリエイト | `affiliate/multi-site-affiliate-workflow.md` | `scaffold_affiliate_article.py` |
 | 図解 | `term-diagrams.md` | `term_diagram.py` |
+
+**試験ガイド全面作り直し:** `.cursor/rules/guide-rewrite-program.mdc`（フェーズ0〜2の順序・50本・アフィ keep）
 
 知識ハブ（比較・数値・誤答タブ）は**廃止**。旧 URL は `build_hub_retire_redirects.py` でリダイレクト。
 

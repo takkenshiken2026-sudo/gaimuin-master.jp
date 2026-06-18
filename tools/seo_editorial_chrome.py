@@ -12,7 +12,7 @@ import html
 from pathlib import Path
 
 # キャッシュバスター（seo-editorial.css を更新したら必ず上げる）
-SEO_EDITORIAL_CSS_VER = "20260616-fix-affiliate-layout"
+SEO_EDITORIAL_CSS_VER = "20260618-type-weight-v2"
 
 SEO_ARTICLE_BODY_CLASSES = frozenset(
     {
@@ -36,7 +36,7 @@ def seo_editorial_head_fonts() -> str:
     """Google Fonts。 serif を足す場合は docs/seo-editorial-typography.md を参照。"""
     return """<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">"""
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">"""
 
 
 def seo_editorial_stylesheet_links(

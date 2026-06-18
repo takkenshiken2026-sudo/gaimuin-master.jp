@@ -5,7 +5,8 @@ window.ICHIMONDOU_ROWS = [
     "field": "fil",
     "statement": "受験案内や出題範囲は毎年公式情報で確認する必要がある。",
     "correctAnswer": true,
-    "exp": "試験制度は更新される場合があります。公式サイトの最新情報を確認してください。",
+    "exp": "試験制度・出題範囲は改定があり得るため、公式の一次情報を定期的に確認する姿勢が重要です。",
+    "expHtml": "<div class=\"q-exp\">\n    <section class=\"q-exp-section\" aria-labelledby=\"q-exp-correct-h\"><h3 id=\"q-exp-correct-h\" class=\"q-exp-h3\">正解の理由</h3>\n    <p>実施団体が公表する受験案内・試験要項・合格発表が基準です。日程・申込方法・会場・出題範囲・試験形式は、前年と同じとは限りません。受験直前や改定のタイミングで公式サイトを開き、変更点をメモするのが適切な学習・受験準備です。</p>\n    <p class=\"q-exp-correct-opt\">設問文は<strong>正しい</strong>記述のため、答えは <strong class=\"q-marubatsu\">○</strong> です。</p>\n    </section>\n    <section class=\"q-exp-section\" aria-labelledby=\"q-exp-opposite-h\"><h3 id=\"q-exp-opposite-h\" class=\"q-exp-h3\">× を選びやすい考え方</h3><p>× を選ぶ場合は「一度調べたから十分」「口コミの方が早い」と読み替えている可能性があります。制度の正誤は公式発表で判断し、SNS やブログは参考程度にとどめてください。疑問は必ず実施団体のページで確認する習慣をつけましょう。</p></section>\n    </div>",
     "publicPath": "q/ichimon/y2026/i01-1/index.html"
   },
   {
@@ -13,7 +14,8 @@ window.ICHIMONDOU_ROWS = [
     "field": "solicitation",
     "statement": "一度間違えた問題は復習しなくても定着する。",
     "correctAnswer": false,
-    "exp": "間違えた問題を復習することで、弱点を効率よく補強できます。",
+    "exp": "「最も適切でないもの」に近い誤りの記述です。学習の定着には誤答の見直しが欠かせません。",
+    "expHtml": "<div class=\"q-exp\">\n    <section class=\"q-exp-section\" aria-labelledby=\"q-exp-correct-h\"><h3 id=\"q-exp-correct-h\" class=\"q-exp-h3\">正解の理由</h3>\n    <p>誤答した問題を放置すると、同じパターンのミスが本番まで残ります。復習リストや間隔を空けた解き直しで、なぜ間違えたか（キーワードの読み違え・制度の混同）を一行メモに残すことが、効率的な弱点克服につながります。</p>\n    </section>\n    <section class=\"q-exp-section\" aria-labelledby=\"q-exp-opposite-h\"><h3 id=\"q-exp-opposite-h\" class=\"q-exp-h3\">○ を選びやすい考え方</h3><p>○ を選ぶ場合は「正解したからもう不要」「時間がないから復習は後回し」と一般論で判断している可能性があります。偶然正解した問題も含め、記録と振り返りがあると学習の再現性が上がります。</p></section>\n    </div>",
     "publicPath": "q/ichimon/y2026/i01-2/index.html"
   },
   {
@@ -21,7 +23,8 @@ window.ICHIMONDOU_ROWS = [
     "field": "compliance",
     "statement": "数字や期限は比較表で整理すると学習しやすい。",
     "correctAnswer": true,
-    "exp": "混同しやすい情報は、表やメモで整理すると確認しやすくなります。",
+    "exp": "数値・期限・例外規定は、暗記だけでは取り違えやすい類題です。自分用の比較表やメモにまとめ、週次で見直す学習法は有効です。",
+    "expHtml": "<div class=\"q-exp\">\n    <section class=\"q-exp-section\" aria-labelledby=\"q-exp-correct-h\"><h3 id=\"q-exp-correct-h\" class=\"q-exp-h3\">正解の理由</h3>\n    <p>設備・その他分野では単位・条件・手続の組み合わせが問われるため、一覧化は本番直前の確認時間を短縮します。</p>\n    <p class=\"q-exp-correct-opt\">設問文は<strong>正しい</strong>記述のため、答えは <strong class=\"q-marubatsu\">○</strong> です。</p>\n    </section>\n    <section class=\"q-exp-section\" aria-labelledby=\"q-exp-opposite-h\"><h3 id=\"q-exp-opposite-h\" class=\"q-exp-h3\">× を選びやすい考え方</h3><p>× を選ぶ場合は「図表は不要」「数字は覚えれば足りる」と決めつけている可能性があります。関連制度の違いや数値の前提（誰が・いつ・どこまで）を表にすると、過去問の選択肢問題でも混同が減ります。</p></section>\n    </div>",
     "publicPath": "q/ichimon/y2025/i01-1/index.html"
   }
 ];

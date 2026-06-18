@@ -41,7 +41,7 @@ def published_affiliate_slugs(root: Path) -> set[str]:
             if (
                 is_affiliate_article(row)
                 and (row.get("content_status") or "").strip() == "published"
-                and affiliate_article_is_buildable(row)
+                and affiliate_article_is_buildable(row, site_root=root)
             ):
                 slug = (row.get("slug") or "").strip()
                 if slug:

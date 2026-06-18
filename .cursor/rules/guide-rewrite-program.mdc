@@ -1,0 +1,67 @@
+---
+description: 試験ガイドのポートフォリオ整理・全面リライト（50本・expert_pass）
+globs:
+  - "**/data/guide_articles.csv"
+  - "**/data/guide_seo_candidates.csv"
+  - "**/data/guide_seo_*_slugs.txt"
+  - "**/docs/guide-*.md"
+  - "**/tools/*guide*"
+  - "**/tools/build_guide_seo_candidates.py"
+  - "**/tools/retire_guide_articles.py"
+  - "**/tools/guide_retire_catalog.py"
+  - "**/articles/**"
+---
+
+# 試験ガイド リライトプログラム（Cursor 要約）
+
+**正本:** ゼロから作り直す場合は `docs/guide-greenfield-workflow.md`（1記事ずつ·旧稿禁止）。ポートフォリオ整理は `docs/guide-portfolio-rewrite-workflow.md` → リライト継続時は `docs/guide-expert-rewrite-program.md`。
+
+## 必ず守る順序
+
+### greenfield（ゼロから·推奨）
+
+1. **ポートフォリオ** … `build_guide_seo_candidates.py` → `manual_decision` → `export-keep-list`
+2. **初期化** … `init_guide_greenfield.py --apply --retire`（旧稿クリア）
+3. **1記事執筆** … `scaffold_guide_greenfield_batch.py` → 本文を新規執筆 → `run_guide_greenfield_batch.py`
+4. **ビルド** … `build_all.py`
+
+### 従来リライト（旧稿ベース·非推奨）
+
+1. **ポートフォリオ** … 同上
+2. **退役** … `retire_guide_articles.py`
+3. **リライト** … 5本 batch で `expert_pass`
+4. **ビルド** … `build_all.py`
+
+## 本数ルール
+
+| 種別 | ルール |
+|------|--------|
+| 通常ガイド | **50本以内**（1記事＝1検索意図） |
+| アフィリエイト（`affiliate-*`） | **~10本・ポートフォリオで常に keep**（50 cap に含めない。ASP 未設定は `draft` のまま公開しない） |
+| KEEP_CORE | cap 対象外（`tools/guide_retire_catalog.py`） |
+
+## 執筆（expert_pass 要約）
+
+- お手本: マン管 `exam-schedule` / `mankan_rewrite_exemplar.py`
+- 各節180字以上・**パイプ表1つ以上**・FAQ3つ（slug 固有）・`related_links` 内部3件
+- **具体アンカー**必須（％・問数・分野名など）。`例えば/たとえば` は記事1〜2回。詳細は §3.1.1
+- **禁止:** enrich 水増し、量産リード、他資格の分野数、読者向け運営メモ
+- prose 品質: `.cursor/rules/guide-prose-quality.mdc`
+
+## 生成物
+
+- `articles/` は **手編集禁止**。CSV と batch が正本
+- 会場ガイド: `.cursor/rules/exam-venue-guide.mdc`
+- アフィ: `.cursor/rules/affiliate-article.mdc`（通常ガイドから ASP 直リンク禁止）
+
+## コマンド（greenfield·1記事）
+
+```bash
+python3 tools/scaffold_guide_greenfield_batch.py --root ~/Projects/<site> --list-pending
+python3 tools/scaffold_guide_greenfield_batch.py --root ~/Projects/<site> --slug <slug>
+# 本文を tools/greenfield/<site-id>/<slug>.py に記入
+python3 tools/run_guide_greenfield_batch.py --batch tools/greenfield/<site-id>/<slug>.py --root ~/Projects/<site>
+python3 tools/build_all.py
+```
+
+## コマンド（従来·5本 batch）

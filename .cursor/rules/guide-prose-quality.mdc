@@ -9,7 +9,8 @@ globs:
 
 # ガイド prose 品質ルール
 
-**正本:** `tools/guide_prose_patterns.py`（検出） / `tools/guide_content_shared.py`（生成）
+**正本:** `tools/guide_prose_patterns.py`（検出） / `tools/guide_content_shared.py`（生成）  
+**リライト全体:** `docs/guide-portfolio-rewrite-workflow.md` → `docs/guide-expert-rewrite-program.md`（`expert_pass` 完了まで prose ルールも満たす）
 
 ## 禁止パターン（読者向け本文）
 
