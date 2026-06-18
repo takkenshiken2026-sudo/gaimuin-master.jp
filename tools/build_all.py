@@ -25,22 +25,6 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=ROOT, check=True)
 
 
-def repair_spa_index_head() -> None:
-    """用語ビルド等が index.html の SEO マーカーを壊した場合の保険。"""
-    index = ROOT / "index.html"
-    if not index.is_file():
-        return
-    if str(ROOT) not in sys.path:
-        sys.path.insert(0, str(ROOT))
-    from tools.brand_assets import inject_brand_head
-    from tools.index_seo_head import inject_index_seo_head
-
-    text = index.read_text(encoding="utf-8")
-    text = inject_index_seo_head(text)
-    text = inject_brand_head(text, Path("index.html"), site_root=ROOT)
-    index.write_text(text, encoding="utf-8")
-
-
 def main() -> int:
     ensure_python_deps()
     py = sys.executable
@@ -59,7 +43,7 @@ def main() -> int:
     run([py, "tools/build_sitemap.py"])
     run([py, "tools/validate_sitemap.py"])
     run([py, "tools/validate_generated_seo.py"])
-    repair_spa_index_head()
+    run([py, "tools/repair_index_seo_head.py"])
     run([py, "tools/validate_site_integration.py"])
     run([py, "tools/validate_guide_index_picks.py"])
     run([py, "tools/validate_internal_links.py"])
