@@ -89,3 +89,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1088,single,その他法令・業務,その他法令・業務,内部監査,standard,9,done,
 1089,single,金融商品・サービス,社債・債券,国債,standard,9,done,
 1090,single,金融商品・サービス,株式業務,店頭売買,standard,9,done,
+1091,marubatsu,金融商品・サービス,財務分析,PER,standard,10,done,Phase1
+1092,marubatsu,金融商品・サービス,財務分析,PBR,standard,10,done,Phase1
+1093,marubatsu,金融商品・サービス,株式業務,株式併合,standard,10,done,Phase1
+1094,marubatsu,金融商品取引法,金融商品取引法,第二種外務員,standard,10,done,Phase1
+1095,marubatsu,勧誘・販売規則,勧誘・販売規則,適格機関投資家,standard,10,done,Phase1
+1096,marubatsu,金融商品・サービス,デリバティブ取引,預託金,standard,10,done,Phase1
+1097,marubatsu,勧誘・販売規則,勧誘・販売規則,訪問販売,standard,10,done,Phase1
+1098,single,金融商品・サービス,財務分析,PER,standard,10,done,Phase1
+1099,single,金融商品取引法,金融商品取引法,第二種外務員,standard,10,done,Phase1
+1100,single,勧誘・販売規則,勧誘・販売規則,勧誘規則,standard,10,done,Phase1完走
