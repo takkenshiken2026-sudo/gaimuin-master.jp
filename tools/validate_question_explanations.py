@@ -91,6 +91,23 @@ def audit_practice() -> tuple[int, int]:
         if is_demo_practice_question_row(row):
             warns += 1
             _warn(f"{path.name}:{idx} デモ・テンプレ実践演習（静的ページ生成対象外）")
+            continue
+        qno = norm(row.get("question_no"))
+        if norm(row.get("is_invalidated")).upper() == "TRUE":
+            continue
+        if norm(row.get("type")) != "marubatsu":
+            choices = parse_explanation_choices(norm(row.get("explanation_choices")))
+            if not choices:
+                warns += 1
+                _warn(
+                    f"{path.name}:{idx} q{qno} explanation_choices 未記入"
+                    "（他の選択肢が自動補完されます）"
+                )
+        summary = norm(row.get("explanation_summary"))
+        correct = norm(row.get("explanation_correct"))
+        if summary and correct and dedupe_prose(summary) == dedupe_prose(correct):
+            warns += 1
+            _warn(f"{path.name}:{idx} explanation_summary と explanation_correct が同一")
     return errs, warns
 
 

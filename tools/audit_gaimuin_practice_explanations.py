@@ -30,9 +30,10 @@ REQUIRED_KEYS = (
     "explanation",
     "explanation_summary",
     "explanation_correct",
-    "explanation_choices",
     "explanation_point",
 )
+
+REQUIRED_KEYS_WITH_CHOICES = REQUIRED_KEYS + ("explanation_choices",)
 
 FORBIDDEN_BODY_PHRASES = (
     "記述は正しいです",
@@ -76,13 +77,6 @@ def _row_for_audit(row: dict | None) -> dict | None:
     return None
 
 
-def _marubatsu_wrong_choice(correct: str) -> int | None:
-    if correct == "1":
-        return 2
-    if correct == "2":
-        return 1
-    return None
-
 
 def audit_explanation_fields(
     qno: str,
@@ -93,7 +87,13 @@ def audit_explanation_fields(
     errs = warns = 0
     label = f"EXPLANATIONS[{qno}]"
 
-    for key in REQUIRED_KEYS:
+    if row:
+        row = _row_for_audit(row)
+    qtype = norm(row.get("type")) if row else ""
+    is_marubatsu = qtype == "marubatsu"
+    required = REQUIRED_KEYS if is_marubatsu else REQUIRED_KEYS_WITH_CHOICES
+
+    for key in required:
         if not norm(fields.get(key)):
             _error(f"{label}: {key} が未入力")
             errs += 1
@@ -105,6 +105,9 @@ def audit_explanation_fields(
                 _error(f"{label}.{key}: 禁止定型句「{phrase}」")
                 errs += 1
 
+    if is_marubatsu:
+        return errs, warns
+
     choices_raw = norm(fields.get("explanation_choices"))
     parsed = parse_explanation_choices(choices_raw)
     if not parsed:
@@ -112,29 +115,15 @@ def audit_explanation_fields(
         return errs + 1, warns
 
     if row:
-        row = _row_for_audit(row)
-    if row:
-        qtype = norm(row.get("type"))
-        correct = norm(row.get("correct"))
-        if qtype == "marubatsu":
-            expected = _marubatsu_wrong_choice(correct)
-            if expected is not None:
-                if set(parsed.keys()) != {expected}:
-                    _error(
-                        f"{label}: 〇×は誤答肢（{expected}）のみ。"
-                        f" 現在: {sorted(parsed.keys())}"
-                    )
-                    errs += 1
-        else:
-            wrong = _wrong_choice_indices(row)
-            missing = [i for i in wrong if i not in parsed]
-            extra = [i for i in parsed if i not in wrong]
-            if missing:
-                _error(f"{label}: 誤肢 {missing} の explanation_choices が未記入")
-                errs += 1
-            if extra:
-                _error(f"{label}: 正答肢 {extra} を explanation_choices に含めない")
-                errs += 1
+        wrong = _wrong_choice_indices(row)
+        missing = [i for i in wrong if i not in parsed]
+        extra = [i for i in parsed if i not in wrong]
+        if missing:
+            _error(f"{label}: 誤肢 {missing} の explanation_choices が未記入")
+            errs += 1
+        if extra:
+            _error(f"{label}: 正答肢 {extra} を explanation_choices に含めない")
+            errs += 1
 
     for num, note in parsed.items():
         if len(note) < THIN_CHOICE_MIN:
@@ -149,7 +138,6 @@ def audit_explanation_fields(
 
     if row:
         stem = norm(row.get("stem"))
-        mode = question_ask_mode(stem)
         if "最も適切でない" in stem:
             for num, note in parsed.items():
                 if num == int(row.get("correct") or 0):
@@ -177,7 +165,9 @@ def audit_csv_sync() -> tuple[int, int]:
             warns += 1
             continue
         fields = EXPLANATIONS[qno]
-        for key in REQUIRED_KEYS:
+        qtype = norm(row.get("type"))
+        sync_keys = REQUIRED_KEYS if qtype == "marubatsu" else REQUIRED_KEYS_WITH_CHOICES
+        for key in sync_keys:
             if norm(row.get(key)) != norm(fields.get(key)):
                 _warn(f"{PRACTICE_CSV.name}:{idx} q{qno}: {key} が正本と CSV で不一致（patch 未反映?）")
                 warns += 1

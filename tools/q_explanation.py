@@ -48,6 +48,19 @@ def _correct_choice_index(correct: object) -> int | None:
     return min(indices) if indices else None
 
 
+def _is_marubatsu_question(page: dict, row: dict) -> bool:
+    """実践演習の〇×（正しい／誤っている）形式。他肢解説は表示しない。"""
+    qtype = norm(row.get("type")) or norm(page.get("type"))
+    if qtype == "marubatsu":
+        return True
+    tags = norm(row.get("tags"))
+    if re.search(r"〇×|○×|marubatsu", tags, re.I):
+        opts = page.get("opts") or []
+        if len(opts) == 2:
+            return True
+    return False
+
+
 def parse_numbered_choice_notes(text: str) -> dict[int, str]:
     """「１．…２．…」形式（運管過去問解説など）の肢別メモを抽出。"""
     out: dict[int, str] = {}
@@ -1195,6 +1208,8 @@ def collapse_wrong_choice_items(
 def build_choice_commentary(page: dict, row: dict) -> list[tuple[int, str, str]]:
     mode = _extended_question_mode(page, row)
     if mode in {"combination", "truefalse_group"}:
+        return []
+    if _is_marubatsu_question(page, row):
         return []
     parsed = parse_explanation_choices(norm(row.get("explanation_choices")))
     numbered = parse_numbered_choice_notes(norm(row.get("explanation")))

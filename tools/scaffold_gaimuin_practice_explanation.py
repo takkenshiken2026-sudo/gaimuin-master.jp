@@ -44,24 +44,19 @@ def scaffold_entry(q: dict[str, str], bp: dict[str, str]) -> str:
     correct = q.get("correct", "?")
 
     if qtype == "marubatsu":
-        wrong = "1" if correct == "2" else "2"
-        choices_hint = (
-            f'        "explanation_choices": "{wrong}:（問題文の誤り／正しさに即して、'
-            f'「正しい」または「誤っている」を選べない理由を48字以上で）",'
-        )
+        choices_hint = ""
     else:
         choices_hint = (
             '        "explanation_choices": "'
             "1:（肢1が正答でない理由）;2:…;（正答肢は除く）"
-            '",'
+            '",\n'
         )
 
     return f'''    "{qno}": {{
         "explanation": "（結論1〜2文。{term}）",
         "explanation_summary": "（15〜30字）",
         "explanation_correct": "（正答={correct} の理由。設問: {stem[:40]}…）",
-{choices_hint}
-        "explanation_point": "（復習の具体アクション。他問と被らないこと）",
+{choices_hint}        "explanation_point": "（復習の具体アクション。他問と被らないこと）",
     }},'''
 
 
