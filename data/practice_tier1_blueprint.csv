@@ -1,0 +1,11 @@
+question_no,format,category,exam_subject,source_term,difficulty,batch,status,notes
+1001,marubatsu,金融商品取引法,金融商品取引法,第一種外務員,basic,1,done,smoke
+1002,marubatsu,金融商品取引法,金融商品取引法,第一種金融商品取引業,basic,1,done,smoke
+1003,marubatsu,金融商品・サービス,株式業務,有価証券の引受け,standard,1,done,smoke
+1004,marubatsu,金融商品・サービス,デリバティブ取引,先物取引,standard,1,done,smoke
+1005,marubatsu,金融商品・サービス,デリバティブ取引,オプション取引,standard,1,done,smoke
+1006,marubatsu,金融商品・サービス,株式業務,信用取引,standard,1,done,smoke
+1007,marubatsu,金融商品・サービス,デリバティブ取引,証拠金,standard,1,done,smoke
+1008,marubatsu,金融商品取引法,金融商品取引法,自己の計算による売買,standard,1,done,smoke
+1009,single,金融商品取引法,金融商品取引法,第一種金融商品取引業,standard,1,done,smoke
+1010,single,金融商品・サービス,デリバティブ取引,先物取引,standard,1,done,smoke

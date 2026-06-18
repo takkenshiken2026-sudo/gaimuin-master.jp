@@ -190,8 +190,7 @@ window.SITE_CONFIG = {
         "label": "一種外務員",
         "shortLabel": "一種",
         "tag": "一種",
-        "preparing": true,
-        "subtitle": "一種外務員向け（準備中・近日公開予定）",
+        "subtitle": "一種外務員向け（〇×方式70問＋五肢選択30問の本番形式）。出題順は毎回ランダムです。",
         "counts": [
           {
             "n": 10,
@@ -210,8 +209,9 @@ window.SITE_CONFIG = {
             "label": "100問（本番）"
           }
         ],
-        "defaultCount": 20,
+        "defaultCount": 10,
         "practiceFormats": [
+          "marubatsu",
           "choice"
         ]
       }

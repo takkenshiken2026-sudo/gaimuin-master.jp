@@ -13,7 +13,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from gaimuin_practice_explanation_texts import EXPLANATIONS  # noqa: E402
 from tools.correct_answer_format import collect_choice_texts  # noqa: E402
 from tools.q_explanation import (  # noqa: E402
     _is_generic_wrong_note,
@@ -24,7 +23,6 @@ from tools.q_explanation import (  # noqa: E402
 )
 
 PRACTICE_CSV = ROOT / "data" / "practice_questions.csv"
-BATCH_GLOB = "gaimuin_practice_tier2_batch*.py"
 
 REQUIRED_KEYS = (
     "explanation",
@@ -148,7 +146,7 @@ def audit_explanation_fields(
     return errs, warns
 
 
-def audit_csv_sync() -> tuple[int, int]:
+def audit_csv_sync(explanations: dict[str, dict[str, str]], *, scope_qnos: set[str] | None = None) -> tuple[int, int]:
     """正本と CSV の列内容が一致しているか（patch / apply 漏れ検出）。"""
     if not PRACTICE_CSV.is_file():
         _warn(f"{PRACTICE_CSV.name} がありません")
@@ -160,11 +158,13 @@ def audit_csv_sync() -> tuple[int, int]:
         qno = norm(row.get("question_no"))
         if not qno or norm(row.get("is_invalidated")).upper() == "TRUE":
             continue
-        if qno not in EXPLANATIONS:
+        if scope_qnos is not None and qno not in scope_qnos:
+            continue
+        if qno not in explanations:
             _warn(f"{PRACTICE_CSV.name}:{idx} q{qno} が EXPLANATIONS に未登録")
             warns += 1
             continue
-        fields = EXPLANATIONS[qno]
+        fields = explanations[qno]
         qtype = norm(row.get("type"))
         sync_keys = REQUIRED_KEYS if qtype == "marubatsu" else REQUIRED_KEYS_WITH_CHOICES
         for key in sync_keys:
@@ -174,19 +174,21 @@ def audit_csv_sync() -> tuple[int, int]:
     return 0, warns
 
 
-def audit_orphan_explanations(csv_qnos: set[str]) -> tuple[int, int]:
+def audit_orphan_explanations(
+    csv_qnos: set[str], explanations: dict[str, dict[str, str]]
+) -> tuple[int, int]:
     errs = warns = 0
-    for qno in EXPLANATIONS:
+    for qno in explanations:
         if qno not in csv_qnos:
             _warn(f"EXPLANATIONS[{qno}] が practice_questions.csv に無い（未適用?）")
             warns += 1
     return errs, warns
 
 
-def audit_duplicate_points() -> tuple[int, int]:
+def audit_duplicate_points(explanations: dict[str, dict[str, str]]) -> tuple[int, int]:
     warns = 0
     seen: dict[str, list[str]] = {}
-    for qno, fields in EXPLANATIONS.items():
+    for qno, fields in explanations.items():
         pt = norm(fields.get("explanation_point"))
         if pt:
             seen.setdefault(pt, []).append(qno)
@@ -197,16 +199,52 @@ def audit_duplicate_points() -> tuple[int, int]:
     return 0, warns
 
 
+def _csv_qnos_for_tier(tier: str) -> set[str]:
+    if not PRACTICE_CSV.is_file():
+        return set()
+    out: set[str] = set()
+    with PRACTICE_CSV.open(encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            qno = norm(row.get("question_no"))
+            if not qno or norm(row.get("is_invalidated")).upper() == "TRUE":
+                continue
+            tags = norm(row.get("tags"))
+            if tier == "1":
+                if qno.isdigit() and int(qno) >= 1001:
+                    out.add(qno)
+                elif "一種" in tags:
+                    out.add(qno)
+            else:
+                if qno.isdigit() and int(qno) < 1001:
+                    out.add(qno)
+                elif "二種" in tags and (not qno.isdigit() or int(qno) < 1001):
+                    out.add(qno)
+    return out
+
+
 def main() -> int:
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--tier1",
+        action="store_true",
+        help="一種解説正本のみ監査（question_no 1001〜）",
+    )
+    args = ap.parse_args()
+
+    if args.tier1:
+        from gaimuin_practice_tier1_explanation_texts import EXPLANATIONS
+        tier = "1"
+        label = "tier1"
+    else:
+        from gaimuin_practice_explanation_texts import EXPLANATIONS
+        tier = "2"
+        label = "tier2"
+
     total_err = total_warn = 0
 
-    csv_qnos: set[str] = set()
-    if PRACTICE_CSV.is_file():
-        with PRACTICE_CSV.open(encoding="utf-8-sig", newline="") as f:
-            for row in csv.DictReader(f):
-                qno = norm(row.get("question_no"))
-                if qno and norm(row.get("is_invalidated")).upper() != "TRUE":
-                    csv_qnos.add(qno)
+    csv_qnos = _csv_qnos_for_tier(tier)
 
     for qno, fields in sorted(EXPLANATIONS.items(), key=lambda x: int(x[0])):
         row = None
@@ -220,20 +258,20 @@ def main() -> int:
         total_err += e
         total_warn += w
 
-    e, w = audit_orphan_explanations(csv_qnos)
+    e, w = audit_orphan_explanations(csv_qnos, EXPLANATIONS)
     total_err += e
     total_warn += w
 
-    e, w = audit_duplicate_points()
+    e, w = audit_duplicate_points(EXPLANATIONS)
     total_err += e
     total_warn += w
 
-    e, w = audit_csv_sync()
+    e, w = audit_csv_sync(EXPLANATIONS, scope_qnos=csv_qnos)
     total_err += e
     total_warn += w
 
     print(
-        f"gaimuin practice explanation audit: {total_err} error(s), {total_warn} warning(s)"
+        f"gaimuin practice explanation audit ({label}): {total_err} error(s), {total_warn} warning(s)"
     )
     return 1 if total_err else 0
 

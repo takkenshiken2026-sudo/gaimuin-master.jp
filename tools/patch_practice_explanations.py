@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import re
 import sys
@@ -13,10 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from gaimuin_practice_explanation_texts import EXPLANATIONS  # noqa: E402
-
 BATCH_DIR = ROOT / "tools" / "batches"
-BATCH_GLOB = "gaimuin_practice_tier2_batch*.py"
 
 EXPLANATION_KEYS = (
     "explanation",
@@ -67,10 +65,10 @@ def _upsert_field(block: str, key: str, value: str) -> str:
     return new_block if n else block
 
 
-def patch_file(path: Path) -> int:
+def patch_file(path: Path, explanations: dict[str, dict[str, str]]) -> int:
     text = path.read_text(encoding="utf-8")
     count = 0
-    for qno, fields in EXPLANATIONS.items():
+    for qno, fields in explanations.items():
         if f'"question_no": "{qno}"' not in text:
             continue
         block_start = text.index(f'"question_no": "{qno}"')
@@ -90,9 +88,26 @@ def patch_file(path: Path) -> int:
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--tier1",
+        action="store_true",
+        help="一種 batch / gaimuin_practice_tier1_explanation_texts.py",
+    )
+    args = ap.parse_args()
+
+    if args.tier1:
+        from gaimuin_practice_tier1_explanation_texts import EXPLANATIONS  # noqa: E402
+
+        batch_glob = "gaimuin_practice_tier1_batch*.py"
+    else:
+        from gaimuin_practice_explanation_texts import EXPLANATIONS  # noqa: E402
+
+        batch_glob = "gaimuin_practice_tier2_batch*.py"
+
     total = 0
-    for path in sorted(BATCH_DIR.glob(BATCH_GLOB)):
-        n = patch_file(path)
+    for path in sorted(BATCH_DIR.glob(batch_glob)):
+        n = patch_file(path, EXPLANATIONS)
         print(f"{path.name}: {n} questions patched")
         total += n
     print(f"total: {total} questions")

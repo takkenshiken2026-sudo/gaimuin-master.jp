@@ -14,12 +14,18 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-BLUEPRINT = ROOT / "data" / "practice_tier2_blueprint.csv"
 BATCH_DIR = ROOT / "tools" / "batches"
 
 
-def load_batch_questions(batch_num: int) -> list[dict[str, str]]:
-    path = BATCH_DIR / f"gaimuin_practice_tier2_batch{batch_num}.py"
+def tier_paths(tier: str) -> tuple[Path, str]:
+    if tier == "1":
+        return ROOT / "data" / "practice_tier1_blueprint.csv", "gaimuin_practice_tier1_batch"
+    return ROOT / "data" / "practice_tier2_blueprint.csv", "gaimuin_practice_tier2_batch"
+
+
+def load_batch_questions(batch_num: int, *, tier: str = "2") -> list[dict[str, str]]:
+    _, batch_prefix = tier_paths(tier)
+    path = BATCH_DIR / f"{batch_prefix}{batch_num}.py"
     if not path.is_file():
         raise SystemExit(f"batch ファイルがありません: {path}")
     spec = importlib.util.spec_from_file_location("batch", path)
@@ -29,10 +35,11 @@ def load_batch_questions(batch_num: int) -> list[dict[str, str]]:
     return mod.QUESTIONS
 
 
-def blueprint_map() -> dict[str, dict[str, str]]:
-    if not BLUEPRINT.is_file():
+def blueprint_map(*, tier: str = "2") -> dict[str, dict[str, str]]:
+    blueprint, _ = tier_paths(tier)
+    if not blueprint.is_file():
         return {}
-    with BLUEPRINT.open(encoding="utf-8-sig", newline="") as f:
+    with blueprint.open(encoding="utf-8-sig", newline="") as f:
         return {row["question_no"]: row for row in csv.DictReader(f)}
 
 
@@ -64,21 +71,32 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--batch", type=int, help="batch 番号（例: 6）")
     ap.add_argument("--question-nos", help="カンマ区切り問番（例: 51,52,53）")
+    ap.add_argument(
+        "--tier1",
+        action="store_true",
+        help="一種（question_no 1001〜、tier1 blueprint / batch）",
+    )
+    ap.add_argument(
+        "--tier2",
+        action="store_true",
+        help="二種（既定）",
+    )
     args = ap.parse_args()
 
     if not args.batch and not args.question_nos:
         ap.error("--batch または --question-nos を指定してください")
 
-    bp = blueprint_map()
+    tier = "1" if args.tier1 else "2"
+    bp = blueprint_map(tier=tier)
     questions: list[dict[str, str]] = []
 
     if args.batch:
-        questions = load_batch_questions(args.batch)
+        questions = load_batch_questions(args.batch, tier=tier)
     elif args.question_nos:
         want = {x.strip() for x in args.question_nos.split(",") if x.strip()}
-        for n in range(1, 20):
+        for n in range(1, 100):
             try:
-                for q in load_batch_questions(n):
+                for q in load_batch_questions(n, tier=tier):
                     if q["question_no"] in want:
                         questions.append(q)
             except SystemExit:
@@ -96,7 +114,8 @@ def main() -> None:
                     }
                 )
 
-    print("# gaimuin_practice_explanation_texts.py の EXPLANATIONS に追記")
+    mod = "gaimuin_practice_tier1_explanation_texts" if tier == "1" else "gaimuin_practice_explanation_texts"
+    print(f"# {mod}.py の EXPLANATIONS に追記")
     print("# 手書きで（）を埋めてから patch → audit → apply してください\n")
     for q in sorted(questions, key=lambda x: int(x["question_no"])):
         print(scaffold_entry(q, bp))
