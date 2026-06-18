@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.correct_answer_format import collect_choice_texts, is_valid_correct, parse_correct_js_index
+from tools.correct_answer_format import collect_choice_texts, is_valid_correct, parse_correct_js_index, practice_min_choice_count
 from tools.site_config import category_to_field_map, extended_correct_answers
 
 DATA_CSV = ROOT / "data" / "past_questions.csv"
@@ -68,7 +68,7 @@ def row_to_obj(row: dict, line_no: int) -> dict | None:
         raise ValueError(f"line {line_no}: 未対応の category={cat!r}")
 
     opts = collect_choice_texts(row)
-    min_choices = 2 if extended_correct_answers() else 4
+    min_choices = practice_min_choice_count(row)
     if len(opts) < min_choices:
         raise ValueError(f"line {line_no}: 選択肢欠け year={year} no={qno}")
     max_choice = len(opts)
@@ -117,7 +117,7 @@ def practice_row_to_obj(row: dict, line_no: int) -> dict | None:
         raise ValueError(f"practice_questions.csv line {line_no}: 未対応の category={cat!r}")
 
     opts = collect_choice_texts(row)
-    min_choices = 2 if extended_correct_answers() else 4
+    min_choices = practice_min_choice_count(row)
     if len(opts) < min_choices:
         raise ValueError(f"practice_questions.csv line {line_no}: 選択肢欠け no={qno}")
     max_choice = len(opts)

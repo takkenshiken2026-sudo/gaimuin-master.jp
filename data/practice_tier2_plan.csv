@@ -1,0 +1,25 @@
+question_no,format,category,source_term,status,notes
+1,marubatsu,金融商品・サービス,有価証券,done,batch1
+2,marubatsu,金融商品・サービス,株式,done,batch1
+3,marubatsu,勧誘・販売規則,適合性の原則,done,batch1
+4,marubatsu,勧誘・販売規則,自己責任原則,done,batch1
+5,marubatsu,金融商品取引法,一般投資家,done,batch1
+6,marubatsu,金融商品取引法,第二種外務員,done,batch1
+7,marubatsu,その他法令・業務,クーリング・オフ,done,batch1
+8,marubatsu,その他法令・業務,顧客の利益保護,done,batch1
+9,single,金融商品・サービス,投資信託,done,batch1
+10,single,勧誘・販売規則,重要事項説明,done,batch1
+11,marubatsu,金融商品・サービス,,planned,phase1
+12,marubatsu,金融商品・サービス,,planned,phase1
+13,marubatsu,勧誘・販売規則,,planned,phase1
+14,marubatsu,勧誘・販売規則,,planned,phase1
+15,marubatsu,金融商品取引法,,planned,phase1
+16,marubatsu,金融商品取引法,,planned,phase1
+17,marubatsu,その他法令・業務,,planned,phase1
+18,marubatsu,その他法令・業務,,planned,phase1
+19,single,金融商品・サービス,,planned,phase1
+20,single,勧誘・販売規則,,planned,phase1
+21-50,marubatsu,各分野,,planned,phase1 〇×残42問
+51-70,single,各分野,,planned,phase1 五肢残18問
+71-350,marubatsu,各分野,,planned,phase2 拡充
+351-490,single,各分野,,planned,phase2 拡充

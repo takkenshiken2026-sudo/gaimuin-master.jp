@@ -480,6 +480,12 @@ h2.section-label .tip-icon{width:13px;height:13px;font-size:9px}
 .opt-num{font-family:var(--mono);font-size:14px;color:var(--text3);flex-shrink:0;padding-top:4px;min-width:16px;font-weight:500}
 .opt.correct .opt-num{color:var(--green)}
 .opt.wrong .opt-num{color:var(--red)}
+.opts-list.marubatsu-mode{flex-direction:row;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:16px}
+.opt-marubatsu{flex:1;min-width:120px;max-width:160px;justify-content:center;padding:20px 16px;text-align:center}
+.opt-marubatsu .opt-maru-label{font-size:32px;font-weight:700;line-height:1;font-family:var(--font)}
+.opt-marubatsu.correct .opt-maru-label{color:var(--green)}
+.opt-marubatsu.wrong .opt-maru-label{color:var(--red)}
+.opts-key-cap.maru-cap{font-size:22px;line-height:1;padding:2px 8px}
 
 /* ===== EXPLANATION BOX ===== */
 .exp-box{border-radius:var(--r);padding:14px 16px;margin-bottom:12px;font-size:var(--fs-body);line-height:1.75}
@@ -4570,11 +4576,43 @@ function formatExamQuestionBodyText(raw){
   }
   return t.replace(/\n{4,}/g,'\n\n').trim();
 }
-function updateOptsKeyHint(show,optCount){
+function isMarubatsuQuestion(q){
+  if(!q) return false;
+  if(q.qtype==='marubatsu') return true;
+  const tags=String(q.tags||'');
+  return /〇×|○×|marubatsu/i.test(tags);
+}
+function marubatsuOptDisplay(opt){
+  const t=String(opt||'').trim();
+  if(/^[○〇]$/.test(t)||/^正/.test(t)) return '○';
+  if(/^[×✕╳]$/.test(t)||/^誤/.test(t)) return '×';
+  return opt;
+}
+function buildOptsListHtml(q,interactive){
+  const opts=q.opts||[];
+  const maru=isMarubatsuQuestion(q);
+  const list=document.getElementById('opts');
+  if(list) list.classList.toggle('marubatsu-mode',maru);
+  if(maru){
+    return opts.map((o,i)=>{
+      const label=marubatsuOptDisplay(o);
+      const click=interactive?` onclick="pickOpt(${i})"`:'';
+      return `<div class="opt opt-marubatsu${interactive?'':' disabled'}" id="opt${i}"${click}><span class="opt-maru-label">${label}</span></div>`;
+    }).join('');
+  }
+  return opts.map((o,i)=>{
+    const click=interactive?` onclick="pickOpt(${i})"`:'';
+    return `<div class="opt${interactive?'':' disabled'}" id="opt${i}"${click}><span class="opt-num">${i+1}</span><span>${o}</span></div>`;
+  }).join('');
+}
+function updateOptsKeyHint(show,optCount,q){
   const el=document.getElementById('opts-key-hint');
   if(!el) return;
   if(!show||!optCount||optCount<1){ el.hidden=true; el.innerHTML=''; return; }
-  const keys=Array.from({length:optCount},(_,i)=>`<span class="opts-key-cap" aria-hidden="true">${i+1}</span>`).join('');
+  const maru=q&&isMarubatsuQuestion(q);
+  const keys=maru
+    ? ['<span class="opts-key-cap maru-cap" aria-hidden="true">○</span>','<span class="opts-key-cap maru-cap" aria-hidden="true">×</span>'].join('')
+    : Array.from({length:optCount},(_,i)=>`<span class="opts-key-cap" aria-hidden="true">${i+1}</span>`).join('');
   el.innerHTML=`<span class="opts-key-hint-label">キーボードの番号キー</span>${keys}<span class="opts-key-hint-label">で回答できます</span>`;
   el.hidden=false;
 }
@@ -4594,8 +4632,7 @@ function renderQScoreReplay(sr){
     <span class="q-meta-item q-meta-year"><span class="q-meta-value">${sourceLabel}</span></span>${starsHTML}`;
   updateBookmarkButton(q);
   document.getElementById('q-body').textContent=formatExamQuestionBodyText(q.text||'');
-  document.getElementById('opts').innerHTML=q.opts.map((o,j)=>
-    `<div class="opt disabled" id="opt${j}"><span class="opt-num">${j+1}</span><span>${o}</span></div>`).join('');
+  document.getElementById('opts').innerHTML=buildOptsListHtml(q,false);
   updateOptsKeyHint(false);
   document.querySelectorAll('.opt').forEach((el,j)=>{
     if(j===q.ans) el.classList.add('correct');
@@ -4655,9 +4692,8 @@ function renderQ(){ window.scrollTo({top:0,behavior:"instant"});
 	    <span class="q-meta-item q-meta-year"><span class="q-meta-value">${sourceLabel}</span></span>${starsHTML}`;
 	  updateBookmarkButton(q);
 	  document.getElementById('q-body').textContent=formatExamQuestionBodyText(q.text||'');
-  document.getElementById('opts').innerHTML=q.opts.map((o,i)=>
-    `<div class="opt" id="opt${i}" onclick="pickOpt(${i})"><span class="opt-num">${i+1}</span><span>${o}</span></div>`).join('');
-  updateOptsKeyHint(true,q.opts.length);
+  document.getElementById('opts').innerHTML=buildOptsListHtml(q,true);
+  updateOptsKeyHint(true,q.opts.length,q);
   document.getElementById('q-result').innerHTML='';
   showNextBtn(false, null);
   renderBookmarkNote(q, 'bookmark-note-wrap');

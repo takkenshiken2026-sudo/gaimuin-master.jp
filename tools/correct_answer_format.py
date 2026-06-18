@@ -21,6 +21,21 @@ def collect_choice_texts(row: dict, *, max_slots: int = 8) -> list[str]:
     return out
 
 
+def practice_min_choice_count(row: dict) -> int:
+    """実践演習 CSV 行の最低選択肢数（〇×方式は2、通常は4）。"""
+    from tools.site_config import extended_correct_answers
+
+    if extended_correct_answers():
+        return 2
+    qtype = norm(row.get("type"))
+    tags = norm(row.get("tags"))
+    if qtype == "marubatsu":
+        return 2
+    if re.search(r"〇×|○×|marubatsu", tags, re.I):
+        return 2
+    return 4
+
+
 def detect_correct_format(raw: str) -> str:
     """正答文字列の型（single / multi / combination / truefalse_group）。"""
     raw = norm(raw)
