@@ -249,3 +249,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1248,single,金融商品取引法,金融商品取引法,投資一任契約,standard,25,done,Phase2
 1249,single,金融商品・サービス,株式業務,貸株,standard,25,done,Phase2
 1250,single,金融商品・サービス,株式業務,逆指値注文,standard,25,done,Phase2
+1251,marubatsu,金融商品取引法,金融商品取引法,金融商品仲介業,standard,26,done,Phase3
+1252,marubatsu,金融商品・サービス,投資信託,投信委託者,standard,26,done,Phase3
+1253,marubatsu,金融商品・サービス,投資信託,投信受託者,standard,26,done,Phase3
+1254,marubatsu,金融商品・サービス,投資信託,信託財産,standard,26,done,Phase3
+1255,marubatsu,金融商品・サービス,株式業務,株主総会,standard,26,done,Phase3
+1256,marubatsu,金融商品・サービス,株式業務,議決権,standard,26,done,Phase3
+1257,marubatsu,金融商品・サービス,株式業務,指値注文,standard,26,done,Phase3
+1258,single,金融商品取引法,金融商品取引法,金融商品仲介業,standard,26,done,Phase3
+1259,single,金融商品・サービス,投資信託,投信委託者,standard,26,done,Phase3
+1260,single,金融商品・サービス,株式業務,株主総会,standard,26,done,Phase3
