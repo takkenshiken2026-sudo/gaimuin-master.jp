@@ -30,6 +30,8 @@ def repair_spa_index_head() -> None:
     index = ROOT / "index.html"
     if not index.is_file():
         return
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
     from tools.brand_assets import inject_brand_head
     from tools.index_seo_head import inject_index_seo_head
 
