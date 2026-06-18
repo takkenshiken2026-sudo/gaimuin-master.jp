@@ -387,6 +387,9 @@ h2.section-label .tip-icon{width:13px;height:13px;font-size:9px}
 .ichi-score-paid-mock-wrap{text-align:left;max-width:480px;margin:24px auto 0}
 .mode-card-v2{background:#fff;border:1.5px solid var(--border2);border-radius:var(--r2);padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:16px;box-shadow:var(--sh);transition:all .18s}
 .mode-card-v2:hover{box-shadow:var(--sh2);border-color:var(--text2);transform:translateY(-1px);background:var(--bg3)}
+.mode-card-v2--preparing{opacity:.55;cursor:not-allowed;pointer-events:none}
+.mode-card-v2--preparing:hover{box-shadow:var(--sh);border-color:var(--border2);transform:none;background:#fff}
+.mode-preparing-badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;color:var(--text3);background:var(--bg3);border:1px solid var(--border2);vertical-align:middle}
 .mode-num-v2{font-size:12px;font-family:var(--mono);color:var(--text3);flex-shrink:0;width:20px;text-align:center}
 .mode-body-v2{flex:1;min-width:0}
 .mode-purpose-v2{font-size:12px;color:var(--text2);font-weight:500;margin-bottom:3px}
@@ -852,6 +855,8 @@ details.rich-detail summary{display:none}
 .field-chip{padding:6px 13px;border-radius:20px;font-size:14px;border:1.5px solid var(--border2);cursor:pointer;background:var(--bg);color:var(--text2);transition:all .15s;font-family:var(--font)}
 .field-chip:hover{border-color:var(--text2);background:var(--bg3)}
 .field-chip.on{background:var(--sel-s);border-color:var(--ink);color:var(--text);font-weight:600}
+.chip--preparing{opacity:.5;cursor:not-allowed;pointer-events:none;border-style:dashed}
+.chip-preparing-label{margin-left:6px;font-size:11px;color:var(--text3);font-weight:500}
 
 .quiz-countdown{font-size:17px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;font-family:var(--mono)}
 .quiz-countdown.warn{color:var(--red)}
@@ -3255,16 +3260,22 @@ function renderQuizStartOrigModes(){
   const cards=[];
   if(tiers.length>=2){
     tiers.forEach(function(t, idx){
+      const preparing=!!t.preparing;
       const n=countPracticeForTier(t.id);
-      const purpose=n>0
-        ? '本番形式で実力を測りたい（'+formatQuizCountJa(n)+'問）'
-        : '本番形式で実力を測りたい';
+      const purpose=preparing
+        ? '準備中（近日公開予定）'
+        : (n>0
+          ? '本番形式で実力を測りたい（'+formatQuizCountJa(n)+'問）'
+          : '本番形式で実力を測りたい');
       const label=t.shortLabel||t.label||'実践演習';
+      const cardClass='mode-card-v2'+(preparing?' mode-card-v2--preparing':'');
+      const click=preparing?'':' onclick="openOrigTier(\''+String(t.id).replace(/'/g,'\\\'')+'\')"';
+      const preparingBadge=preparing?'<span class="mode-preparing-badge">準備中</span>':'';
       cards.push(
-        '<div class="mode-card-v2" onclick="openOrigTier(\''+String(t.id).replace(/'/g,'\\\'')+'\')">'
+        '<div class="'+cardClass+'"'+click+'>'
         +'<div class="mode-num-v2">'+String(numBase+idx).padStart(2,'0')+'</div>'
         +'<div class="mode-body-v2"><div class="mode-purpose-v2">'+purpose+'</div>'
-        +'<div class="mode-title-v2">実践演習（'+label+'）</div></div>'
+        +'<div class="mode-title-v2">実践演習（'+label+'）'+preparingBadge+'</div></div>'
         +'<div class="mode-arrow-v2">›</div></div>'
       );
     });
@@ -3931,7 +3942,7 @@ function _resolveInitialPage() {
     '#review':'review','#account':'dash'
   };
   const page = pathMap[path] || hashMap[hash] || 'quiz-start';
-  if(page==='orig' && hash==='#orig-tier1') origState.tier='tier1';
+  if(page==='orig' && hash==='#orig-tier1' && !isPracticeTierPreparing(getPracticeTierById('tier1'))) origState.tier='tier1';
   else if(page==='orig' && hash==='#orig-tier2') origState.tier='tier2';
   return page;
 }
@@ -4204,9 +4215,16 @@ function getPracticeTiers(){
   var qm=(window.SITE_CONFIG&&window.SITE_CONFIG.questionModes)||{};
   return Array.isArray(qm.practiceTiers)?qm.practiceTiers:[];
 }
-function hasPracticeTiers(){ return getPracticeTiers().length>=2; }
+function isPracticeTierPreparing(t){ return !!(t&&t.preparing); }
+function getPracticeTierById(tierId){
+  return getPracticeTiers().find(function(t){ return t.id===tierId; })||null;
+}
+function getAvailablePracticeTiers(){
+  return getPracticeTiers().filter(function(t){ return !isPracticeTierPreparing(t); });
+}
+function hasPracticeTiers(){ return getAvailablePracticeTiers().length>=2; }
 function getActivePracticeTier(){
-  var tiers=getPracticeTiers();
+  var tiers=getAvailablePracticeTiers();
   if(!tiers.length) return null;
   return tiers.find(function(t){ return t.id===origState.tier; })||tiers[0];
 }
@@ -4260,14 +4278,28 @@ function buildOrigTierChips(){
   const section=document.getElementById('orig-tier-section');
   const el=document.getElementById('orig-tier-chips');
   const tiers=getPracticeTiers();
-  if(!el||tiers.length<2){ if(section) section.style.display='none'; return; }
+  const available=getAvailablePracticeTiers();
+  if(!el||available.length<2){
+    if(section) section.style.display='none';
+    if(available.length){
+      const cur=getPracticeTierById(origState.tier);
+      if(!origState.tier||isPracticeTierPreparing(cur)) origState.tier=available[0].id;
+    }
+    return;
+  }
   if(section) section.style.display='';
-  if(!origState.tier||!tiers.some(t=>t.id===origState.tier)) origState.tier=tiers[0].id;
-  el.innerHTML=tiers.map(t=>
-    `<div class="chip ${origState.tier===t.id?'on':''}" id="otier-${t.id}" onclick="selOrigTier('${t.id}')">${t.shortLabel||t.label}</div>`
-  ).join('');
+  if(!origState.tier||!available.some(t=>t.id===origState.tier)) origState.tier=available[0].id;
+  el.innerHTML=tiers.map(t=>{
+    const preparing=isPracticeTierPreparing(t);
+    const on=!preparing&&origState.tier===t.id;
+    const cls='chip'+(on?' on':'')+(preparing?' chip--preparing':'');
+    const click=preparing?'':' onclick="selOrigTier(\''+t.id+'\')"';
+    const badge=preparing?'<span class="chip-preparing-label">準備中</span>':'';
+    return `<div class="${cls}" id="otier-${t.id}"${click} role="button"${preparing?' aria-disabled="true"':''}>${t.shortLabel||t.label}${badge}</div>`;
+  }).join('');
 }
 function selOrigTier(tierId){
+  if(isPracticeTierPreparing(getPracticeTierById(tierId))) return;
   origState.tier=tierId;
   origState.format='all';
   buildOrigTierChips();
@@ -4277,6 +4309,7 @@ function selOrigTier(tierId){
   updateOrigSelSummary();
 }
 function openOrigTier(tierId){
+  if(isPracticeTierPreparing(getPracticeTierById(tierId))) return;
   origState.tier=tierId;
   gotoPage('orig');
 }
@@ -7571,7 +7604,7 @@ if(typeof getUserData==='function'){
 })();
 </script>
 <!-- GA4: tools/html_footer.analytics_snippet と同内容（トップ SPA） -->
-<script>window.__GA4_MEASUREMENT_ID__="";</script>
+<script>window.__GA4_MEASUREMENT_ID__="G-D4NX9VHDNT";</script>
 <script defer src="site-analytics.js"></script>
 </body>
 </html>

@@ -115,13 +115,16 @@ _SPA_BREADCRUMB_TOP_RE = re.compile(
 )
 _GA4_INLINE_RE = re.compile(r'window\.__GA4_MEASUREMENT_ID__="[^"]*";')
 _GA4_DEFAULT_MID_RE = re.compile(r'var DEFAULT_MID = "[^"]*";')
+_PRIVACY_GA4_CODE_RE = re.compile(r"（測定ID <code>[^<]*</code>）")
 
 
 def apply_ga4_measurement_ids(text: str) -> str:
-    """site-config の ga4MeasurementId を index / site-analytics へ常に反映する。"""
+    """site-config の ga4MeasurementId を index / site-analytics / privacy へ反映する。"""
     mid = ga4_measurement_id()
     text = _GA4_INLINE_RE.sub(f'window.__GA4_MEASUREMENT_ID__="{mid}";', text)
     text = _GA4_DEFAULT_MID_RE.sub(f'var DEFAULT_MID = "{mid}";', text)
+    if mid:
+        text = _PRIVACY_GA4_CODE_RE.sub(f"（測定ID <code>{mid}</code>）", text)
     return text
 
 
