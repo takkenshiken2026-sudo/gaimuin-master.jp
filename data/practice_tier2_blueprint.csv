@@ -139,3 +139,13 @@ question_no,format,category,source_term,difficulty,batch,status,notes
 138,marubatsu,金融商品取引法,偽計行為,standard,14,done,
 139,marubatsu,金融商品取引法,内部管理責任者,standard,14,done,
 140,marubatsu,その他法令・業務,テロ資金供与,standard,14,done,
+141,marubatsu,金融商品・サービス,上場株式,standard,15,done,phase2
+142,marubatsu,金融商品・サービス,株主名簿,standard,15,done,
+143,marubatsu,金融商品・サービス,オプション取引,standard,15,done,
+144,marubatsu,勧誘・販売規則,一般信用取引,standard,15,done,
+145,marubatsu,勧誘・販売規則,投資助言業,standard,15,done,
+146,marubatsu,勧誘・販売規則,店頭売買,standard,15,done,
+147,marubatsu,金融商品取引法,少額公募,standard,15,done,
+148,marubatsu,金融商品取引法,登録金融機関,standard,15,done,
+149,marubatsu,金融商品取引法,半期報告書,standard,15,done,
+150,marubatsu,その他法令・業務,顧客分別金信託,standard,15,done,

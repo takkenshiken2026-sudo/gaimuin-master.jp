@@ -28,5 +28,6 @@ question_no,format,category,source_term,status,notes
 111-120,marubatsu,各分野,,done,phase2 batch12
 121-130,marubatsu,各分野,,done,phase2 batch13
 131-140,marubatsu,各分野,,done,phase2 batch14
-141-350,marubatsu,各分野,,planned,phase2 拡充
+141-150,marubatsu,各分野,,done,phase2 batch15
+151-350,marubatsu,各分野,,planned,phase2 拡充
 351-490,single,各分野,,planned,phase2 拡充
