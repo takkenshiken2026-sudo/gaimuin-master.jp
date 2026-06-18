@@ -885,6 +885,16 @@ def build_practice_hub_index(
 """
 
 
+def _practice_pages_for_tier_index(pages: list[dict], rel_path: Path) -> list[dict]:
+    """tier 別一覧は q/practice/pNNN/ への相対 href が ../ 付きになるよう補正する。"""
+    out: list[dict] = []
+    for pg in pages:
+        patched = dict(pg)
+        patched["href_rel"] = rel_href(rel_path, pg["rel_path"])
+        out.append(patched)
+    return out
+
+
 def build_mode_index(
     *,
     mode: str,
@@ -912,7 +922,10 @@ def build_mode_index(
             canonical_rel = tier_index_rel_path(tid)
         else:
             canonical_rel = "q/practice/index.html"
-        index_items = [practice_index_item_dict(pg) for pg in pages]
+        pages_for_index = (
+            _practice_pages_for_tier_index(pages, rel_path) if practice_tier else pages
+        )
+        index_items = [practice_index_item_dict(pg) for pg in pages_for_index]
         group_by = "category"
         filter_hint = "分野・学習状況"
         show_category_row = False
@@ -949,7 +962,9 @@ def build_mode_index(
         by_category[pg["category"]] = by_category.get(pg["category"], 0) + 1
 
     group_blocks_html, group_jump_html, group_count = build_group_blocks(
-        pages, mode=mode, group_by=group_by
+        pages_for_index if mode == "practice" and practice_tier else pages,
+        mode=mode,
+        group_by=group_by,
     )
 
     status_defs = [
