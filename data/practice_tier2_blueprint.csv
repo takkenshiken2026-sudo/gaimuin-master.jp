@@ -69,3 +69,13 @@ question_no,format,category,source_term,difficulty,batch,status,notes
 68,single,勧誘・販売規則,プロの投資家,standard,7,done,
 69,single,金融商品・サービス,転換社債,standard,7,done,
 70,single,金融商品取引法,金融商品取引業者,standard,7,done,
+71,marubatsu,金融商品・サービス,普通株式,standard,8,done,phase2
+72,marubatsu,金融商品・サービス,新株予約権,standard,8,done,
+73,marubatsu,金融商品・サービス,配当,standard,8,done,
+74,marubatsu,勧誘・販売規則,最良執行の原則,standard,8,done,
+75,marubatsu,勧誘・販売規則,利益相反管理,standard,8,done,
+76,marubatsu,勧誘・販売規則,目論見書,standard,8,done,
+77,marubatsu,金融商品取引法,外務員,standard,8,done,
+78,marubatsu,金融商品取引法,重要事実,standard,8,done,
+79,marubatsu,金融商品取引法,大量保有報告制度,standard,8,done,
+80,marubatsu,その他法令・業務,犯罪収益移転防止法,standard,8,done,
