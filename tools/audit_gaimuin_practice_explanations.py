@@ -42,6 +42,12 @@ FORBIDDEN_BODY_PHRASES = (
     "定番の誤答",
 )
 
+FORBIDDEN_CHOICE_PHRASES = (
+    "には当たりません",
+    "本問で選ぶ正答肢とは別",
+    "設問の趣旨に照らすと",
+)
+
 THIN_CHOICE_MIN = 48
 
 
@@ -133,15 +139,10 @@ def audit_explanation_fields(
         if _is_generic_wrong_note(note):
             _error(f"{label}: （{num}）が汎用テンプレ相当です")
             errs += 1
-
-    if row:
-        stem = norm(row.get("stem"))
-        if "最も適切でない" in stem:
-            for num, note in parsed.items():
-                if num == int(row.get("correct") or 0):
-                    continue
-                if "最も適切でない" not in note and "正答" not in note and "当たりません" not in note:
-                    _warn(f"{label}: （{num}）に「最も適切でない」形式の言及が弱い")
+        for phrase in FORBIDDEN_CHOICE_PHRASES:
+            if phrase in note:
+                _error(f"{label}: （{num}）に禁止定型句「{phrase}…」")
+                errs += 1
 
     return errs, warns
 
