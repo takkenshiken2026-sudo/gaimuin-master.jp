@@ -30,6 +30,7 @@ from tools.site_config import (
     external_links,
     ga4_measurement_id,
     ichimon_enabled,
+    learning_nav_extras,
     learning_nav_label,
     official_organization,
     primary_external_link,
@@ -37,7 +38,13 @@ from tools.site_config import (
     sync_config_files,
     fields,
 )
-from tools.html_footer import site_page_footer, site_page_header, site_shell_footer
+from tools.html_footer import (
+    index_learning_nav_extra_desktop_html,
+    index_learning_nav_extra_mobile_html,
+    site_page_footer,
+    site_page_header,
+    site_shell_footer,
+)
 from tools.brand_assets import inject_brand_head
 from tools.build_index_faq_ldjson import inject_index_faq_ldjson
 from tools.index_seo_head import (
@@ -366,6 +373,48 @@ def update_related_sites_official_links(text: str) -> str:
     return _RELATED_OFFICIAL_SECTION_RE.sub(repl, text, count=1)
 
 
+def sync_index_learning_nav_extras(text: str) -> str:
+    """index.html の SPA 学習ナビに learningNavExtras を差し込む（用語解説の隣）。"""
+    extras = learning_nav_extras()
+    known_ids = {e["id"] for e in extras}
+    for nav_id in known_ids:
+        text = re.sub(
+            rf'\s*<a class="topnav-link" id="{re.escape(nav_id)}"[^>]*>.*?</a>',
+            "",
+            text,
+            flags=re.S,
+        )
+        mnav_id = nav_id.replace("tnav-", "mnav-", 1) if nav_id.startswith("tnav-") else f"mnav-{nav_id}"
+        text = re.sub(
+            rf'\s*<a class="mobile-nav-item" id="{re.escape(mnav_id)}"[^>]*>.*?</a>',
+            "",
+            text,
+            flags=re.S,
+        )
+    if not extras:
+        return text
+    for extra in extras:
+        after = extra.get("after") or "tnav-glossary"
+        desktop = index_learning_nav_extra_desktop_html(extra)
+        text = re.sub(
+            rf'(id="{re.escape(after)}"[^>]*>.*?</a>)',
+            r"\1\n" + desktop,
+            text,
+            count=1,
+            flags=re.S,
+        )
+        mnav_after = after.replace("tnav-", "mnav-", 1)
+        mobile = index_learning_nav_extra_mobile_html(extra)
+        text = re.sub(
+            rf'(id="{re.escape(mnav_after)}"[^>]*>.*?</a>)',
+            r"\1\n" + mobile,
+            text,
+            count=1,
+            flags=re.S,
+        )
+    return text
+
+
 def update_static_page_canonical(text: str, path: Path) -> str:
     rel = STATIC_PAGE_CANONICAL.get(path)
     if not rel:
@@ -648,7 +697,7 @@ def main() -> int:
                 new = update_related_sites_official_links(new)
         new = replace_static_chrome(new, path)
         rel = path.relative_to(ROOT)
-        if path.suffix == ".html":
+        if path.suffix == ".html" and path != ROOT / "index.html":
             new = inject_brand_head(new, rel, site_root=ROOT)
         if path == ROOT / "index.html":
             new = ensure_site_config_before_fields(new)
@@ -668,6 +717,8 @@ def main() -> int:
             new = update_index_auth_modal(new)
             new = update_index_logo_styles(new)
             new = update_index_glossary_excerpt(new)
+            new = sync_index_learning_nav_extras(new)
+            new = inject_brand_head(new, rel, site_root=ROOT)
         if new != old:
             path.write_text(new, encoding="utf-8")
             print(f"Updated {path.relative_to(ROOT)}")
