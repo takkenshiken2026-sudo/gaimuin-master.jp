@@ -259,3 +259,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1258,single,金融商品取引法,金融商品取引法,金融商品仲介業,standard,26,done,Phase3
 1259,single,金融商品・サービス,投資信託,投信委託者,standard,26,done,Phase3
 1260,single,金融商品・サービス,株式業務,株主総会,standard,26,done,Phase3
+1261,marubatsu,金融商品・サービス,社債・債券,CB,standard,27,done,Phase3
+1262,marubatsu,金融商品・サービス,投資信託,ラップ口座,standard,27,done,Phase3
+1263,marubatsu,金融商品・サービス,投資信託,追加型投信,standard,27,done,Phase3
+1264,marubatsu,金融商品・サービス,投資信託,単位型投信,standard,27,done,Phase3
+1265,marubatsu,金融商品・サービス,税制,損益通算,standard,27,done,Phase3
+1266,marubatsu,金融商品・サービス,税制,源泉徴収,standard,27,done,Phase3
+1267,marubatsu,金融商品・サービス,投資信託,追加型投信,standard,27,done,Phase3
+1268,single,金融商品・サービス,社債・債券,CB,standard,27,done,Phase3
+1269,single,金融商品・サービス,投資信託,ラップ口座,standard,27,done,Phase3
+1270,single,金融商品・サービス,税制,損益通算,standard,27,done,Phase3
