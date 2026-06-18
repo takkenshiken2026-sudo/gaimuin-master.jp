@@ -279,3 +279,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1278,single,金融商品・サービス,株式業務,種類株式,standard,28,done,Phase3
 1279,single,金融商品・サービス,株式業務,株主名簿,standard,28,done,Phase3
 1280,single,金融商品・サービス,株式業務,サーキットブレーカー,standard,28,done,Phase3
+1281,marubatsu,金融商品・サービス,株式業務,ストップ高,standard,29,done,Phase3
+1282,marubatsu,金融商品・サービス,株式業務,ストップ安,standard,29,done,Phase3
+1283,marubatsu,金融商品・サービス,株式業務,値幅制限,standard,29,done,Phase3
+1284,marubatsu,金融商品・サービス,株式業務,制度信用取引,standard,29,done,Phase3
+1285,marubatsu,金融商品・サービス,株式業務,信用買い,standard,29,done,Phase3
+1286,marubatsu,金融商品・サービス,株式業務,信用売り,standard,29,done,Phase3
+1287,marubatsu,金融商品・サービス,投資信託,ポートフォリオ,standard,29,done,Phase3
+1288,single,金融商品・サービス,株式業務,ストップ高,standard,29,done,Phase3
+1289,single,金融商品・サービス,株式業務,制度信用取引,standard,29,done,Phase3
+1290,single,金融商品・サービス,投資信託,ポートフォリオ,standard,29,done,Phase3
