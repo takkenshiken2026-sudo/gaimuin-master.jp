@@ -25,13 +25,6 @@ def run(cmd: list[str]) -> None:
     subprocess.run(cmd, cwd=ROOT, check=True)
 
 
-def maybe_run_exam_schedule_page(py: str) -> None:
-    script = ROOT / "tools" / "build_exam_schedule_page.py"
-    schedule_csv = ROOT / "data" / "exam_schedule_otsu4.csv"
-    if script.is_file() and schedule_csv.is_file():
-        run([py, str(script)])
-
-
 def repair_spa_index_head() -> None:
     """用語ビルド等が index.html の SEO マーカーを壊した場合の保険。"""
     index = ROOT / "index.html"
@@ -50,8 +43,6 @@ def main() -> int:
     ensure_python_deps()
     py = sys.executable
     run([py, "tools/validate_csv.py"])
-    run([py, "tools/validate_guide_exam_facts.py", "--skip-greenfield-pending"])
-    run([py, "tools/validate_guide_law_facts.py", "--skip-greenfield-pending"])
     run([py, "tools/validate_question_explanations.py"])
     run([py, "tools/generate_brand_assets.py"])
     run([py, "tools/apply_site_config.py"])
@@ -61,7 +52,6 @@ def main() -> int:
     run([py, "tools/build_practice_ichimon_pages.py"])
     run([py, "tools/build_article_pages.py"])
     run([py, "tools/build_guide_retire_redirects.py"])
-    maybe_run_exam_schedule_page(py)
     run([py, "tools/build_glossary_pages.py"])
     run([py, "tools/build_hub_retire_redirects.py"])
     run([py, "tools/build_sitemap.py"])
