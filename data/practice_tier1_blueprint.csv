@@ -239,3 +239,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1238,single,金融商品取引法,金融商品取引法,投資助言業,standard,24,done,Phase2
 1239,single,金融商品・サービス,株式業務,保証金維持率,standard,24,done,Phase2
 1240,single,金融商品・サービス,株式業務,成行注文,standard,24,done,Phase2
+1241,marubatsu,金融商品取引法,金融商品取引法,投資一任契約,standard,25,done,Phase2
+1242,marubatsu,金融商品取引法,金融商品取引法,投資運用業,standard,25,done,Phase2
+1243,marubatsu,金融商品・サービス,株式業務,逆指値注文,standard,25,done,Phase2
+1244,marubatsu,金融商品・サービス,株式業務,貸株,standard,25,done,Phase2
+1245,marubatsu,金融商品・サービス,株式業務,逆日歩,standard,25,done,Phase2
+1246,marubatsu,金融商品取引法,金融商品取引法,投資者保護基金,standard,25,done,Phase2
+1247,marubatsu,金融商品取引法,金融商品取引法,投資一任契約,standard,25,done,Phase2
+1248,single,金融商品取引法,金融商品取引法,投資一任契約,standard,25,done,Phase2
+1249,single,金融商品・サービス,株式業務,貸株,standard,25,done,Phase2
+1250,single,金融商品・サービス,株式業務,逆指値注文,standard,25,done,Phase2
