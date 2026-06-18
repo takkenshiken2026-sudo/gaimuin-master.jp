@@ -209,3 +209,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1208,single,その他法令・業務,その他法令・業務,疑わしい取引の届出,standard,21,done,Phase2
 1209,single,勧誘・販売規則,勧誘・販売規則,契約締結時交付書面,standard,21,done,Phase2
 1210,single,金融商品・サービス,デリバティブ取引,有価証券派生商品,standard,21,done,Phase2
+1211,marubatsu,金融商品・サービス,株式業務,約定,standard,22,done,Phase2
+1212,marubatsu,金融商品・サービス,株式業務,日計り取引,standard,22,done,Phase2
+1213,marubatsu,その他法令・業務,その他法令・業務,業務部門分離,standard,22,done,Phase2
+1214,marubatsu,その他法令・業務,その他法令・業務,顧客勘定,standard,22,done,Phase2
+1215,marubatsu,金融商品取引法,金融商品取引法,重要事項,standard,22,done,Phase2
+1216,marubatsu,その他法令・業務,その他法令・業務,テロ資金供与対策,standard,22,done,Phase2
+1217,marubatsu,金融商品・サービス,株式業務,約定,standard,22,done,Phase2
+1218,single,その他法令・業務,その他法令・業務,業務部門分離,standard,22,done,Phase2
+1219,single,金融商品・サービス,株式業務,約定,standard,22,done,Phase2
+1220,single,金融商品取引法,金融商品取引法,重要事項,standard,22,done,Phase2
