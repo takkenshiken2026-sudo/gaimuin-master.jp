@@ -520,8 +520,16 @@ def _header_learning_nav(root: Path) -> list[Issue]:
 
     spa_hash = _spa_nav_hash_hrefs()
     article_sample = root / "articles" / "field-law-basics" / "index.html"
-    if not article_sample.is_file():
+    if not article_sample.is_file() or _is_redirect_stub(article_sample):
         article_sample = root / "articles" / "exam-overview" / "index.html"
+    if not article_sample.is_file() or _is_redirect_stub(article_sample):
+        for candidate in sorted((root / "articles").glob("*/index.html")):
+            if candidate.parent.name == "articles":
+                continue
+            if _is_redirect_stub(candidate):
+                continue
+            article_sample = candidate
+            break
     samples: list[tuple[str, Path]] = [
         ("articles sample", article_sample),
         ("terms/index.html", root / "terms" / "index.html"),
