@@ -139,3 +139,13 @@ question_no,format,category,exam_subject,source_term,difficulty,batch,status,not
 1138,single,勧誘・販売規則,勧誘・販売規則,適合性の原則,standard,14,done,Phase2
 1139,single,金融商品・サービス,デリバティブ取引,スワップ,standard,14,done,Phase2
 1140,single,金融商品・サービス,株式業務,信用取引,standard,14,done,Phase2
+1141,marubatsu,金融商品・サービス,株式業務,目論見書,standard,15,done,Phase2
+1142,marubatsu,金融商品・サービス,株式業務,ブックビルディング,standard,15,done,Phase2
+1143,marubatsu,勧誘・販売規則,勧誘・販売規則,契約締結前交付書面,standard,15,done,Phase2
+1144,marubatsu,勧誘・販売規則,勧誘・販売規則,クーリング・オフ,standard,15,done,Phase2
+1145,marubatsu,勧誘・販売規則,勧誘・販売規則,特定投資家,standard,15,done,Phase2
+1146,marubatsu,勧誘・販売規則,勧誘・販売規則,一般投資家,standard,15,done,Phase2
+1147,marubatsu,金融商品・サービス,社債・債券,転換社債,standard,15,done,Phase2
+1148,single,金融商品・サービス,社債・債券,普通社債,standard,15,done,Phase2
+1149,single,金融商品・サービス,株式業務,目論見書,standard,15,done,Phase2
+1150,single,勧誘・販売規則,勧誘・販売規則,特定投資家,standard,15,done,Phase2
