@@ -35,7 +35,9 @@ def guide_index_pick_href(href: str, rel_path: Path) -> str:
     article_href = raw.lstrip("/")
     if not article_href.startswith("articles/"):
         article_href = f"articles/{article_href}"
-    return f"../{article_href}"
+    depth = len(rel_path.parent.parts)
+    prefix = "/".join([".."] * depth) + "/" if depth else ""
+    return f"{prefix}{article_href}"
 
 
 def guide_index_pick_image_src(image: str, rel_path: Path) -> str:

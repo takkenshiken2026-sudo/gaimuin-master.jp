@@ -103,23 +103,30 @@ def validate_guide_index_picks(root: Path) -> list[Issue]:
     if not pick_slugs:
         return issues
 
-    for hub, label in (
-        ("articles", "試験ガイド一覧"),
-        ("terms", "用語一覧"),
-        ("q", "過去問一覧"),
-    ):
-        index_path = root / hub / "index.html"
+    hub_checks: list[tuple[str, str, Path]] = [
+        ("articles", "試験ガイド一覧", root / "articles" / "index.html"),
+        ("terms", "用語一覧", root / "terms" / "index.html"),
+        ("q", "過去問一覧", root / "q" / "index.html"),
+    ]
+    practice_index = root / "q" / "practice" / "index.html"
+    for hub, label, index_path in hub_checks:
         if not index_path.is_file():
-            issues.append(Issue(f"{label} ({hub}/index.html) がありません"))
+            issues.append(Issue(f"{label} ({index_path.relative_to(root)}) がありません"))
             continue
         html = index_path.read_text(encoding="utf-8", errors="replace")
-        if "article-index-picks" not in html:
-            issues.append(
-                Issue(
-                    f"{label} に guideIndexPicks カードがありません。"
-                    " build_article_pages / build_glossary_pages / build_past_question_pages を実行してください"
-                )
+        if "article-index-picks" in html:
+            continue
+        if hub == "q" and practice_index.is_file():
+            practice_html = practice_index.read_text(encoding="utf-8", errors="replace")
+            if "article-index-picks" in practice_html:
+                continue
+        issues.append(
+            Issue(
+                f"{label} に guideIndexPicks カードがありません。"
+                " build_article_pages / build_glossary_pages / build_past_question_pages"
+                " / build_practice_ichimon_pages を実行してください"
             )
+        )
 
     return issues
 

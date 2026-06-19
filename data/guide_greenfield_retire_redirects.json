@@ -1,35 +1,4 @@
 {
   "updated": "2026-06-19",
-  "redirects": {
-    "exemption-system": "exam-eligibility",
-    "first-time-exam-guide": "study-plan",
-    "cbt-computer-exam": "exam-format-overview",
-    "difficulty-for-beginners": "exam-overview",
-    "pass-rate-how-to-read": "exam-overview",
-    "first-30-days-plan": "study-plan",
-    "mistake-notebook": "study-plan",
-    "self-study-mistakes": "study-plan",
-    "self-study-start": "study-plan",
-    "study-plan-3months": "study-plan",
-    "study-plan-working": "study-plan",
-    "field-law-basics": "study-plan",
-    "field-law-past-question-focus": "study-plan",
-    "field-limit-basics": "study-plan",
-    "field-limit-past-question-focus": "study-plan",
-    "field-rights-basics": "study-plan",
-    "field-rights-past-question-focus": "study-plan",
-    "mock-exam-how-to": "past-question-strategy",
-    "past-questions-by-year": "past-question-strategy",
-    "past-questions-wrong-reasons": "past-question-strategy",
-    "timed-practice": "past-question-strategy",
-    "final-week-prep": "final-day-checklist",
-    "mental-prep-exam-day": "final-day-checklist",
-    "common-misconceptions": "exam-overview",
-    "confusing-terms": "glossary-how-to",
-    "glossary-study-method": "glossary-how-to",
-    "self-study-roadmap": "study-plan",
-    "exam-changes": "exam-overview",
-    "review-cycle-spaced": "exam-overview",
-    "weight-by-topic": "exam-overview"
-  }
+  "redirects": {}
 }

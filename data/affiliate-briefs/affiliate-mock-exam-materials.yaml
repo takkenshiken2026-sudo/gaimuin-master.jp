@@ -1,0 +1,74 @@
+slug: affiliate-mock-exam-materials
+theme_key: mock-exam-materials
+search_intent: 直前8週に使う模試·通し演習教材を比較して1冊選びたい
+title: 証券外務員試験のおすすめ模試・直前問題集3選【通し演習·2026】
+genre: 過去問活用
+layout: product-comparison
+asp_primary: amazon
+comparison_kind: books
+comparison_title: おすすめ模試·直前対策3選（比較）
+price_disclaimer: 価格·在庫·版情報は執筆時点（2026-06-16）のAmazon税込参考です。購入前に必ず販売ページでご確認ください。
+products:
+  - rank: 1
+    offer_type: book
+    name: TACスーパー予想模試 証券外務員一種 2025-2026年版
+    publisher: TAC出版
+    edition: 2025-2026年版
+    price_yen: 2420
+    price_note: Amazon税込参考·送料別
+    pages: 536
+    format: B5判
+    asin: "430011918X"
+    image_file: gaimuin-book-430011918X.webp
+    amazon_url: https://www.amazon.co.jp/dp/430011918X/ref=nosim?tag=ue083093-22
+    for_who: 一種100問160分·予想模試3回+CBTガイドで直前の通し演習を固めたい人
+    highlights:
+      - 予想模試3回分+分野別問題+CBT試験ガイド付き
+      - 100問160分の通し時間配分を本番前に再現しやすい
+      - 赤シート対応で直前の暗記確認にも使える
+  - rank: 2
+    offer_type: book
+    name: TACスーパー予想模試 証券外務員二種 2025-2026年版
+    publisher: TAC出版
+    edition: 2025-2026年版
+    price_yen: 2090
+    price_note: Amazon税込参考·送料別
+    pages: 444
+    format: B5判
+    asin: "4300119171"
+    image_file: gaimuin-book-4300119171.webp
+    amazon_url: https://www.amazon.co.jp/dp/4300119171/ref=nosim?tag=ue083093-22
+    for_who: 二種70問120分·210点合格を予想模試で通し演習したい人
+    highlights:
+      - 二種出題範囲に絞った予想模試構成
+      - 70問120分の配分練習に特化
+      - TAC一種模試と同系列で出版社を揃えやすい
+  - rank: 3
+    offer_type: book
+    name: 2025-2026 特別会員 証券外務員 一種 対策問題集
+    publisher: ビジネス教育出版社
+    edition: 2025-2026年版
+    price_yen: 1650
+    price_note: Amazon税込参考·送料別
+    pages: 240
+    format: A5判
+    asin: "4828311238"
+    image_file: gaimuin-book-4828311238.webp
+    amazon_url: https://www.amazon.co.jp/dp/4828311238/ref=nosim?tag=ue083093-22
+    for_who: 低価格帯で模擬想定問題+習熟チェック表を使いたい一種受験者
+    highlights:
+      - 本試験同一配分の模擬想定問題を収録
+      - 習熟チェック表で科目別の進捗を記録できる
+      - 240ページで直前の総仕上げ向けコンパクト構成
+related_links:
+  - past-question-strategy:過去問·演習の使い方
+  - mock-exam-how-to:模試の活用法
+  - final-day-checklist:直前1週間の勉強法
+  - affiliate-problem-books:おすすめ問題集3選
+  - affiliate-textbooks-recommend:おすすめテキスト3選
+  - exam-day-flow:当日の時間配分
+operator_note: |
+  Amazon tag=ue083093-22。
+  2026-06-16 Amazonで価格確認（2,420/2,090/1,650円税込参考）。
+  旧ASIN 4300119181/4296050840/4828311531 は404のため差し替え。
+  うかる単独の「直前チェック」刊行なし→TAC予想模試2冊+BEP模擬付問題集で比較。

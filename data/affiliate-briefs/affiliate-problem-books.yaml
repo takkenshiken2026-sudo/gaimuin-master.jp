@@ -1,0 +1,75 @@
+slug: affiliate-problem-books
+theme_key: problem-books
+search_intent: テキスト第1周後に使うおすすめ問題集を比較して1冊に絞りたい
+title: 証券外務員試験のおすすめ問題集3選【科目別·模試付·2026】
+genre: 独学対策
+layout: product-comparison
+asp_primary: amazon
+comparison_kind: books
+comparison_title: おすすめ問題集3選（比較）
+price_disclaimer: 価格·在庫·版情報は執筆時点（2026-06-16）のAmazon税込参考です。購入前に必ず販売ページでご確認ください。
+products:
+  - rank: 1
+    offer_type: book
+    name: うかる! 証券外務員一種 必修問題集 2025-2026年版
+    publisher: 日経BP
+    edition: 2025-2026年版
+    price_yen: 2530
+    price_note: Amazon税込参考·送料別
+    pages: 472
+    format: A5判
+    asin: "4296050842"
+    image_file: gaimuin-book-4296050842.webp
+    amazon_url: https://www.amazon.co.jp/dp/4296050842/ref=nosim?tag=ue083093-22
+    for_who: 一種100問160分·科目別演習と巻末模擬試験を1冊で回したい人
+    highlights:
+      - 左ページ問題·右ページ解説の科目別構成
+      - 必修テキストと章リンクで復習が往復しやすい
+      - 巻末模擬試験で通し100問160分の練習ができる
+  - rank: 2
+    offer_type: book
+    name: うかる! 証券外務員二種 最速問題集 2025-2026年版
+    publisher: 日経BP
+    edition: 2025-2026年版
+    price_yen: 2310
+    price_note: Amazon税込参考·送料別（定価2,530円）
+    pages: 351
+    format: A5判
+    asin: "4296050850"
+    image_file: gaimuin-book-4296050850.webp
+    amazon_url: https://www.amazon.co.jp/dp/4296050850/ref=nosim?tag=ue083093-22
+    for_who: 二種70問120分·210点合格を最速問題集1冊で演習したい人
+    highlights:
+      - 二種出題範囲に絞った351ページのコンパクト構成
+      - 最速テキストとページリンクで弱点章へ戻りやすい
+      - 巻末模擬試験で70問120分の通し感覚を確認できる
+  - rank: 3
+    offer_type: book
+    name: 2025-2026 証券外務員 一種 対策問題集
+    publisher: ビジネス教育出版社
+    edition: 2025-2026年版
+    price_yen: 1870
+    price_note: Amazon税込参考·送料別
+    pages: 338
+    format: A5判
+    asin: "4828311203"
+    image_file: gaimuin-book-4828311203.webp
+    amazon_url: https://www.amazon.co.jp/dp/4828311203/ref=nosim?tag=ue083093-22
+    for_who: 学習テキストと同系列·338ページで科目別演習を回したい一種受験者
+    highlights:
+      - 問題·解答·解説の科目別構成（338ページ）
+      - 学習テキスト（一種·二種対応）と出版社を揃えやすい
+      - 2025-2026版·Amazon在庫あり（2026-2027版は未掲載）
+related_links:
+  - past-question-strategy:過去問·演習の使い方
+  - mistake-notebook:誤答ノートの作り方
+  - timed-practice:制限時間演習
+  - affiliate-textbooks-recommend:おすすめテキスト3選
+  - affiliate-mock-exam-materials:おすすめ模試·直前対策3選
+  - exam-day-flow:当日の時間配分
+operator_note: |
+  Amazon tag=ue083093-22。
+  2026-06-16 出版社·書店情報で価格確認。
+  旧ASIN 4296050840/4300119167/4828311531/4296050857/4828311153 は404のため差し替え。
+  二種最速=4296050850、BEP一種=4828311203（2025-2026·Amazon在庫）。
+  スッキリわかる単独の一問一答刊行なし→演習型3冊で比較。

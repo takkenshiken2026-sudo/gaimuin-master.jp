@@ -812,6 +812,8 @@ def build_practice_hub_index(
         practice_hub_meta_description,
     )
 
+    from tools.guide_index_picks_ui import build_guide_index_picks_html
+
     rel_path = Path("q/practice/index.html")
     h1 = index_h1("practice")
     page_title = index_page_title("practice")
@@ -848,6 +850,7 @@ def build_practice_hub_index(
     footer = site_page_footer(rel_path, current="practice")
     css_href = rel_css(rel_path)
     theme_href = rel_theme_css(rel_path)
+    index_picks_html = build_guide_index_picks_html(rel_path)
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -872,6 +875,7 @@ def build_practice_hub_index(
   {breadcrumb}
   <h1>{html.escape(h1)}</h1>
   <p class="site-page-lead">{html.escape(lead)}</p>
+  {index_picks_html}
   {study_modes_note_html()}
   {q_hub_links_html(rel_path, current="practice")}
   <div class="q-practice-tier-hub" aria-label="試験種別を選ぶ">
