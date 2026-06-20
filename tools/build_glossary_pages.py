@@ -43,7 +43,7 @@ from tools.seo_utils import (
     json_ld_date_modified,
     latest_content_date,
     meta_updated_html,
-    robots_meta_for_slug,
+    robots_meta_for_glossary_entry,
 )
 from tools.term_diagram import diagram_body_html
 from tools.seo_body_markup import seo_section_body_html  # noqa: E402
@@ -923,7 +923,7 @@ def build_term_html(
     )
 
     updated = content_date_from_row(entry)
-    robots_meta = robots_meta_for_slug(slug_file)
+    robots_meta = robots_meta_for_glossary_entry(entry, slug_file)
     preparing_notice_html = (
         "" if is_glossary_expert_pass(entry) else glossary_preparing_notice_html()
     )

@@ -98,6 +98,18 @@ def robots_meta_for_slug(slug_file: str) -> str:
     return INDEX_ROBOTS_META
 
 
+def robots_meta_for_glossary_entry(entry: dict[str, str], slug_file: str) -> str:
+    """編集合格前の用語詳細は noindex（一覧からもリンクしない）。"""
+    from tools.editorial_quality import is_glossary_expert_pass
+
+    name = Path(slug_file).name
+    if name in SITEMAP_EXCLUDED_BASENAMES:
+        return NOINDEX_ROBOTS_META
+    if not is_glossary_expert_pass(entry):
+        return NOINDEX_ROBOTS_META
+    return INDEX_ROBOTS_META
+
+
 def meta_updated_html(updated: str | None) -> str:
     if not updated:
         return ""

@@ -59,11 +59,11 @@ python3 tools/sync_from_template.py --target ~/Projects/gaimuin-master --build
 
 | 項目 | 目標 | 状態 |
 |------|------|------|
-| `glossary_terms.csv` | 300+ | **300件・v0済**／**編集合格 155/300**（expert batch1〜31 適用・フェーズ2進行中） |
-| `guide_articles.csv` | 50以内 | **47本 published**（通常ガイド手書き完了）／アフィリエイト3本は **draft** |
+| `glossary_terms.csv` | 300+ | **300件**／**編集合格 0/300**（2026-06-21 全文リセット・準備中スタブ）／expert batch33〜で再執筆 |
+| `guide_articles.csv` | 50以内 | **50本 published**（通常47＋アフィリ3） |
 | 実践演習（二種） | 70問（本番相当）→拡充620 | **620問デプロイ済み**（Phase3 batch50〜62）／[作問手順](practice-tier2-workflow.md) |
 | 過去問 | 年度別 | 非表示（hidePast） |
-| アフィリエイト | ~10 本 | **未着手**（雛形3 slug のみ・brief は textbooks 雛形のみ） |
+| アフィリエイト | ~10 本 | **3本 published**（textbooks / problem-books / mock-exam）／残7 slug は未着手 |
 
 ## 試験形式（公式・2025-06 確認）
 
