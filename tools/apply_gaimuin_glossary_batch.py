@@ -47,6 +47,8 @@ def apply_rewrites(
             continue
         patch = rewrites[term]
         for key, value in patch.items():
+            if key not in fieldnames:
+                continue
             row[key] = value
         patched += 1
     if patched and not dry_run:
