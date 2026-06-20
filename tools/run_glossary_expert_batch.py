@@ -51,7 +51,9 @@ def main() -> int:
         return 1
 
     if not args.skip_apply:
-        n = apply_rewrites(csv_path, rewrites)
+        from tools.apply_gaimuin_glossary_batch import all_patches
+
+        n = apply_rewrites(csv_path, all_patches(mod))
         print(f"applied {n} terms from {batch.name}")
 
     py = sys.executable

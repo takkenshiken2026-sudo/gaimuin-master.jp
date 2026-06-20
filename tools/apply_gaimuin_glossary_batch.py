@@ -59,6 +59,19 @@ def apply_rewrites(
     return patched
 
 
+def all_patches(mod: ModuleType) -> dict[str, dict[str, str]]:
+    merged: dict[str, dict[str, str]] = {}
+    for key in ("PEER_SHORT_UPDATES", "REWRITES"):
+        block = getattr(mod, key, None)
+        if not block:
+            continue
+        for term, patch in block.items():
+            merged.setdefault(term, {}).update(patch)
+    if not merged:
+        raise ValueError(f"{getattr(mod, '__file__', mod)} must define REWRITES dict")
+    return merged
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="用語手書き batch を CSV に適用")
     ap.add_argument("--root", type=Path, default=ROOT)
@@ -67,7 +80,7 @@ def main() -> int:
     args = ap.parse_args()
     csv_path = args.root.resolve() / "data" / "glossary_terms.csv"
     mod = load_rewrites_module(args.batch.resolve())
-    rewrites = getattr(mod, "REWRITES")
+    rewrites = all_patches(mod)
     terms = list(rewrites.keys())
     n = apply_rewrites(csv_path, rewrites, dry_run=args.dry_run)
     mode = "would patch" if args.dry_run else "patched"
