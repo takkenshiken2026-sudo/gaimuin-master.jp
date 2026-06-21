@@ -1302,6 +1302,33 @@ def _legal_source_text(entry: dict) -> str:
     )
 
 
+def _legal_explain_wrap(law: str, main_core: str, extras: list[str]) -> str:
+    """条文名と抽出コアから法令解説1文を組み立てる。"""
+    core = main_core.rstrip("。").strip()
+    base = re.sub(r"第?\d+条.*", "", law).strip()
+    if core.startswith(law):
+        core = core[len(law) :].lstrip("は、").strip()
+    elif len(base) >= 2 and core.startswith(base):
+        core = core[len(base) :].lstrip("は、").strip()
+
+    core = re.sub(r"^上[、,]?", "", core).strip()
+    core = re.sub(r"^において[、,]?", "", core).strip()
+
+    if core.endswith("について"):
+        text = f"{law}は、{core}定めた条文です"
+    elif re.search(r"(?:定め(?:る|ます|た|ている)|列挙(?:する|します|した)|規定(?:する|します|した))$", core):
+        text = f"{law}は、{core}。"
+    elif re.search(r"(?:です|である|いいます|いう)$", core):
+        text = f"{law}は、{core}。"
+    else:
+        text = f"{law}は、{core}について定めた条文です。"
+    if extras:
+        text += f"{extras[0]}"
+    if not text.endswith("。"):
+        text += "。"
+    return text
+
+
 def _legal_explain_sentence(law: str, entry: dict) -> str:
     """根拠条文を、定義文から平易な解説1文（＋必要なら補足1文）に整える。"""
     term = _norm(entry.get("term"))
@@ -1327,20 +1354,14 @@ def _legal_explain_sentence(law: str, entry: dict) -> str:
                 break
 
     if main_core:
-        if main_core.endswith("について"):
-            text = f"{law}は、{main_core}定めた条文です"
-        else:
-            text = f"{law}は、{main_core}について定めた条文です"
-        if extras:
-            text += f"。{extras[0]}"
-        return text + "。"
+        return _legal_explain_wrap(law, main_core, extras)
 
     core = _definition_core_from_sentence(short_def, term)
     if core and not any(skip in core for skip in _DEFINITION_SKIP_SENTENCE):
-        return f"{law}は、{core}に関する根拠法令です。"
+        return _legal_explain_wrap(law, core, [])
 
     label = term.split("（")[0].strip() if term else "この用語"
-    return f"{law}は、{label}の要件・手続を定める根拠法令です。"
+    return f"{law}は、{label}の要件と表示方法を定める根拠法令です。"
 
 
 def glossary_legal_body_html(entry: dict) -> str:
