@@ -1313,7 +1313,7 @@ def _legal_explain_wrap(law: str, main_core: str, extras: list[str]) -> str:
     elif len(base) >= 2 and core.startswith(base):
         core = core[len(base) :].lstrip("は、").strip()
 
-    core = re.sub(r"^上[、,]?", "", core).strip()
+    core = re.sub(r"^上[、,]", "", core).strip()
     core = re.sub(r"^において[、,]?", "", core).strip()
 
     if core.endswith("について"):
