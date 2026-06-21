@@ -347,6 +347,11 @@
       "label": "外務員・内部管理責任者等登録",
       "url": "https://www.jsda.or.jp/gaimuin/gaiyou.html",
       "description": "合格後の登録手続き・有効期限・更新について。"
+    },
+    {
+      "label": "金融商品取引法（e-Gov）",
+      "url": "https://elaws.e-gov.go.jp/document?lawid=405AC0000000025",
+      "description": "第2条（有価証券の定義）など条文原文を確認できます。"
     }
   ]
 }

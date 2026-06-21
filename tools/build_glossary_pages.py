@@ -875,16 +875,17 @@ def build_term_html(
     exam_choices_html = glossary_exam_choices_body_html(entry)
     if not exam_choices_html and explanation:
         exam_choices_html = text_paragraphs(explanation)
+    from tools.inline_markup import render_inline_markup
+
     example_html = ""
     if example_question or example_answer:
-        from tools.inline_markup import render_inline_markup
-
         example_html = (
             '<div class="related-box"><div class="related-box-title">例題</div>'
             f"<p>{_term_item_label('問題')}：{render_inline_markup(example_question)}</p>"
             f"<p>{_term_item_label('答え')}：{render_inline_markup(example_answer)}</p></div>"
         )
     faq_items = custom_faq_items(entry, faq_items_for_term(term, short_def, definition, explanation))
+    lead_body_html = render_inline_markup(article_lead or lead)
     faq_html = faq_section_html(faq_items)
 
     from tools.knowledge_hub_seo import glossary_key_points_items, seo_key_points_box_html
@@ -1129,7 +1130,7 @@ def build_term_html(
       <span class="meta-updated">{meta_line}</span>
     </div>
     <h1 class="article-title">{html.escape(article_title or term + 'とは？意味・根拠・試験ポイントを整理')}</h1>
-    <p class="article-lead"><strong>{html.escape(term)}</strong>について、定義・根拠・試験での押さえ方をまとめます。{html.escape(article_lead or lead)}</p>
+    <p class="article-lead"><strong>{html.escape(term)}</strong>について、定義・根拠・試験での押さえ方をまとめます。{lead_body_html}</p>
     {preparing_notice_html}
     {key_points_html}
     {toc_html}
