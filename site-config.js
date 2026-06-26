@@ -246,5 +246,14 @@ window.SITE_CONFIG = {
         "choice"
       ]
     }
+  },
+  "coursePromo": {
+    "url": "https://px.a8.net/svt/ejp?a8mat=4B3TF0+DUXIZ6+408S+BW0YB&a8ejpredirect=https%3A%2F%2Fonsuku.jp%2Ftraining%2Fgaimuin2",
+    "modeTitle": "オンスク 証券外務員二種 オンライン講座",
+    "modePurpose": "スマホのスキマ時間で動画講座を受講したい",
+    "priceLabel": "月額980円〜",
+    "tagLabel": "PR",
+    "footnote": "※ オンスク.JP公式サイトへ移動します。料金・受講条件は申込前に各ページでご確認ください。",
+    "lpUrl": "https://onsuku.jp/training/gaimuin2"
   }
 };
