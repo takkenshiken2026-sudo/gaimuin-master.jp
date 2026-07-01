@@ -1564,9 +1564,9 @@ html.question-modes--no-past .past-chrome{display:none!important}
           <button type="button" class="count-btn" onclick="selIchiCount(30)" id="icb30">30問ずつ</button>
           <button type="button" class="count-btn" onclick="selIchiCount(0)" id="icb0">エンドレス</button>
         </div>
+        <button type="button" class="btn-primary config-start-btn" onclick="beginIchimondouSession()">開始</button>
         <h2 class="section-label">分野を選ぶ</h2>
         <div class="field-chips" id="ichi-field-chips"></div>
-        <button type="button" class="btn-primary ichi-start-btn" onclick="beginIchimondouSession()">開始</button>
       </div>
       <div id="ichi-play-wrap" class="ichi-play-wrap" style="display:none">
       <div class="ichi-prog-wrap">
@@ -1787,6 +1787,7 @@ html.question-modes--no-past .past-chrome{display:none!important}
           <button class="count-btn"    onclick="selCount(30)" id="cb30">30問</button>
           <button class="count-btn"    onclick="selCount(0)"  id="cb0">全問</button>
         </div>
+        <button type="button" class="btn-primary config-start-btn" onclick="beginQuiz()">スタート</button>
       </div>
 
       <h2 class="section-label">年度を選ぶ</h2>
@@ -1798,7 +1799,6 @@ html.question-modes--no-past .past-chrome{display:none!important}
 
       <h2 class="section-label">分野を選ぶ</h2>
       <div class="field-chips" id="field-chips"></div>
-      <button type="button" class="btn-primary config-start-btn" onclick="beginQuiz()">スタート</button>
 
       <h2 class="section-label">出題順</h2>
       <div class="count-btns count-btns--stack-mobile" style="margin-bottom:22px">
@@ -1835,7 +1835,6 @@ html.question-modes--no-past .past-chrome{display:none!important}
 
       <h2 class="section-label">分野を選ぶ</h2>
       <div class="field-chips orig-field-chips" id="orig-field-chips"></div>
-      <button type="button" class="btn-primary config-start-btn" onclick="beginOrigQuiz()">スタート</button>
 
       <div class="orig-bottom-bar" style="margin-top:16px;margin-bottom:16px;padding-top:16px;border-top:1px solid var(--border);padding-bottom:16px;border-bottom:1px solid var(--border)">
         <h2 class="section-label" style="margin-bottom:12px">出題数</h2>
@@ -1845,6 +1844,7 @@ html.question-modes--no-past .past-chrome{display:none!important}
           <button class="count-btn"    onclick="selOrigCount(30)" id="ocb30">30問</button>
           <button class="count-btn"    onclick="selOrigCount(0)"  id="ocb0">全問</button>
         </div>
+        <button type="button" class="btn-primary config-start-btn" onclick="beginOrigQuiz()">スタート</button>
         <div class="orig-sel-summary" id="orig-sel-summary" style="margin-top:12px">条件を選んでください</div>
       </div>
 
