@@ -151,6 +151,9 @@ def practice_row_to_obj(row: dict, line_no: int) -> dict | None:
     text = build_plain_text(row)
     exp, exp_html = practice_exp_fields(row, line_no)
     qid = PRACTICE_ID_BASE + qno
+    qtype = norm(row.get("type", "")).lower()
+    if qtype not in ("marubatsu", "single"):
+        qtype = "marubatsu" if len(opts) == 2 else "single"
     return {
         "id": qid,
         "year": PRACTICE_POOL_YEAR,
@@ -162,6 +165,8 @@ def practice_row_to_obj(row: dict, line_no: int) -> dict | None:
         "exp": exp,
         "expHtml": exp_html,
         "level": level_from_tags(row.get("tags", "")),
+        "tags": norm(row.get("tags", "")),
+        "qtype": "marubatsu" if qtype == "marubatsu" else "choice",
         "publicPath": f"q/practice/p{qno:03d}/index.html",
     }
 

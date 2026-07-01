@@ -4302,6 +4302,8 @@ function practiceQuestionTier(q){
   var tags=String(q.tags||'');
   if(/二種/.test(tags)) return 'tier2';
   if(/一種/.test(tags)) return 'tier1';
+  var num=Number(q.num);
+  if(Number.isFinite(num)&&num>0) return num>=1000?'tier1':'tier2';
   return '';
 }
 function matchesOrigTier(q, tierId){
