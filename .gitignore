@@ -9,3 +9,7 @@ hub_deploy_report.txt
 hub_deploy_final_report.txt
 apply_site_config_report.txt
 mankan_unkan_kangyou_deploy_report.txt
+
+# Python バイトコード（コミットしない）
+__pycache__/
+*.pyc
