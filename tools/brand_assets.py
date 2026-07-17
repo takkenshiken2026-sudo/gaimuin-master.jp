@@ -20,6 +20,14 @@ from tools.site_config import (
 
 BRAND_DIR = "assets/brand"
 MARKER = "<!--BRAND_ASSET_HEAD-->"
+# Google AdSense（全ページの <head> に読み込む）。
+# meta タグは所有権確認用（Google 推奨のサイト確認方法）、script は広告配信用。
+ADSENSE_CLIENT = "ca-pub-7927260139193410"
+ADSENSE_HEAD = (
+    f'<meta name="google-adsense-account" content="{ADSENSE_CLIENT}">\n'
+    '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+    f'?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>'
+)
 OG_WIDTH = 1200
 OG_HEIGHT = 630
 # SNS の 1:1 中央クロップ（630×630）でも切れないよう、コンテンツ幅をこの範囲に収める
@@ -347,6 +355,7 @@ def favicons_head_markup(rel_path: Path, *, site_root: Path | None = None) -> st
     apple = html.escape(_rel_href(rel_path, f"{BRAND_DIR}/apple-touch-icon.png"))
     theme_color = html.escape(theme_ink())
     return f"""{MARKER}
+{ADSENSE_HEAD}
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" type="image/png" sizes="48x48" href="{icon48}">
 <link rel="icon" type="image/png" sizes="32x32" href="{icon32}">
