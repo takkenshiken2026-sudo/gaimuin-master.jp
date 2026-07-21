@@ -158,6 +158,19 @@ from tools.guide_slug_prose import url_label_map_from_sources  # noqa: E402
 from tools.guide_slug_prose import resolve_slug_references  # noqa: E402
 from tools.seo_body_markup import seo_section_body_html  # noqa: E402
 
+# 講座CTA（coursePromo）を差し込む情報記事。独学・学習計画・難易度クラスタで、
+# 読者が「独学が不安」な文脈に合うものだけに限定（アフィリ専用記事は各自の hub を持つ）。
+COURSE_CTA_SLUGS: frozenset[str] = frozenset(
+    {
+        "difficulty-for-beginners",
+        "study-plan",
+        "self-study-start",
+        "self-study-mistakes",
+        "self-study-roadmap",
+        "first-time-exam-guide",
+    }
+)
+
 
 def slug_title_map(by_slug: dict[str, dict[str, str]]) -> dict[str, str]:
     return {s: apply_vars(row.get("title", "")) for s, row in by_slug.items() if s}
@@ -805,6 +818,18 @@ def build_article_html(
         hub_toc = affiliate_hub_toc_item(brief)
         if hub_toc:
             toc_extra = {hub_after_section: hub_toc}
+    elif slug in COURSE_CTA_SLUGS:
+        # COURSE_CTA_SLUGS は非アフィリ記事のみ（has_product_hub 偽の分岐）
+        from tools.affiliate_product_ui import course_promo_hub_html  # noqa: E402
+        from tools.site_config import course_promo  # noqa: E402
+
+        cp = course_promo()
+        if cp:
+            cta = course_promo_hub_html(cp)
+            if cta:
+                affiliate_hub = cta
+                # 本文の途中（3節後、節が少ない記事は最終節後）に自然に差し込む
+                hub_after_section = min(3, article_body_section_count(article) or 1)
     sections = sections_html(
         article,
         term_hrefs=term_hrefs,

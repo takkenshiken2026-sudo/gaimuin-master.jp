@@ -322,6 +322,60 @@ def affiliate_product_hub_html(
     )
 
 
+def course_promo_hub_html(course: dict[str, Any]) -> str:
+    """情報記事に差し込む講座CTA（coursePromo設定・PR明示・rel=sponsored）。
+
+    独学記事の読者に「独学でも可、ただし動画で体系化したい人には近道」という
+    条件付きで提示する。オファーの正本は site-config.json の coursePromo。
+    """
+    url = norm(str(course.get("url") or ""))
+    if not is_trackable_asp_url(url):
+        return ""
+    title = norm(str(course.get("modeTitle") or "オンライン講座"))
+    purpose = norm(str(course.get("modePurpose") or ""))
+    price = norm(str(course.get("priceLabel") or ""))
+    tag = norm(str(course.get("tagLabel") or "PR"))
+    foot = norm(str(course.get("footnote") or ""))
+    publisher = title.split("　")[0].split(" ")[0] if title else "講座"
+    meta = " · ".join(x for x in (purpose, price, tag) if x)
+    cover = (
+        '<div class="affiliate-product-cover affiliate-product-cover--placeholder '
+        'affiliate-product-cover--course" aria-hidden="true">'
+        f'<span class="affiliate-product-cover-publisher">{html.escape(publisher)}</span>'
+        f'<span class="affiliate-product-cover-title">{html.escape(title)}</span></div>'
+    )
+    card_body = (
+        '<div class="affiliate-product-card-body">'
+        f"<h3>{html.escape(title)}</h3>"
+        f'<p class="affiliate-product-meta">{html.escape(meta)}</p>'
+        '<span class="affiliate-product-cta">公式サイトで詳細・料金を見る</span></div>'
+    )
+    hit = (
+        f'<a class="affiliate-product-card-hit" href="{html.escape(url)}" target="_blank" '
+        f'rel="{EXTERNAL_REL}" aria-label="{html.escape(title)} を公式サイトで見る">'
+        f"{cover}{card_body}</a>"
+    )
+    card = (
+        '<article class="affiliate-product-card affiliate-product-card--course">'
+        f"{hit}</article>"
+    )
+    disclaimer = (
+        f'<p class="affiliate-price-disclaimer">{html.escape(foot)}</p>' if foot else ""
+    )
+    lead = (
+        "独学でも合格は可能です。ただし、動画で体系的に学びたい人や、"
+        "独学だと学習ペースの管理が不安な人には、通信講座が近道になることがあります。"
+    )
+    return (
+        '<section class="seo-article-section affiliate-product-hub" '
+        'data-comparison-kind="course" id="affiliate-course" '
+        'aria-labelledby="affiliate-course-title">'
+        '<h2 id="affiliate-course-title">独学が不安なら：動画講座という選択肢</h2>'
+        f"<p>{html.escape(lead)}</p>"
+        f"{card}{disclaimer}</section>"
+    )
+
+
 def affiliate_hub_toc_item(brief: dict[str, Any] | None) -> tuple[str, str] | None:
     if not brief or not brief_has_product_comparison_ui(brief):
         return None
